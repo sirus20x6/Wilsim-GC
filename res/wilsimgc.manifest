@@ -1,0 +1,5 @@
+
+Main-Class: Wilsim
+Permissions: all-permissions
+
+Application-Library-Allowable-Codebase:  http://jogamp.org/deployment

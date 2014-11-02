@@ -1,0 +1,48 @@
+               v1[2] = topo[((x+1) * 263) + y] - topo[((x-1) * 263 + y)];
+                v2[2] = topo[x * 263 + (y+1)] - topo[(x * 263 + y-1)];
+
+                cross(norm, v2, v1);
+
+                gl.glNormal3fv(norm, 0);
+
+                map_color(topo[x * 263 + y], color);
+                gl.glColor3f(color[0], color[1], color[2]);
+                // debug_color(x, y);
+                gl.glVertex3f(x,   y,   topo[x * 263 + y]);
+
+                map_color(topo[(x+1) * 263 + y], color);
+                // gl.glColor3fv(color, 0);
+                gl.glColor3f(color[0], color[1], color[2]);
+                // debug_color(x+1, y);
+                gl.glVertex3f(x+1, y,   topo[(x+1) * 263 + y]);
+
+                map_color(topo[x * 263 + (y+1)], color);
+                // gl.glColor3fv(color, 0);
+                gl.glColor3f(color[0], color[1], color[2]);
+                // debug_color(x, y+1);
+                gl.glVertex3f(x,   y+1, topo[x * 263 + (y+1)]);
+
+                v1[2] = topo[(x+2) * 263 + (y+1)] - topo[x * 263 + (y+1)];
+                v2[2] = topo[(x+1) * 263 + (y+2)] - topo[(x+1) * 263 + y];
+
+                cross(norm, v2, v1);
+
+                map_color(topo[(x+1) * 263 + (y+1)], color);
+                // gl.glColor3fv(color, 0);
+                gl.glColor3f(color[0], color[1], color[2]);
+                // debug_color(x+1, y+1);
+                gl.glVertex3f(x+1, y+1, topo[(x+1) * 263 + (y+1)]);
+
+                map_color(topo[x * 263 + (y+1)], color);
+                // gl.glColor3fv(color, 0);
+                gl.glColor3f(color[0], color[1], color[2]);
+                // debug_color(x, y+1);
+                gl.glVertex3f(x,   y+1, topo[x * 263 + (y+1)]);
+
+                map_color(topo[(x+1) * 263 + y], color);
+                // gl.glColor3fv(color, 0);
+                gl.glColor3f(color[0], color[1], color[2]);
+                // debug_color(x+1, y);
+                gl.glVertex3f(x+1, y,   topo[(x+1) * 263 + y]);
+
+                gl.glEnd();
