@@ -682,6 +682,7 @@ public class View implements Runnable, GLEventListener
         }
         newUI = false;
         drawVertScale();
+        drawScaleBar();
         drawCompass();
         if(viewMode == SPIN_MODE && Wilsim.m.scoreFlag)
             //drawScore();   // Temporarily removed until sane values emerge
@@ -777,6 +778,104 @@ public class View implements Runnable, GLEventListener
 
             String Label = Float.toString(vertScaleSample[i]) + " m";
             vertScaleTextEngine.draw(Label, (int)textPosX, (int)textPosY);
+        }
+
+        vertScaleTextEngine.endRendering();
+    }
+    private void drawScaleBar()
+    {
+
+        float scaleHeight = canvas.getHeight();
+        if(scaleHeight > 300.0f) scaleHeight = 300.0f;
+
+        float scaleBorder = 0.03f; // Fraction of screen height
+        scaleHeight = (1.0f - 2 * scaleBorder) * scaleHeight ; // Give a little border
+        float scaleWidth = 0.05f * scaleHeight; // Seems like a good ratio
+        float scalePosX;
+        float scalePosY;
+        //	scalePosX = canvas.getHeight() * scaleBorder;
+        //	scalePosY = canvas.getHeight() * (1.0f - scaleBorder) - scaleHeight;
+        scalePosX = 10.0f;
+        scalePosY = canvas.getHeight() - 100.0f - scaleHeight;
+
+
+        // Calculate divisions and division locations
+        // Hardwired for now
+
+        // Draw colored rectangular scale
+        float [] color = new float[3];
+
+
+
+        gl.glColor3f(0.0f, 0.0f, 0.0f);
+        gl.glBegin(GL.GL_LINE_LOOP);
+        gl.glVertex3f(scalePosX * 5, scalePosY + 30.0f, -1.5f);
+        gl.glVertex3f(scalePosX * 8 + scaleHeight, scalePosY + 30.0f, -1.5f);
+        gl.glVertex3f(scalePosX * 5, scalePosY + 30.0f, -1.5f);
+       // gl.glVertex3f(scalePosX + scaleWidth, scaleHeight , -1.5f);
+        //gl.glVertex3f(scalePosX, scalePosY + scaleHeight, -1.5f);
+        gl.glEnd();
+
+        // Draw label tics
+        gl.glColor3f(0.0f, 0.0f, 0.0f);
+        gl.glBegin(GL.GL_LINES);
+        int nVertScaleSamples = 4;
+
+
+
+        gl.glVertex3f(scalePosX * 5, scalePosY +30.0f, -1.5f);
+        gl.glVertex3f(scalePosX * 5, scalePosY +35.0f, -1.5f);
+        gl.glVertex3f(scalePosX * 5, scalePosY +30.0f, -1.5f);
+
+
+        gl.glVertex3f(128, scalePosY +30.0f, -1.5f);
+        gl.glVertex3f(128, scalePosY +35.0f, -1.5f);
+        gl.glVertex3f(128, scalePosY +30.0f, -1.5f);
+
+        gl.glVertex3f(206, scalePosY +30.0f, -1.5f);
+        gl.glVertex3f(206, scalePosY +35.0f, -1.5f);
+        gl.glVertex3f(206, scalePosY +30.0f, -1.5f);
+
+        gl.glVertex3f(284, scalePosY +30.0f, -1.5f);
+        gl.glVertex3f(284, scalePosY +35.0f, -1.5f);
+        gl.glVertex3f(284, scalePosY +30.0f, -1.5f);
+
+        gl.glVertex3f(362, scalePosY +30.0f, -1.5f);
+        gl.glVertex3f(362, scalePosY +35.0f, -1.5f);
+        gl.glVertex3f(362, scalePosY +30.0f, -1.5f);
+
+
+
+
+
+
+
+
+        gl.glEnd();
+
+        // Draw labels
+
+
+        vertScaleTextEngine.beginRendering(canvas.getWidth(), canvas.getHeight());
+        gl.glMatrixMode(5888);
+        gl.glPushMatrix();
+
+        gl.glRotatef(90, 0, 0, 1);
+        vertScaleTextEngine.setColor(0.0f, 0.0f, 0.0f, 1.0f);
+
+        float textPosX, textPosY;
+        textPosX = scalePosX + scaleWidth + 10.0f;
+
+float total = 244800;
+        //61200
+
+        for(int i = 0; i < 5; i++)
+        {
+            textPosY = 78 * i;
+
+            String Label = Float.toString(total) ;
+            total = total - 61200.0f;
+            vertScaleTextEngine.draw(Label, (int)textPosX -30, (int)textPosY - 362);
         }
 
         vertScaleTextEngine.endRendering();

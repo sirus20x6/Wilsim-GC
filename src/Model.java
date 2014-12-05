@@ -2,10 +2,12 @@ import sun.misc.Unsafe;
 
 import java.lang.reflect.Field;
 import java.util.Scanner;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Model implements Runnable {
     private int iterationCount = 0;
     private final CondVar executeFlag = new CondVar(false);
+    private final AtomicBoolean isOn = new AtomicBoolean(false);
     private final CondVar resetFlag   = new CondVar(true);
     private static final float oneoversqrt2 = 0.70710678118F;
     private static final float sqrt2 = 1.414213562F;
@@ -387,7 +389,7 @@ public class Model implements Runnable {
 
         river = new Profile();
 
-        Wilsim.i.log.append("Model: modelMain() \n");
+        //Wilsim.i.log.append("Model: modelMain() \n");
 
         // Default input files are stored in a .jar file
         // These need to be handled differently from user supplied
@@ -434,6 +436,13 @@ public class Model implements Runnable {
                 area2[i][j] = fp0b.nextFloat();
             }
         }
+        //unsafeTopo.unsafeCopyTo(topoorig);
+
+        fp0b.close();
+        fp0c.close();
+        fp1.close();
+        fp1b.close();
+
 
         Wilsim.v.initModel(); // Let the view know that data matrices are ready
 
@@ -857,7 +866,7 @@ public class Model implements Runnable {
     }
 
     void openDefaultDataFiles() {
-        Wilsim.i.log.append("Model: openDefaultDataFiles() \n");
+        //Wilsim.i.log.append("Model: openDefaultDataFiles() \n");
 
         // Default input files are stored in a .jar file
         // These need to be handled differently from user supplied
@@ -866,30 +875,30 @@ public class Model implements Runnable {
         Scanner fp0 = new Scanner(getClass().getResourceAsStream(
                 "input_files/grandcanyonfaultmask.txt"));
 
-        Wilsim.i.log.append("Model: opened grandcanyonfaultmask.txt\n");
+       // Wilsim.i.log.append("Model: opened grandcanyonfaultmask.txt\n");
 
         fp0b = new Scanner(getClass().getResourceAsStream(
                 "input_files/grandcanyonarea.txt"));
 
-        Wilsim.i.log.append("Model: opened grandcanyonarea.txt\n");
+        //Wilsim.i.log.append("Model: opened grandcanyonarea.txt\n");
 
         fp0c = new Scanner(getClass().getResourceAsStream(
                 "input_files/grandcanyonrim.txt"));
 
-        Wilsim.i.log.append("Model: opened grandcanyonrim.txt\n");
+        //Wilsim.i.log.append("Model: opened grandcanyonrim.txt\n");
 
         fp1 = new Scanner(getClass().getResourceAsStream(
                 "input_files/grandcanyoninitialtopo.txt"));
 
-        Wilsim.i.log.append("Model: opened grandcanyoninitialtopo.txt\n");
+       // Wilsim.i.log.append("Model: opened grandcanyoninitialtopo.txt\n");
 
         fp1b = new Scanner(getClass().getResourceAsStream(
                 "input_files/grandcanyonactualtopo.txt"));
 
-        Wilsim.i.log.append("Model: opened grandcanyonactualtopo.txt\n");
+        //Wilsim.i.log.append("Model: opened grandcanyonactualtopo.txt\n");
 
-        Scanner f1 = new Scanner(getClass().getResourceAsStream("input_files/text.txt"));
-        Wilsim.i.log.append("Model: opened text.txt \n");
+        //Scanner f1 = new Scanner(getClass().getResourceAsStream("input_files/text.txt"));
+        //Wilsim.i.log.append("Model: opened text.txt \n");
 
     }
 

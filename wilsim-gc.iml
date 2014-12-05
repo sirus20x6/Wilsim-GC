@@ -9,6 +9,25 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module-library">
       <library>
+        <CLASSES>
+          <root url="file://$APPLICATION_HOME_DIR$/projects/jogl/jar" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+        <jarDirectory url="file://$APPLICATION_HOME_DIR$/projects/jogl/jar" recursive="false" />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="RUNTIME">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/jar/gcdata.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
         <CLASSES />
         <JAVADOC />
         <SOURCES>
@@ -19,31 +38,12 @@
     </orderEntry>
     <orderEntry type="module-library">
       <library>
-        <CLASSES>
-          <root url="file://$APPLICATION_HOME_DIR$/projects/jogl/jar" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-        <jarDirectory url="file://$APPLICATION_HOME_DIR$/projects/jogl/jar" recursive="false" />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
         <CLASSES />
         <JAVADOC />
         <SOURCES>
           <root url="file://$APPLICATION_HOME_DIR$/projects/jogl/src" />
         </SOURCES>
         <jarDirectory url="file://$APPLICATION_HOME_DIR$/projects/jogl/src" recursive="false" type="SOURCES" />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" scope="RUNTIME">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/jar/gcdata.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
       </library>
     </orderEntry>
   </component>
