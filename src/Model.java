@@ -959,7 +959,7 @@ public class Model implements Runnable {
         max = 0;
         Wilsim.c.progressBar.setString("6M Years ago");
 
-        // Reset XSections
+        // Reset XSections //
         XSectionManager.clear(storageIntervals);
         storeCount = 0;
         storeTime = 1.0f / storageIntervals * duration;

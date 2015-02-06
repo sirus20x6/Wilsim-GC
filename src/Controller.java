@@ -552,7 +552,6 @@ public class Controller
 	Line = BorderFactory.createLineBorder(brown);
 	pas.setBorder(Line);
 	*/
-
 	// Storage intervals
         JLabel siLabel = new JLabel("Storage Intervals :");
 	siLabel.setToolTipText(
