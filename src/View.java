@@ -811,33 +811,6 @@ public class View implements Runnable, GLEventListener
         /***********************************************************************/
 
 
-        String path1 = "models/formula.obj";
-
-        try{
-/*            texture_manager.createManagedTexture
-                    ("road", "textures/roads/road.jpg",
-                            GL.GL_TEXTURE_2D, GL.GL_RGB, GL.GL_RGB, GL.GL_LINEAR,
-                            GL.GL_LINEAR, true, true );*/
-            // ...
-            //in the same way we load each texture is needed...
-            //...
-
-            //a file input stream reads the data and stores them in
-            //a buffer reader for each 3D model
-            FileInputStream r_path1 = new FileInputStream(path1);
-            BufferedReader b_read1 =
-                    new BufferedReader(new InputStreamReader(r_path1));
-            model1 = new GLModel(b_read1, true, "models/formula.mtl", gl);
-
-
-
-            r_path1.close();
-
-        }
-        catch( Exception e ){
-            System.out.println("LOADING ERROR");
-        }
-
 
 
 
