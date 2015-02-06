@@ -17,7 +17,7 @@
         <jarDirectory url="file://$APPLICATION_HOME_DIR$/projects/jogl/jar" recursive="false" />
       </library>
     </orderEntry>
-    <orderEntry type="module-library" scope="RUNTIME">
+    <orderEntry type="module-library" exported="" scope="RUNTIME">
       <library>
         <CLASSES>
           <root url="jar://$MODULE_DIR$/jar/gcdata.jar!/" />
@@ -46,6 +46,15 @@
         <jarDirectory url="file://$APPLICATION_HOME_DIR$/projects/jogl/src" recursive="false" type="SOURCES" />
       </library>
     </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library>
+        <CLASSES>
+          <root url="file://$USER_HOME$/school/jogl/jar" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+        <jarDirectory url="file://$USER_HOME$/school/jogl/jar" recursive="false" />
+      </library>
+    </orderEntry>
   </component>
 </module>
-
