@@ -1,4 +1,4 @@
-class XSectionManager
+public class XSectionManager
 {
     static private int n; // Number of profiles stored
 

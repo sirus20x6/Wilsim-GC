@@ -1,7 +1,7 @@
-import javax.swing.*;
+import javax.swing.JFrame;
 import java.awt.*;
 
-class Wilsim extends JFrame {
+public class Wilsim extends JFrame {
 	/*
 	 * The Wilsim erosion simulation application.
 	 * 
@@ -11,7 +11,7 @@ class Wilsim extends JFrame {
 	 */
 
 	/**
-	 *
+	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	/**
@@ -24,14 +24,14 @@ class Wilsim extends JFrame {
 	
 	public static InfoPanel i;
 
+	private Container ui;
+	Thread t1;
+	Thread t2;
 
-    void init() {
+	public void init() {
 		// Called once at beginning of program
 
 		// Get things going here
-        //System.out.println(unsafe.floatArrayOffset);
-
-
 
 		v = new View();
 		m = new Model();
@@ -39,7 +39,7 @@ class Wilsim extends JFrame {
 
 		i=new InfoPanel();
 		i.init();
-        Container ui = rootPane.getContentPane();
+		ui = rootPane.getContentPane();
 
 		c.createGUI(ui, v.canvas);
 
@@ -47,8 +47,8 @@ class Wilsim extends JFrame {
 
 		// Set up threads and get started
 
-        Thread t1 = new Thread(m);
-        Thread t2 = new Thread(v);
+		t1 = new Thread(m);
+		t2 = new Thread(v);
 		// Controller thread needs to stay in this thread of execution
 		// in order to trap UI input events
 

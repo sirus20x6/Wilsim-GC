@@ -92,14 +92,14 @@ public class XSection
 		for(i = 0; i < dx; i++)
 		    {
 			values[0][i] = ((float)i) / dx * distance
-			    * Model.gridHorizontalSpacingFactor;
+			    * Wilsim.m.gridHorizontalSpacingFactor;
 			x += stepX;
 			if(p < 0)
 			    { p += 2 * dy; }
 			else
 			    { p += 2 * (dy - dx); y += stepY; }
 		    }
-		values[0][i] = distance * Model.gridHorizontalSpacingFactor;
+		values[0][i] = distance * Wilsim.m.gridHorizontalSpacingFactor;
 	    }
 	else
 	    {
@@ -108,14 +108,14 @@ public class XSection
 		for(i = 0; i < dy; i++)
 		    {
 			values[0][i] = ((float)i) / dy * distance
-			    * Model.gridHorizontalSpacingFactor;
+			    * Wilsim.m.gridHorizontalSpacingFactor;
 			y += stepY;
 			if(p < 0)
 			    { p += 2 * dx; }
 			else
 			    { p += 2 * (dx - dy); x += stepX; }
 		    }
-		values[0][i] = distance * Model.gridHorizontalSpacingFactor;
+		values[0][i] = distance * Wilsim.m.gridHorizontalSpacingFactor;
 	    }
 
 	if(nIterates == 0)
@@ -123,7 +123,7 @@ public class XSection
 
     } // computeDistances
 
-    void appendXSectionValues(UnsafeMemory terrain)
+    void appendXSectionValues(float [][] terrain)
     {
 	Wilsim.i.log.append("Xsection::appendXSectionValues()\n");
 	if(nIterates > maxNIterates) return;
@@ -154,15 +154,14 @@ public class XSection
 		p = 2 * dy - dx;
 		for(i = 0; i < dx; i++)
 		    {
-
-			values[nIterates][i] = terrain.getFloatAt(x * y + y);
+			values[nIterates][i] = terrain[x][y];
 			x += stepX;
 			if(p < 0)
 			    { p += 2 * dy; }
 			else
 			    { p += 2 * (dy - dx); y += stepY; }
 		    }
-		values[nIterates][i] = terrain.getFloatAt(x * y + y);
+		values[nIterates][i] = terrain[x][y];
 	    }
 	else
 	    {
@@ -170,14 +169,14 @@ public class XSection
 		p = 2 * dx - dy;
 		for(i = 0; i < dy; i++)
 		    {
-			values[nIterates][i] = terrain.getFloatAt(x * y + y);
+			values[nIterates][i] = terrain[x][y];
 			y += stepY;
 			if(p < 0)
 			    { p += 2 * dx; }
 			else
 			    { p += 2 * (dx - dy); x += stepX; }
 		    }
-		values[nIterates][i] = terrain.getFloatAt(x * y + y);
+		values[nIterates][i] = terrain[x][y];
 	    }
 
 	nIterates++;

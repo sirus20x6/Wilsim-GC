@@ -1,12 +1,13 @@
-import javax.swing.*;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 
 public class InfoPanel
 {
-	JTextArea log;
-
-    public void init()
+	protected JTextArea log;
+	JScrollPane bar;
+	public void init()
 	{
 		log=new JTextArea(8,50);
-        //JScrollPane bar = new JScrollPane(log);
+		bar=new JScrollPane(log);
 	}
 }

@@ -8,7 +8,7 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 
-abstract class ViewAdapter implements MouseListener,
+public abstract class ViewAdapter implements MouseListener, 
 					     MouseMotionListener, 
 					     MouseWheelListener,
 					     KeyListener

@@ -46,7 +46,7 @@
         <jarDirectory url="file://$APPLICATION_HOME_DIR$/projects/jogl/src" recursive="false" type="SOURCES" />
       </library>
     </orderEntry>
-    <orderEntry type="module-library" exported="">
+    <orderEntry type="module-library">
       <library>
         <CLASSES>
           <root url="file://$USER_HOME$/school/jogl/jar" />
@@ -56,5 +56,16 @@
         <jarDirectory url="file://$USER_HOME$/school/jogl/jar" recursive="false" />
       </library>
     </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library>
+        <CLASSES>
+          <root url="file://$APPLICATION_HOME_DIR$/projects/jogl/jar" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+        <jarDirectory url="file://$APPLICATION_HOME_DIR$/projects/jogl/jar" recursive="false" />
+      </library>
+    </orderEntry>
   </component>
 </module>
+

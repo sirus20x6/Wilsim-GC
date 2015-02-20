@@ -22,7 +22,7 @@ public class Profile
 	// Wilsim.i.log.append("Profile::init(" + nI + ", " + nV + ")\n");
 	nIterates = nI;
 	nValues = nV;
-
+	
 	values = new float [nI][];
 	distances = new float [nI][];
 	n = new int [nI];
