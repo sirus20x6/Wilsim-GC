@@ -62,7 +62,7 @@ public class Wilsim extends JFrame {
 	public static void main(String args[]) {
 		Wilsim wilsim = new Wilsim();
 		wilsim.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		wilsim.setSize(800, 600); // Change to something more intelligent
+		wilsim.setSize(800, 800); // Change to something more intelligent
 		wilsim.init();
 	}
 

@@ -195,7 +195,7 @@ public class Controller
 
         // Initializing and adding the initial conditions and parameters panels
         // (to hold their appropriate values) to optionsBody panel
-        JPanel parameter = new JPanel(new GridLayout(8, 1));
+        JPanel parameter = new JPanel(new GridLayout(10, 1));
         parameterButton.setBackground(activeColor);
         parameter.setBackground(activeColor);
         optionsBody.add("Parameter", parameter);
@@ -272,6 +272,17 @@ public class Controller
 
         // Declaring kstrong and kfactor as panels and adding border to the
         // panel
+
+        JLabel subsidence = new JLabel("Subsidence rate along faults");
+        JPanel subsidencePan = new JPanel(new BorderLayout());
+        subsidencePan.add(subsidence, BorderLayout.WEST);
+        subsidencePan.setBackground(activeColor);
+
+        JPanel emptyPan = new JPanel(new BorderLayout());
+        emptyPan.setBackground(activeColor);
+
+
+
         JLabel Along_GW_Fault_Label = new JLabel("Along Grant Wash Fault");
         Along_GW_Fault_Label.setToolTipText(
                 "<html>New Value to add</html>");
@@ -331,6 +342,7 @@ public class Controller
             }
         });
         JPanel Along_T_Pan = new JPanel(new BorderLayout());
+
         Along_T_Pan.add(Along_TFault_Label, BorderLayout.WEST);
         Along_T_Pan.add(Along_TFault_Text, BorderLayout.CENTER);
         Along_T_Pan.add(Along_TFault, BorderLayout.EAST);
@@ -338,6 +350,9 @@ public class Controller
 
         Border Along_T_Line = BorderFactory.createLineBorder(brown);
         Along_T_Pan.setBorder(Along_T_Line);
+
+
+
 
 
 
@@ -676,9 +691,11 @@ public class Controller
         siPanel.setBorder(siLine);
 
         // Adding all the parameter panels to mail parameter panel
+        parameter.add(subsidencePan);
         parameter.add(Along_GW_Pan);
         parameter.add(Along_H_Pan);
         parameter.add(Along_T_Pan);
+        parameter.add(emptyPan);
         parameter.add(kstr);
         parameter.add(kfact);
         parameter.add(clif);

@@ -492,10 +492,13 @@ public class Model implements Runnable {
 				// slip
 			    for (i = 1; i <= lattice_size_x; i++) 
 				for (j = 1; j <= lattice_size_y; j++) {
-				    if ((j > 81) && (0.4 * j + i < 75))
+
+
+                    //commented per instructions feb 2015
+/*				    if ((j > 81) && (0.4 * j + i < 75))
 					U[i][j] = -.15f;
 				    else
-					U[i][j] = 0.0F;
+					U[i][j] = 0.0F;*/
 				    if (maskhurricane[i][j] == 2)
 					//U[i][j] += -0.10 * Math.exp(-(j - 140) * (j - 140) / 900.0) - 0.05 * Math.exp(-(j - 140) * (j - 140) / 900.0);
                     U[i][j] += Along_Hurricane_Fault * Math.exp(-(j-140)*(j-140)/900.0);
