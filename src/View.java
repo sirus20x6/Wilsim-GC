@@ -70,6 +70,7 @@ public class View implements Runnable, GLEventListener
     // For text labels
     private TextRenderer vertScaleTextEngine;
     private TextRenderer scoreTextEngine;
+    private TextRenderer CompassTextEngine;
 
     final float COLOR_MAX_HEIGHT = 3000.0f;
     final float COLOR_MIN_HEIGHT = 1400.0f;
@@ -332,6 +333,7 @@ public class View implements Runnable, GLEventListener
 	// Set up text rendering capability
 	vertScaleTextEngine = new TextRenderer(new Font("SansSerif", Font.PLAIN, 14));
 	scoreTextEngine = new TextRenderer(new Font("SanSerif", Font.PLAIN, 28));
+    CompassTextEngine = new TextRenderer(new Font("SanSerif", Font.PLAIN, 20));
 
 	// Initialize XSection Manager
 	XSectionManager.init();
@@ -469,8 +471,8 @@ public class View implements Runnable, GLEventListener
 	// Set up 3D view
 	gl.glMatrixMode(GLMatrixFunc.GL_PROJECTION);
 	gl.glLoadIdentity();
-	gl.glFrustum(-screenX, screenX, -screenY, screenY, 
-		     cameraNear, cameraFar);
+	gl.glFrustum(-screenX, screenX, -screenY, screenY,
+			cameraNear, cameraFar);
 
 	// Set up 3D rendering
 	gl.glMatrixMode(GLMatrixFunc.GL_MODELVIEW);
@@ -510,8 +512,8 @@ public class View implements Runnable, GLEventListener
 	// Set up orthogonal view
 	gl.glMatrixMode(GLMatrixFunc.GL_PROJECTION);
 	gl.glLoadIdentity();
-	gl.glOrtho(-screenX, screenX, -screenY, screenY, 
-		     cameraNear, cameraFar);
+	gl.glOrtho(-screenX, screenX, -screenY, screenY,
+			cameraNear, cameraFar);
 
 	// Set up 3D rendering
 	gl.glMatrixMode(GLMatrixFunc.GL_MODELVIEW);
@@ -595,8 +597,8 @@ public class View implements Runnable, GLEventListener
 
 	// Get ready for varying material properties
 	gl.glEnable(gl.GL_COLOR_MATERIAL);
-	gl.glColorMaterial(gl.GL_FRONT_AND_BACK, 
-			   GLLightingFunc.GL_AMBIENT_AND_DIFFUSE);
+	gl.glColorMaterial(gl.GL_FRONT_AND_BACK,
+			GLLightingFunc.GL_AMBIENT_AND_DIFFUSE);
 
 	for(int x = 2; x < latticeSizeX-1; x++)
 	    {
@@ -679,10 +681,12 @@ public class View implements Runnable, GLEventListener
 	    }
 	newUI = false;
 	drawVertScale();
-	drawCompass();
-	if(viewMode == SPIN_MODE && Wilsim.m.scoreFlag)
-	    //drawScore();   // Temporarily removed until sane values emerge
-	    ;
+		//drawScaleBar();
+        if(viewMode == SPIN_MODE) drawCompass();
+        //drawCompass();
+        if(viewMode == SPIN_MODE && Wilsim.m.scoreFlag)
+            //drawScore();   // Temporarily removed until sane values emerge
+            ;
     }
 
     private void drawVertScale()
@@ -778,9 +782,166 @@ public class View implements Runnable, GLEventListener
 	vertScaleTextEngine.endRendering();
     }
 
+	private void drawScaleBar()
+	{
+
+		float scaleHeight = canvas.getHeight();
+		if(scaleHeight > 300.0f) scaleHeight = 300.0f;
+
+		float scaleBorder = 0.03f; // Fraction of screen height
+		scaleHeight = (1.0f - 2 * scaleBorder) * scaleHeight ; // Give a little border
+		float scaleWidth = 0.05f * scaleHeight; // Seems like a good ratio
+		float scalePosX;
+		float scalePosY;
+		//	scalePosX = canvas.getHeight() * scaleBorder;
+		//	scalePosY = canvas.getHeight() * (1.0f - scaleBorder) - scaleHeight;
+		scalePosX = 10.0f;
+		scalePosY = canvas.getHeight() - 100.0f - scaleHeight;
+
+
+		// Calculate divisions and division locations
+		// Hardwired for now
+
+		// Draw colored rectangular scale
+		float [] color = new float[3];
+
+
+		/********************************************/
+		//Attempt to use objreader.java
+		/********************************************/
+
+
+
+
+		/********************************************/
+
+		gl.glColor3f(0.0f, 0.0f, 0.0f);
+		gl.glBegin(GL2.GL_LINE_LOOP);
+		gl.glVertex3f(scalePosX * 5, scalePosY + 30.0f, -1.5f);
+		gl.glVertex3f(scalePosX * 8 + scaleHeight, scalePosY + 30.0f, -1.5f);
+		gl.glVertex3f(scalePosX * 5, scalePosY + 30.0f, -1.5f);
+		// gl.glVertex3f(scalePosX + scaleWidth, scaleHeight , -1.5f);
+		//gl.glVertex3f(scalePosX, scalePosY + scaleHeight, -1.5f);
+		gl.glEnd();
+
+		// Draw label tics
+		gl.glColor3f(0.0f, 0.0f, 0.0f);
+		gl.glBegin(GL2.GL_LINES);
+		int nVertScaleSamples = 4;
+
+
+
+		gl.glVertex3f(scalePosX * 5, scalePosY +30.0f, -1.5f);
+		gl.glVertex3f(scalePosX * 5, scalePosY +35.0f, -1.5f);
+		gl.glVertex3f(scalePosX * 5, scalePosY +30.0f, -1.5f);
+
+
+		gl.glVertex3f(128, scalePosY +30.0f, -1.5f);
+		gl.glVertex3f(128, scalePosY +35.0f, -1.5f);
+		gl.glVertex3f(128, scalePosY +30.0f, -1.5f);
+
+		gl.glVertex3f(206, scalePosY +30.0f, -1.5f);
+		gl.glVertex3f(206, scalePosY +35.0f, -1.5f);
+		gl.glVertex3f(206, scalePosY +30.0f, -1.5f);
+
+		gl.glVertex3f(284, scalePosY +30.0f, -1.5f);
+		gl.glVertex3f(284, scalePosY +35.0f, -1.5f);
+		gl.glVertex3f(284, scalePosY +30.0f, -1.5f);
+
+		gl.glVertex3f(362, scalePosY +30.0f, -1.5f);
+		gl.glVertex3f(362, scalePosY +35.0f, -1.5f);
+		gl.glVertex3f(362, scalePosY +30.0f, -1.5f);
+
+
+		gl.glEnd();
+
+		// Draw labels
+
+
+		vertScaleTextEngine.beginRendering(canvas.getWidth(), canvas.getHeight());
+		gl.glMatrixMode(5888);
+		gl.glPushMatrix();
+
+		gl.glRotatef(90, 0, 0, 1);
+		vertScaleTextEngine.setColor(0.0f, 0.0f, 0.0f, 1.0f);
+
+		float textPosX, textPosY;
+		textPosX = scalePosX + scaleWidth + 10.0f;
+
+		float total = 244800;
+		//61200
+
+		for(int i = 0; i < 5; i++)
+		{
+			textPosY = 78 * i;
+
+			String Label = Float.toString(total) ;
+			total = total - 61200.0f;
+			vertScaleTextEngine.draw(Label, (int)textPosX -30, (int)textPosY - 362);
+		}
+
+		vertScaleTextEngine.endRendering();
+	}
     private void drawCompass()
     {
-	// Nothing yet
+        // Positions the compass in the upper right corner
+        float compassHeight = canvas.getHeight();
+        float compassWidth = 0.05f;
+        float icompasswidth = canvas.getWidth()*compassWidth;
+        float ccx;
+        float ccy;
+        if (icompasswidth<20.0f) icompasswidth=20.0f;
+        ccx = canvas.getWidth()-icompasswidth-20;
+        ccy = canvas.getHeight()-icompasswidth-20;
+
+        // Rotates the compass with the model, points to North
+        gl.glPushMatrix();
+        gl.glTranslatef(ccx, ccy, 0);
+        gl.glRotatef(viewLongitude-180, 0, 0, 1);
+
+        //Draw compass border
+        gl.glColor3f(0.0f, 0.0f, 0.0f);
+        gl.glBegin(gl.GL_LINE_LOOP);
+        gl.glVertex3f(icompasswidth*(-2/3.0f), -icompasswidth, -1.5f);
+        gl.glVertex3f(0, icompasswidth, -1.0f);
+        gl.glVertex3f(icompasswidth*(2/3.0f), -icompasswidth, -1.5f);
+        gl.glVertex3f(0, icompasswidth*(-1/3.0f), -1.5f);
+        gl.glEnd();
+
+//    	//Draw left half of compass arrow
+        gl.glBegin(gl.GL_TRIANGLE_STRIP);
+        gl.glColor3f(0.9f, 0.7f, 0.1f);
+        gl.glVertex3f(icompasswidth*(-2/3.0f), -icompasswidth, -1.5f);
+        gl.glColor3f(0.7f, 0.2f, 0.0f);
+        gl.glVertex3f(0, icompasswidth, -1.5f);
+        gl.glColor3f(1.0f, 0.8f, 0.1f);
+        gl.glVertex3f(0, icompasswidth*(-1/3.0f), -1.5f);
+        gl.glEnd();
+
+        //Draw right half of compass arrow
+        gl.glBegin(gl.GL_TRIANGLE_STRIP);
+        gl.glColor3f(0.9f, 0.7f, 0.1f);
+        gl.glVertex3f(icompasswidth*(2/3.0f), -icompasswidth, -1.5f);
+        gl.glColor3f(0.7f, 0.2f, 0.0f);
+        gl.glVertex3f(0, icompasswidth, -1.5f);
+        gl.glColor3f(1.0f, 0.8f, 0.1f);
+        gl.glVertex3f(0, icompasswidth*(-1/3.0f), -1.5f);
+        gl.glEnd();
+
+        CompassTextEngine.beginRendering(canvas.getWidth(), canvas.getHeight());
+        CompassTextEngine.setColor(0.0f, 0.0f, 0.0f, 1.0f);
+
+        // Writes an "N" in the middle of the compass
+        float textPosX, textPosY;
+        textPosX = ccx-6.0f;
+        textPosY = ccy-10.0f;
+
+        String Label = "N";
+        CompassTextEngine.draw(Label, (int)textPosX, (int)textPosY);
+
+        CompassTextEngine.endRendering();
+
+        gl.glPopMatrix();
     }
 
     private void drawScore()

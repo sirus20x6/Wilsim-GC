@@ -1,9 +1,4 @@
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.Date;
 import java.util.Scanner;
-
-import javax.swing.JProgressBar;
 
 public class Model implements Runnable {
     private int iterationCount = 0;

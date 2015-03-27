@@ -11,6 +11,8 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 
+import static java.lang.Math.abs;
+
 /**
  * The Controller class handles the User Interface. It handles all the events by
  * user and communicates with the view and model classes and display the model
@@ -195,7 +197,7 @@ public class Controller
 
         // Initializing and adding the initial conditions and parameters panels
         // (to hold their appropriate values) to optionsBody panel
-        JPanel parameter = new JPanel(new GridLayout(10, 1));
+        JPanel parameter = new JPanel(new GridLayout(6, 1));
         parameterButton.setBackground(activeColor);
         parameter.setBackground(activeColor);
         optionsBody.add("Parameter", parameter);
@@ -283,83 +285,23 @@ public class Controller
 
 
 
-        JLabel Along_GW_Fault_Label = new JLabel("Along Grant Wash Fault");
+        JLabel Along_GW_Fault_Label = new JLabel("Subsidence Rate Along Grand Wash Fault:");
         Along_GW_Fault_Label.setToolTipText(
                 "<html>New Value to add</html>");
-        Along_GW_Fault_Text = new JLabel("          -1.7");
-        Along_GW_Fault = new JScrollBar(JScrollBar.VERTICAL, 35, 50, 0, 251);
-        Along_GW_Fault.setValue(170);
+        Along_GW_Fault_Text = new JLabel("          1.7 m/kyr ");
+        Along_GW_Fault = new JScrollBar(JScrollBar.VERTICAL, 35, 0, 0, 226);
+        Along_GW_Fault.setValue(81);
         Along_GW_Fault.addAdjustmentListener(new AdjustmentListener() {
             public void adjustmentValueChanged(AdjustmentEvent e) {
-                Wilsim.m.Along_Grant_Wash_Fault = ((250 - Along_GW_Fault.getValue()) / 100.0f) * -1;
+                Wilsim.m.Along_Grant_Wash_Fault = ((251 - Along_GW_Fault.getValue()) / 100.0f) * -1;
 
                 /*new = KStrong / 100.0f;*/
                 // Have to fake division for proper printing
                 // without flipping to scientific notation
                 Along_GW_Fault_Text.setText("              "
-                        + String.format("%.02f", Wilsim.m.Along_Grant_Wash_Fault));
+                        + String.format("%.02f", abs(Wilsim.m.Along_Grant_Wash_Fault)) + " m/kyr ");
             }
         });
-
-
-        JLabel Along_HFault_Label = new JLabel("Along Hurricane Fault");
-        Along_HFault_Label.setToolTipText(
-                "<html>New Value to add</html>");
-        Along_HFault_Text = new JLabel("          -.15");
-        Along_HFault = new JScrollBar(JScrollBar.VERTICAL, 35, 50, 0, 201);
-        Along_HFault.setValue(150);
-        Along_HFault.addAdjustmentListener(new AdjustmentListener() {
-            public void adjustmentValueChanged(AdjustmentEvent e) {
-                Wilsim.m.Along_Hurricane_Fault = ((201 - Along_HFault.getValue()) / 1000.0f) * -1;
-                Along_HFault_Text.setText("              "
-                        + String.format("%.02f", Wilsim.m.Along_Hurricane_Fault));
-            }
-        });
-        JPanel Along_H_Pan = new JPanel(new BorderLayout());
-        Along_H_Pan.add(Along_HFault_Label, BorderLayout.WEST);
-        Along_H_Pan.add(Along_HFault_Text, BorderLayout.CENTER);
-        Along_H_Pan.add(Along_HFault, BorderLayout.EAST);
-        Along_H_Pan.setBackground(activeColor);
-
-        Border Along_H_Line = BorderFactory.createLineBorder(brown);
-        Along_H_Pan.setBorder(Along_H_Line);
-
-
-
-
-
-        JLabel Along_TFault_Label = new JLabel("Along Toroweap Fault");
-        Along_TFault_Label.setToolTipText(
-                "<html>New Value to add</html>");
-        Along_TFault_Text = new JLabel("          -.05");
-        Along_TFault = new JScrollBar(JScrollBar.VERTICAL, 35, 50, 0, 101);
-        Along_TFault.setValue(50);
-        Along_TFault.addAdjustmentListener(new AdjustmentListener() {
-            public void adjustmentValueChanged(AdjustmentEvent e) {
-                Wilsim.m.Along_Toroweap_Fault = ((101 - Along_TFault.getValue()) / 1000.0f) * -1;
-                Along_TFault_Text.setText("              "
-                        + String.format("%.02f", Wilsim.m.Along_Toroweap_Fault));
-            }
-        });
-        JPanel Along_T_Pan = new JPanel(new BorderLayout());
-
-        Along_T_Pan.add(Along_TFault_Label, BorderLayout.WEST);
-        Along_T_Pan.add(Along_TFault_Text, BorderLayout.CENTER);
-        Along_T_Pan.add(Along_TFault, BorderLayout.EAST);
-        Along_T_Pan.setBackground(activeColor);
-
-        Border Along_T_Line = BorderFactory.createLineBorder(brown);
-        Along_T_Pan.setBorder(Along_T_Line);
-
-
-
-
-
-
-
-
-
-
 
         JLabel kStrong = new JLabel("Rock Erodibility :");
         kStrong.setToolTipText(
@@ -440,7 +382,7 @@ public class Controller
 
         // Initializing the profiles and profiles panels(Cards)
         profiles = new JPanel();
-   
+
    /*
    // This button will switch model between profiles and spin modes
    // the counter changes the name on the button from profile to spin and
@@ -582,13 +524,13 @@ public class Controller
         JLabel bannerLabel = new JLabel(banner);
         JPanel bannerPanel = new JPanel(new GridLayout(1, 1));
         bannerPanel.add(bannerLabel);
-   
+
    /* // Pause points
-   
+
    Pause = new JTextField(4);
-   
+
    pause = new JLabel("Pause point : (In Million years)");
-   
+
    JButton set = new JButton("set");
    // Because we do not want to pause betwen 0 and 2 unless the value is set
    pauseValue = 20;
@@ -598,7 +540,7 @@ public class Controller
           int val = Integer.parseInt(Pause.getText());
           if (val == -1)
          pauseValue = 1;
-          
+
           if (val == -2)
          pauseValue = 2;
           if (val == -3)
@@ -621,15 +563,15 @@ public class Controller
          pauseValue = 11;
           if (val == 6)
          pauseValue = 12;
-          
+
           if (val > 6 || val < -5)
          JOptionPane.showMessageDialog(Pause,
                         "Enter a value in range -1 to 6");
       }
        });
-   
+
    JPanel pas = new JPanel(new BorderLayout());
-   
+
    JPanel pan = new JPanel();
    JPanel p = new JPanel();
    pan.setBackground(activeColor);
@@ -637,25 +579,25 @@ public class Controller
    p.add(pan);
    p.setBackground(activeColor);
    pas.add(p, BorderLayout.WEST);
-   
+
    JPanel field = new JPanel();
    field.add(Pause);
    field.setBackground(activeColor);
    JPanel box = new JPanel();
    box.add(field);
    box.setBackground(activeColor);
-   
+
    JPanel btn = new JPanel();
    JPanel bt = new JPanel();
    bt.add(set);
    bt.setBackground(activeColor);
    btn.setBackground(activeColor);
    btn.add(bt);
-   
+
    pas.add(btn, BorderLayout.EAST);
    pas.add(box, BorderLayout.CENTER);
    pas.setBackground(activeColor);
-   
+
    // Color m=Color(0,0,0);
    Line = BorderFactory.createLineBorder(brown);
    pas.setBorder(Line);
@@ -691,11 +633,7 @@ public class Controller
         siPanel.setBorder(siLine);
 
         // Adding all the parameter panels to mail parameter panel
-        parameter.add(subsidencePan);
         parameter.add(Along_GW_Pan);
-        parameter.add(Along_H_Pan);
-        parameter.add(Along_T_Pan);
-        parameter.add(emptyPan);
         parameter.add(kstr);
         parameter.add(kfact);
         parameter.add(clif);
