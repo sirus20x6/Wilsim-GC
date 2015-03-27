@@ -3,7 +3,7 @@
     <CLASSES />
     <JAVADOC />
     <NATIVE>
-      <root url="file://$PROJECT_DIR$/../../jogl/lib" />
+      <root url="file://$USER_HOME$/school/jogl/lib" />
     </NATIVE>
     <SOURCES />
   </library>

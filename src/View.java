@@ -7,6 +7,7 @@ import javax.media.opengl.GLProfile;
 import javax.media.opengl.fixedfunc.*;
 import com.jogamp.opengl.util.awt.TextRenderer;
 import java.awt.event.MouseEvent;
+import java.awt.Color;
 import java.awt.Font;
 
 public class View implements Runnable, GLEventListener
@@ -29,6 +30,7 @@ public class View implements Runnable, GLEventListener
     final static public int SPIN_MODE = 0;
     final static public int PROFILE_MODE = 1;
     final static public int FLY_MODE = 2;  // Someday
+	final static public int XVISUALIZER_MODE = 3;
 
     private int viewMode = SPIN_MODE;
 
@@ -377,6 +379,8 @@ public class View implements Runnable, GLEventListener
 			break;
 		    case PROFILE_MODE:
 			viewMode = PROFILE_MODE;
+//		    case XVISUALIZER_MODE:
+//		    viewMode = XVISUALIZER_MODE;
 			break;
 		    default:  //Unrecognized view mode - do nothing
 			break;
@@ -414,39 +418,96 @@ public class View implements Runnable, GLEventListener
 	if(viewMode == PROFILE_MODE)
 	    {
 		drawXSectionMode();
+	    gl.glEnable(gl.GL_LIGHTING);
+
+		// Position lights
+		gl.glLightfv(GLLightingFunc.GL_LIGHT0, GLLightingFunc.GL_POSITION, lightPosition, 0);
+
+		// Recenter and resposition grid
+		// gl.glRotatef(180f, 1.0f, 1.0f, .0f);
+		gl.glScalef(gridHorizontalScaleFactor, -gridHorizontalScaleFactor, 1.0f);
+		gl.glTranslatef(-latticeSizeX / 2, -latticeSizeY / 2, -1800);
+		// Z translation is currently a hack based on the grid.  Roughly 1800 m for
+		// the Grand Canyon
+
+		drawTerrain();
+
+		gl.glDisable(gl.GL_LIGHTING);
+
+		drawXSections();
+
+		// Now draw UI stuff on top
+		gl.glMatrixMode(GLMatrixFunc.GL_PROJECTION);
+		gl.glLoadIdentity();
+		gl.glOrtho(0.0f, canvas.getWidth(), 0.0f, canvas.getHeight(), 1.0f, 2.0f);
+		gl.glMatrixMode(GLMatrixFunc.GL_MODELVIEW);
+		gl.glLoadIdentity();
+
+		drawUI();
 	    }
-	else
+	else if(viewMode == SPIN_MODE)
 	    {
 		// Spin mode
 		drawSpinMode();
+			gl.glEnable(gl.GL_LIGHTING);
+
+			// Position lights
+			gl.glLightfv(GLLightingFunc.GL_LIGHT0, GLLightingFunc.GL_POSITION, lightPosition, 0);
+
+			// Recenter and resposition grid
+			// gl.glRotatef(180f, 1.0f, 1.0f, .0f);
+			gl.glScalef(gridHorizontalScaleFactor, -gridHorizontalScaleFactor, 1.0f);
+			gl.glTranslatef(-latticeSizeX / 2, -latticeSizeY / 2, -1800);
+			// Z translation is currently a hack based on the grid.  Roughly 1800 m for
+			// the Grand Canyon
+
+			drawTerrain();
+
+			gl.glDisable(gl.GL_LIGHTING);
+
+			drawXSections();
+
+			// Now draw UI stuff on top
+			gl.glMatrixMode(GLMatrixFunc.GL_PROJECTION);
+			gl.glLoadIdentity();
+			gl.glOrtho(0.0f, canvas.getWidth(), 0.0f, canvas.getHeight(), 1.0f, 2.0f);
+			gl.glMatrixMode(GLMatrixFunc.GL_MODELVIEW);
+			gl.glLoadIdentity();
+
+			drawUI();
 	    }
+	else
+		{
+		drawXVISUALIZER_MODE();
+			gl.glEnable(gl.GL_LIGHTING);
 
-	gl.glEnable(gl.GL_LIGHTING);
+			// Position lights
+			gl.glLightfv(GLLightingFunc.GL_LIGHT0, GLLightingFunc.GL_POSITION, lightPosition, 0);
 
-	// Position lights
-	gl.glLightfv(GLLightingFunc.GL_LIGHT0, GLLightingFunc.GL_POSITION, lightPosition, 0);
+			// Recenter and resposition grid
+			// gl.glRotatef(180f, 1.0f, 1.0f, .0f);
+			gl.glScalef(gridHorizontalScaleFactor, -gridHorizontalScaleFactor, 1.0f);
+			gl.glTranslatef(-latticeSizeX / 2, -latticeSizeY / 2, -1800);
+			// Z translation is currently a hack based on the grid.  Roughly 1800 m for
+			// the Grand Canyon
 
-	// Recenter and resposition grid
-	// gl.glRotatef(180f, 1.0f, 1.0f, .0f);
-	gl.glScalef(gridHorizontalScaleFactor, -gridHorizontalScaleFactor, 1.0f);
-	gl.glTranslatef(-latticeSizeX / 2, -latticeSizeY / 2, -1800);
-	// Z translation is currently a hack based on the grid.  Roughly 1800 m for
-	// the Grand Canyon
+			drawTerrain();
 
-	drawTerrain();
+			gl.glDisable(gl.GL_LIGHTING);
 
-	gl.glDisable(gl.GL_LIGHTING);
+			drawXSections();
 
-	drawXSections();
+			// Now draw UI stuff on top
+			gl.glMatrixMode(GLMatrixFunc.GL_PROJECTION);
+			gl.glLoadIdentity();
+			gl.glOrtho(0.0f, canvas.getWidth(), 0.0f, canvas.getHeight(), 1.0f, 2.0f);
+			gl.glMatrixMode(GLMatrixFunc.GL_MODELVIEW);
+			gl.glLoadIdentity();
 
-	// Now draw UI stuff on top
-	gl.glMatrixMode(GLMatrixFunc.GL_PROJECTION);
-	gl.glLoadIdentity();
-	gl.glOrtho(0.0f, canvas.getWidth(), 0.0f, canvas.getHeight(), 1.0f, 2.0f);
-	gl.glMatrixMode(GLMatrixFunc.GL_MODELVIEW);
-	gl.glLoadIdentity();
+			drawUI();
+		}
 
-	drawUI();
+
 
 	synchronized(newComputation)
 	    {
@@ -472,7 +533,7 @@ public class View implements Runnable, GLEventListener
 	gl.glMatrixMode(GLMatrixFunc.GL_PROJECTION);
 	gl.glLoadIdentity();
 	gl.glFrustum(-screenX, screenX, -screenY, screenY,
-			cameraNear, cameraFar);
+		     cameraNear, cameraFar);
 
 	// Set up 3D rendering
 	gl.glMatrixMode(GLMatrixFunc.GL_MODELVIEW);
@@ -506,20 +567,28 @@ public class View implements Runnable, GLEventListener
 			screenY = screenX / aspect;
 		    }
 		computeXSectionView();
-		newParams = false;
-		newMode = false;
+		newParams = true;
+		newMode = true;
 	    }
+
+
+
 	// Set up orthogonal view
 	gl.glMatrixMode(GLMatrixFunc.GL_PROJECTION);
 	gl.glLoadIdentity();
 	gl.glOrtho(-screenX, screenX, -screenY, screenY,
-			cameraNear, cameraFar);
+		     cameraNear, cameraFar);
 
 	// Set up 3D rendering
 	gl.glMatrixMode(GLMatrixFunc.GL_MODELVIEW);
 	gl.glLoadIdentity();
 	gl.glMultMatrixf(world2cam, 0);
     }
+
+	private void drawXVISUALIZER_MODE()
+	{
+
+	}
 
     private void drawXSections()
     {
@@ -598,7 +667,7 @@ public class View implements Runnable, GLEventListener
 	// Get ready for varying material properties
 	gl.glEnable(gl.GL_COLOR_MATERIAL);
 	gl.glColorMaterial(gl.GL_FRONT_AND_BACK,
-			GLLightingFunc.GL_AMBIENT_AND_DIFFUSE);
+			   GLLightingFunc.GL_AMBIENT_AND_DIFFUSE);
 
 	for(int x = 2; x < latticeSizeX-1; x++)
 	    {
@@ -682,11 +751,11 @@ public class View implements Runnable, GLEventListener
 	newUI = false;
 	drawVertScale();
 		//drawScaleBar();
-        if(viewMode == SPIN_MODE) drawCompass();
-        //drawCompass();
-        if(viewMode == SPIN_MODE && Wilsim.m.scoreFlag)
-            //drawScore();   // Temporarily removed until sane values emerge
-            ;
+	if(viewMode == SPIN_MODE) drawCompass();
+	//drawCompass();
+	if(viewMode == SPIN_MODE && Wilsim.m.scoreFlag)
+	    //drawScore();   // Temporarily removed until sane values emerge
+	    ;
     }
 
     private void drawVertScale()
