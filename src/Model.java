@@ -793,30 +793,30 @@ public class Model implements Runnable {
 		fp0 = new Scanner(getClass().getResourceAsStream(
 				"input_files/grandcanyonfaultmask.txt"));
 
-		Wilsim.i.log.append("Model: opened grandcanyonfaultmask.txt\n");
+		//Wilsim.i.log.append("Model: opened grandcanyonfaultmask.txt\n");
 
 		fp0b = new Scanner(getClass().getResourceAsStream(
 				"input_files/grandcanyonarea.txt"));
 
-		Wilsim.i.log.append("Model: opened grandcanyonarea.txt\n");
+		//Wilsim.i.log.append("Model: opened grandcanyonarea.txt\n");
 
 		fp0c = new Scanner(getClass().getResourceAsStream(
 				"input_files/grandcanyonrim.txt"));
 
-		Wilsim.i.log.append("Model: opened grandcanyonrim.txt\n");
+		//Wilsim.i.log.append("Model: opened grandcanyonrim.txt\n");
 
 		fp1 = new Scanner(getClass().getResourceAsStream(
 				"input_files/grandcanyoninitialtopo.txt"));
 
-		Wilsim.i.log.append("Model: opened grandcanyoninitialtopo.txt\n");
+		//Wilsim.i.log.append("Model: opened grandcanyoninitialtopo.txt\n");
 
 		fp1b = new Scanner(getClass().getResourceAsStream(
 				"input_files/grandcanyonactualtopo.txt"));
 
-		Wilsim.i.log.append("Model: opened grandcanyonactualtopo.txt\n");
+		//Wilsim.i.log.append("Model: opened grandcanyonactualtopo.txt\n");
 
 		f1 = new Scanner(getClass().getResourceAsStream("input_files/text.txt"));
-		Wilsim.i.log.append("Model: opened text.txt \n");
+		//Wilsim.i.log.append("Model: opened text.txt \n");
 
 	}
 

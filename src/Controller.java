@@ -187,8 +187,8 @@ public class Controller
 
         // Initializing the buttons
         optionsButton = new JRadioButton("PARAMETERS");
-	profilesButton = new JRadioButton("DRAW");
-	XsectionButton = new JRadioButton("CROSS SECTION");
+	    profilesButton = new JRadioButton("DRAW");
+	    XsectionButton = new JRadioButton("CROSS SECTION");
 
         optionsButton.setSelected(true);
         optionsButton.setBackground(activeColor);
@@ -196,21 +196,21 @@ public class Controller
         profilesButton.setToolTipText(
                 "<html>Left-click and drag a line where you want<br />" +
                         "to place the cross-section.</html>");
-	XsectionButton.setBackground(inactiveColor);
+	    XsectionButton.setBackground(inactiveColor);
 
         // grouping the three buttons which helps in choosing a single button at
         // a time
         ButtonGroup mainOptions = new ButtonGroup();
         mainOptions.add(optionsButton);
         mainOptions.add(profilesButton);
-	mainOptions.add(XsectionButton);
+	    mainOptions.add(XsectionButton);
 
         // Adding the buttons to controlsHead panel which is the head of the
         // control
         // panel
         controlsHead.add(optionsButton);
         controlsHead.add(profilesButton);
-	controlsHead.add(XsectionButton);
+	    controlsHead.add(XsectionButton);
 
         // Creating a card layout to display single panel out of the
         // two(parameters,profiles) at a time
@@ -502,7 +502,7 @@ public class Controller
         // Adding the three main card panels to the main CardPanel
         cardPanel.add("Card1", options);
         cardPanel.add("Card2", profiles);
-	//cardPanel.add("Card3", Xsection);
+	    //cardPanel.add("Card3", Xsection);
 
         // When options button is selected, the options panels card is displayed
         optionsButton.addActionListener(new ActionListener() {
