@@ -55,8 +55,8 @@ public class Controller
     // hypsometric buttons
 
     private JPanel controlsBody;// contains the options, profiles and
-                                // hypsometric
-                                // panels
+    // hypsometric
+    // panels
     private JPanel options; // Contains the optionsHead and optionsHead panels
     private JPanel optionsHead; // Contains the initial Conditions and
     // parameters Buttons
@@ -66,7 +66,7 @@ public class Controller
 
     private JPanel parameter; // panel to hold parameter values
     private JPanel cardPanel; // Panel to hold the main three panels
-                              // (options,profiles and hypsometric)
+    // (options,profiles and hypsometric)
     private JPanel Xsection; //panel to hold onto cross section data
     private JPanel startPanel; // Panel to place start button(get rid of it)
     private CardLayout card; // Main cardlayout to display one panel at a time
@@ -187,8 +187,8 @@ public class Controller
 
         // Initializing the buttons
         optionsButton = new JRadioButton("PARAMETERS");
-	    profilesButton = new JRadioButton("DRAW");
-	    XsectionButton = new JRadioButton("CROSS SECTION");
+        profilesButton = new JRadioButton("DRAW");
+        XsectionButton = new JRadioButton("CROSS SECTION");
 
         optionsButton.setSelected(true);
         optionsButton.setBackground(activeColor);
@@ -196,21 +196,21 @@ public class Controller
         profilesButton.setToolTipText(
                 "<html>Left-click and drag a line where you want<br />" +
                         "to place the cross-section.</html>");
-	    XsectionButton.setBackground(inactiveColor);
+        XsectionButton.setBackground(inactiveColor);
 
         // grouping the three buttons which helps in choosing a single button at
         // a time
         ButtonGroup mainOptions = new ButtonGroup();
         mainOptions.add(optionsButton);
         mainOptions.add(profilesButton);
-	    mainOptions.add(XsectionButton);
+        mainOptions.add(XsectionButton);
 
         // Adding the buttons to controlsHead panel which is the head of the
         // control
         // panel
         controlsHead.add(optionsButton);
         controlsHead.add(profilesButton);
-	    controlsHead.add(XsectionButton);
+        controlsHead.add(XsectionButton);
 
         // Creating a card layout to display single panel out of the
         // two(parameters,profiles) at a time
@@ -220,10 +220,10 @@ public class Controller
         // Initializing the buttons of options category
         JRadioButton parameterButton = new JRadioButton("Parameters");
 
-	// Initializing the Xsection panel
-		options = new JPanel(new BorderLayout());
-		options.setBackground(activeColor);
-		options.setBorder(new EmptyBorder(10, 10, 10, 10));
+        // Initializing the Xsection panel
+        options = new JPanel(new BorderLayout());
+        options.setBackground(activeColor);
+        options.setBorder(new EmptyBorder(10, 10, 10, 10));
 
         // Initializing the options panel
         options = new JPanel(new BorderLayout());
@@ -422,7 +422,7 @@ public class Controller
 
         // Initializing the profiles and profiles panels(Cards)
         profiles = new JPanel();
-
+        Xsection = new JPanel();
    /*
    // This button will switch model between profiles and spin modes
    // the counter changes the name on the button from profile to spin and
@@ -454,21 +454,21 @@ public class Controller
             }
         });
 
-	JButton initialize = new JButton("Initialize");
-	initialize.addActionListener(new ActionListener() {
-		@Override
-		    public void actionPerformed(ActionEvent arg0) {
-		    Wilsim.v.resetXSections();
-		}
-	    });
+        JButton initialize = new JButton("Initialize");
+        initialize.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                Wilsim.v.resetXSections();
+            }
+        });
 
-	JButton display = new JButton("Display");
-	display.addActionListener(new ActionListener() {
-		@Override
-		    public void actionPerformed(ActionEvent arg0) {
-		    Wilsim.v.resetXSections();
-		}
-	    });
+        JButton display = new JButton("Display");
+        display.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                Wilsim.v.resetXSections();
+            }
+        });
 
         // create XSection File Browser for future use
         xsfc = new JFileChooser();
@@ -495,14 +495,14 @@ public class Controller
         // Adding buttons to profiles tab
         // profiles.add(profButton);
         profiles.add(clear);
-	profiles.add(initialize);
-	profiles.add(display);
+        profiles.add(initialize);
+        profiles.add(display);
         // profiles.add(savetoText);
 
         // Adding the three main card panels to the main CardPanel
         cardPanel.add("Card1", options);
         cardPanel.add("Card2", profiles);
-	    //cardPanel.add("Card3", Xsection);
+        cardPanel.add("Card3", Xsection);
 
         // When options button is selected, the options panels card is displayed
         optionsButton.addActionListener(new ActionListener() {
@@ -531,17 +531,17 @@ public class Controller
             }
         });
 
-	XsectionButton.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
-		    card.show(cardPanel, "Card2");
-		    profiles.setBackground(activeColor);
-		    profilesButton.setBackground(inactiveColor);
-		    optionsButton.setBackground(inactiveColor);
-		    XsectionButton.setBackground(activeColor);
-		    Wilsim.v.changeViewMode(Wilsim.v.XVISUALIZER_MODE);
+        XsectionButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                card.show(cardPanel, "Card2");
+                profiles.setBackground(activeColor);
+                profilesButton.setBackground(inactiveColor);
+                optionsButton.setBackground(inactiveColor);
+                XsectionButton.setBackground(activeColor);
+                Wilsim.v.changeViewMode(Wilsim.v.XVISUALIZER_MODE);
 
-		}
-	    });
+            }
+        });
 
 
         // //When parameter button is selected, the parameter panels card is
@@ -942,7 +942,7 @@ public class Controller
                     {
                         for(int i = k; i < rv.n[j]-k; i++)
                         {
-				    float value;
+                            float value;
                             if((rv.values[j][i-k] - rv.values[j][i]) < -thresh
                                     && (rv.values[j][i+k] - rv.values[j][i]) < -thresh)
                                 rv.values[j][i] = (rv.values[j][i+k] + rv.values[j][i-k]) / 2.0f;

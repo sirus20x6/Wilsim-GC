@@ -180,5 +180,14 @@ public class XSection
 	    }
 
 	nIterates++;
+		for (float[] row : values) {
+			//for each number in the row
+			for (float j : row) {
+				System.out.print(j + " ");
+			}
+			System.out.println("");
+		}
     }
+
+
 }
