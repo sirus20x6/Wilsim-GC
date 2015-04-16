@@ -1,5 +1,0 @@
-Manifest-Version: 1.0
-Class-Path: .; jar\gluegen-rt.jar; jar\jogl-all.jar; gcdata.jar; wilsi
- m.jar
-Main-Class: Wilsim
-

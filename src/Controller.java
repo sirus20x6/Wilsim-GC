@@ -83,6 +83,7 @@ public class Controller
     JButton startStopButton;
     private JButton savetoText /* , profButton*/ ;
     private JRadioButton profilesButton;
+    private JRadioButton DrawProfileButton;
     private JRadioButton XsectionButton;
     private JRadioButton optionsButton;
     private JRadioButton kstrong;
@@ -158,14 +159,17 @@ public class Controller
 
         // Border Layout by default
         // Set up the graphics panel
-        JPanel viewPanel = new JPanel(new BorderLayout());
+        JPanel viewPanel = new JPanel();
+        viewPanel.setLayout(new BorderLayout());
 
-        viewHorScroll = new JScrollBar(JScrollBar.HORIZONTAL, 180, 1, 0, 360);
-        viewVerScroll = new JScrollBar(JScrollBar.VERTICAL, 45, 1, 1, 90);
+
+        viewHorScroll = new JScrollBar(Adjustable.HORIZONTAL, 180, 1, 0, 360);
+        viewVerScroll = new JScrollBar(Adjustable.VERTICAL, 45, 1, 1, 90);
 
         viewPanel.add(viewHorScroll, BorderLayout.SOUTH);
         viewPanel.add(viewVerScroll, BorderLayout.EAST);
         viewPanel.add(glc, BorderLayout.CENTER);
+
 
         // adding listeners to rotate the model
         viewHorScroll.addAdjustmentListener(new AdjustmentListener() {
@@ -185,11 +189,20 @@ public class Controller
         // Set up the user interface controlsHead
         JPanel controlPanel = new JPanel(new BorderLayout());
         JPanel controlsHead = new JPanel(new GridLayout(1, 3));
+        JPanel controlsHeadsub = new JPanel(new WrapLayout());
 
         // Initializing the buttons
-        optionsButton = new JRadioButton("PARAMETERS");
-        profilesButton = new JRadioButton("DRAW");
-        XsectionButton = new JRadioButton("CROSS SECTION");
+    optionsButton = new JRadioButton("PARAMETERS");
+        optionsButton.setPreferredSize(new Dimension(110, 24));
+        optionsButton.setMaximumSize(new Dimension(110, 24));
+	profilesButton = new JRadioButton("DRAW");
+        profilesButton.setPreferredSize(new Dimension(70, 24));
+        profilesButton.setMaximumSize(new Dimension(70, 24));
+	XsectionButton = new JRadioButton("CROSS SECTION");
+        XsectionButton.setPreferredSize(new Dimension(125, 24));
+        XsectionButton.setMaximumSize(new Dimension(125, 24));
+	DrawProfileButton = new JRadioButton("PROFILE");
+
 
         optionsButton.setSelected(true);
         optionsButton.setBackground(activeColor);
@@ -198,20 +211,30 @@ public class Controller
                 "<html>Left-click and drag a line where you want<br />" +
                         "to place the cross-section.</html>");
         XsectionButton.setBackground(inactiveColor);
+        DrawProfileButton.setBackground(inactiveColor);
 
         // grouping the three buttons which helps in choosing a single button at
         // a time
-        ButtonGroup mainOptions = new ButtonGroup();
+/*        ButtonGroup mainOptions = new ButtonGroup();
         mainOptions.add(optionsButton);
         mainOptions.add(profilesButton);
-        mainOptions.add(XsectionButton);
+        mainOptions.add(XsectionButton);*/
 
         // Adding the buttons to controlsHead panel which is the head of the
         // control
         // panel
-        controlsHead.add(optionsButton);
-        controlsHead.add(profilesButton);
-        controlsHead.add(XsectionButton);
+
+
+
+
+        controlsHeadsub.add(optionsButton);
+        controlsHeadsub.add(profilesButton);
+        controlsHeadsub.add(XsectionButton);
+        controlsHeadsub.add(DrawProfileButton);
+        controlsHeadsub.setBackground(activeColor);
+        controlsHead.add(controlsHeadsub);
+
+
 
         // Creating a card layout to display single panel out of the
         // two(parameters,profiles) at a time
@@ -256,7 +279,7 @@ public class Controller
         Myr = new JLabel("       0 Myr (Present)");
         duration = 6000;
         //timeBar = new JScrollBar(JScrollBar.VERTICAL, 0, 1, 0, 7);
-        timeBar = new JScrollBar(JScrollBar.VERTICAL, 6, 1, 0, 7);
+        timeBar = new JScrollBar(Adjustable.VERTICAL, 6, 1, 0, 7);
 
         // progress bar to display the model evolution in time
         timeBar.addAdjustmentListener(new AdjustmentListener() {
@@ -292,7 +315,7 @@ public class Controller
                         "a value of 0.5m kyr\u207B\u00B9 means the cliff will<br />" +
                         "wear back 0.5m per 1000 years.</html>");
         rate = new JLabel("              0.5  m/kyr");
-        cliffRateScroll = new JScrollBar(JScrollBar.VERTICAL, 200, 25, 0, 251);
+        cliffRateScroll = new JScrollBar(Adjustable.VERTICAL, 200, 25, 0, 251);
         cliffRateScroll.setValue(200);
         cliffRateScroll.addAdjustmentListener(new AdjustmentListener() {
             public void adjustmentValueChanged(AdjustmentEvent e) {
@@ -330,7 +353,7 @@ public class Controller
         Along_GW_Fault_Label.setToolTipText(
                 "<html>New Value to add</html>");
         Along_GW_Fault_Text = new JLabel("          1.7 m/kyr ");
-        Along_GW_Fault = new JScrollBar(JScrollBar.VERTICAL, 35, 0, 0, 226);
+        Along_GW_Fault = new JScrollBar(Adjustable.VERTICAL, 35, 0, 0, 226);
         Along_GW_Fault.setValue(81);
         Along_GW_Fault.addAdjustmentListener(new AdjustmentListener() {
             public void adjustmentValueChanged(AdjustmentEvent e) {
@@ -361,8 +384,8 @@ public class Controller
 
         strong = new JLabel("              0.00015 kyr\u207B\u00B9");
         factor = new JLabel("           5");
-        kstrongBar = new JScrollBar(JScrollBar.VERTICAL, 35, 1, 0, 51);
-        kfactorBar = new JScrollBar(JScrollBar.VERTICAL, 5, 1, 0, 10);
+        kstrongBar = new JScrollBar(Adjustable.VERTICAL, 35, 1, 0, 51);
+        kfactorBar = new JScrollBar(Adjustable.VERTICAL, 5, 1, 0, 10);
         // initial values
         kstrng = (float) 0.15;
         kfctor = 5;
@@ -506,6 +529,7 @@ public class Controller
         cardPanel.add("Card1", options);
         cardPanel.add("Card2", profiles);
         cardPanel.add("Card3", Xsection);
+        //cardPanel.add("Card4", DrawProfile);
 
         // When options button is selected, the options panels card is displayed
         optionsButton.addActionListener(new ActionListener() {
@@ -515,6 +539,8 @@ public class Controller
                 optionsButton.setBackground(activeColor);
 
                 profilesButton.setBackground(inactiveColor);
+                XsectionButton.setBackground(inactiveColor);
+                DrawProfileButton.setBackground(inactiveColor);
                 Wilsim.v.changeViewMode(View.SPIN_MODE);
                 // profButton.setText("Setup");
 
@@ -529,19 +555,35 @@ public class Controller
                 profiles.setBackground(activeColor);
                 profilesButton.setBackground(activeColor);
                 optionsButton.setBackground(inactiveColor);
+                XsectionButton.setBackground(inactiveColor);
+                DrawProfileButton.setBackground(inactiveColor);
                 Wilsim.v.changeViewMode(View.PROFILE_MODE);
 
             }
         });
 
-        XsectionButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                card.show(cardPanel, "Card2");
-                profiles.setBackground(activeColor);
-                profilesButton.setBackground(inactiveColor);
-                optionsButton.setBackground(inactiveColor);
-                XsectionButton.setBackground(activeColor);
-                Wilsim.v.changeViewMode(Wilsim.v.XVISUALIZER_MODE);
+	XsectionButton.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+		    card.show(cardPanel, "Card2");
+		    profiles.setBackground(activeColor);
+		    profilesButton.setBackground(inactiveColor);
+		    optionsButton.setBackground(inactiveColor);
+		    XsectionButton.setBackground(activeColor);
+		    DrawProfileButton.setBackground(inactiveColor);
+		    Wilsim.v.changeViewMode(View.XVISUALIZER_MODE);
+
+		}
+	    });
+
+	DrawProfileButton.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+		    card.show(cardPanel, "Card2");
+		    profiles.setBackground(activeColor);
+		    profilesButton.setBackground(inactiveColor);
+		    optionsButton.setBackground(inactiveColor);
+		    XsectionButton.setBackground(inactiveColor);
+		    DrawProfileButton.setBackground(activeColor);
+		    Wilsim.v.changeViewMode(View.RIVER_PROFILE_MODE);
 
             }
         });
@@ -561,6 +603,7 @@ public class Controller
         // Adding the three control buttons and the three panels to the main
         // control panel
         JPanel controlsBody = new JPanel(new BorderLayout());
+        JPanel controlsBodySub = new JPanel(new WrapLayout());
         controlsBody.add(controlsHead, "North");
         controlsBody.add(cardPanel, "Center");
         controlPanel.add(controlsBody, "Center");
@@ -699,12 +742,12 @@ public class Controller
                         "at the end of 6 equal intervals over the simulation duration.</html>");
         siText = new JLabel("           1");
         Wilsim.m.storageIntervals = 1;
-        siBar = new JScrollBar(JScrollBar.VERTICAL,
+        siBar = new JScrollBar(Adjustable.VERTICAL,
                 25-Wilsim.m.storageIntervals, 1, 1, 25);
         // storInterval = 1;
         siBar.addAdjustmentListener(new AdjustmentListener() {
             public void adjustmentValueChanged(AdjustmentEvent e) {
-                int siFactor = 25-siBar.getValue();
+                int siFactor = 25 - siBar.getValue();
                 siText.setText("            " + String.valueOf(siFactor));
                 Wilsim.m.storageIntervals = siFactor;
                 //        storInterval = siBar.getValue();
@@ -729,10 +772,24 @@ public class Controller
         // parameter.add(pas);
         parameter.add(siPanel);
 
-        JPanel middle = new JPanel(new BorderLayout());
 
-        middle.add(viewPanel, BorderLayout.CENTER);
-        middle.add(controlPanel, BorderLayout.EAST);
+        //JPanel middle = new JPanel(new BorderLayout());
+
+        //Create a split pane with the two scroll panes in it.
+        JSplitPane middle = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
+                viewPanel, controlPanel);
+        middle.setOneTouchExpandable(true);
+        middle.setDividerLocation(500);
+
+//Provide minimum sizes for the two components in the split pane
+        Dimension minimumSize = new Dimension(400, 400);
+        viewPanel.setMinimumSize(minimumSize);
+        controlPanel.setMinimumSize(minimumSize);
+
+
+        //viewPanel.setMinimumSize(new Dimension(400,600));
+       // middle.add(viewPanel, BorderLayout.CENTER);
+       // middle.add(controlPanel, BorderLayout.EAST);
 
         UI.add(bannerPanel, BorderLayout.NORTH);
         UI.add(middle, BorderLayout.CENTER);

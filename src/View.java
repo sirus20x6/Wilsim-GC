@@ -12,33 +12,35 @@ import java.awt.event.MouseEvent;
 import java.awt.Color;
 import java.awt.Font;
 
-public class View implements Runnable, GLEventListener {
-    public GLCanvas canvas;
-    private GLCapabilities caps;
-    private GL2 gl;
+public class View implements Runnable, GLEventListener
+{
+    public GLCanvas               canvas;
+    private GLCapabilities        caps;
+    private GL2                   gl;
 
-    private static float[][] topo;  // Local copy of the height grid
-    private static int latticeSizeX;
-    private static int latticeSizeY;
+    private static float[][]      topo;  // Local copy of the height grid
+    private static int            latticeSizeX;
+    private static int            latticeSizeY;
 
-    private CondVar newComputation;
-    private boolean newData;
-    private boolean newParams;
-    private boolean newMode;
-    private boolean newUI;
+    private CondVar               newComputation;
+    private boolean               newData;
+    private boolean               newParams;
+    private boolean               newMode;
+    private boolean               newUI;
 
     // Modes
     final static public int SPIN_MODE = 0;
     final static public int PROFILE_MODE = 1;
     final static public int FLY_MODE = 2;  // Someday
-    final static public int XVISUALIZER_MODE = 3;
+	final static public int XVISUALIZER_MODE = 3;
+	final static public int RIVER_PROFILE_MODE = 4;
 
     private int viewMode = SPIN_MODE;
 
     // Camera parameters
     private float[] cameraEye = {1, 0, 0};
-    private float[] cameraAt = {0, 0, 0};
-    private float[] cameraUp = {0, 1, 0};
+    private float[] cameraAt  = {0, 0, 0};
+    private float[] cameraUp  = {0, 1, 0};
     private float cameraFOV;
     private float cameraNear;
     private float cameraFar;
@@ -465,8 +467,9 @@ public class View implements Runnable, GLEventListener {
             drawUI();
         } else {
             drawXVISUALIZER_MODE();
-            gl.glEnable(gl.GL_LIGHTING);
 
+            gl.glEnable(gl.GL_LIGHTING);
+            drawScaleBar();
             // Position lights
             gl.glLightfv(GLLightingFunc.GL_LIGHT0, GLLightingFunc.GL_POSITION, lightPosition, 0);
 
@@ -477,7 +480,8 @@ public class View implements Runnable, GLEventListener {
             // Z translation is currently a hack based on the grid.  Roughly 1800 m for
             // the Grand Canyon
 
-            drawTerrain();
+            //drawTerrain();
+
 
             gl.glDisable(gl.GL_LIGHTING);
 
@@ -561,12 +565,19 @@ public class View implements Runnable, GLEventListener {
         gl.glMultMatrixf(world2cam, 0);
     }
 
-    private void drawXVISUALIZER_MODE() {
+	private void drawXVISUALIZER_MODE()
+	{
 
-    }
+	}
 
-    private void drawXSections() {
-        int n = XSectionManager.nXSections();
+	private void drawRIVER_PROFILE_MODE()
+	{
+
+	}
+
+    private void drawXSections()
+    {
+	int n = XSectionManager.nXSections();
 
         // Wilsim.i.log.append("View : drawXSections() : " + n + "\n");
 
