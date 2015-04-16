@@ -108,6 +108,7 @@ public class Controller
 
     private JScrollBar Along_TFault;
     private JLabel Along_TFault_Text;
+    JButton saveBtn;
 
 
 
@@ -470,6 +471,8 @@ public class Controller
             }
         });
 
+
+
         // create XSection File Browser for future use
         xsfc = new JFileChooser();
         xsfc.setMultiSelectionEnabled(false);
@@ -578,6 +581,18 @@ public class Controller
         progressBar.setStringPainted(true);
         Wilsim.c.progressBar.setString("6M Years ago");
         JButton rset = new JButton("Reset");
+        saveBtn = new JButton("Save");
+        saveBtn.setEnabled(false);
+
+
+        saveBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                saveCross();
+
+            }
+        });
+
+
         rset.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 Wilsim.m.resetCall();
@@ -588,6 +603,7 @@ public class Controller
         startPanel.add(startStopButton);
         startPanel.add(progressBar);
         startPanel.add(rset);
+        startPanel.add(saveBtn);
         controlPanel.add(startPanel, BorderLayout.SOUTH);
         controlPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
@@ -728,6 +744,12 @@ public class Controller
 
     } // createGUI
 
+    public void saveCross() {
+        //Wilsim.c.outputReady();
+        outputXSections();
+        outputProfiles();
+    }
+
     public void outputReady()
     {
    /*
@@ -738,6 +760,7 @@ public class Controller
       attentionRequest.notify();
        }
    */
+
         try {
             SwingUtilities.invokeAndWait(outputRun);
         } catch (Exception e) {}

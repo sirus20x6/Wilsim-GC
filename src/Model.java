@@ -445,7 +445,8 @@ public class Model implements Runnable {
 
 			if (time >= duration) {
 			    // Save output
-			    Wilsim.c.outputReady();
+			    //Wilsim.c.saveCross();      //<== make saving optional
+				Wilsim.c.saveBtn.setEnabled(true);
 				synchronized (executeFlag) {
 					executeFlag.boolVal = false;
 				}
