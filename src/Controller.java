@@ -1,7 +1,4 @@
-import javax.media.opengl.awt.GLCanvas;
 import javax.swing.*;
-import javax.swing.border.Border;
-import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -12,29 +9,16 @@ import java.io.File;
 import java.io.FileWriter;
 
 import static java.lang.Math.abs;
+
 import javax.media.opengl.awt.GLCanvas;
-import javax.swing.BorderFactory;
-import javax.swing.ButtonGroup;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JProgressBar;
-import javax.swing.JRadioButton;
-import javax.swing.JScrollBar;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
+
 /**
  * The Controller class handles the User Interface. It handles all the events by
  * user and communicates with the view and model classes and display the model
  * accordingly.
- * */
+ */
 public class Controller
 
 {
@@ -46,29 +30,18 @@ public class Controller
 
     // Internal UI variables
     private Container UI;  // The containing UI panel for the controller
-    private JPanel controlPanel; // The controller UI
-    private JPanel viewPanel; // Contains the graphics
-    private JPanel logPanel; // for debugging , to see the debug log, remove the
-    // comment line of the last line of this class
-    private JPanel bannerPanel;
-    private JPanel controlsHead; // contains the options, profiles and
+    //private JPanel controlsHead; // contains the options, profiles and
     // hypsometric buttons
 
-    private JPanel controlsBody;// contains the options, profiles and
     // hypsometric
     // panels
     private JPanel options; // Contains the optionsHead and optionsHead panels
-    private JPanel optionsHead; // Contains the initial Conditions and
     // parameters Buttons
     private JPanel optionsBody; // Contains the two cards -> initial &
     // parameters
     private JPanel profiles; // panel to hold profiles
 
-    private JPanel parameter; // panel to hold parameter values
     private JPanel cardPanel; // Panel to hold the main three panels
-    // (options,profiles and hypsometric)
-    private JPanel Xsection; //panel to hold onto cross section data
-    private JPanel startPanel; // Panel to place start button(get rid of it)
     private CardLayout card; // Main cardlayout to display one panel at a time
     // out of (options,profiles and hypsometric)
     private CardLayout optionsCard; // Options card layout to display one card
@@ -77,11 +50,9 @@ public class Controller
 
     // View widgets
     private JScrollBar viewHorScroll, viewVerScroll;
-    private JScrollPane profilesBar;
 
     // Controller widgets
     JButton startStopButton;
-    private JButton savetoText /* , profButton*/ ;
     private JRadioButton profilesButton;
     private JRadioButton DrawProfileButton;
     private JRadioButton XsectionButton;
@@ -89,8 +60,6 @@ public class Controller
     private JRadioButton kstrong;
     private JRadioButton kfactor;
 
-    private ButtonGroup firstOptions;
-    private ButtonGroup k; // to allow only one
     // button
     // to be selected at a
     // time
@@ -104,45 +73,34 @@ public class Controller
     private JScrollBar kstrongBar;
     private JScrollBar Along_GW_Fault;
     private JLabel Along_GW_Fault_Text;
-    private JScrollBar Along_HFault;
-    private JLabel Along_HFault_Text;
 
-    private JScrollBar Along_TFault;
-    private JLabel Along_TFault_Text;
     JButton saveBtn;
 
 
-
     private JScrollBar cliffRateScroll;
-    protected JTextField Pause;
 
     // to set the color of main card panels
     private final Color inactiveColor = new Color(205, 133, 63);
     private final Color activeColor = new Color(227, 207, 87);
 
-    JTextArea profilesText;
     float duration;
     float kfctor;
     float kstrng;
     float cliffRate;
     float pauseValue;
-    JLabel pause;
-    int count;
-    Border timeLine, cliffLine, kstrLine, kfactLine, Line;
+    Border kstrLine;
+    Border kfactLine;
 
 
-    // Storage Intervals
-    private JLabel siLabel, siText;
+    private JLabel siText;
     private JScrollBar siBar;
-    //    int storInterval;
-    private Border siLine;
 
     // Output
     private Runnable outputRun;
 
     // XSection file chooser
-    private JFileChooser   xsfc;  // XSection file chooser
-    private JFileChooser   lpfc;   // long profile file chooser
+    private JFileChooser xsfc;  // XSection file chooser
+    private JFileChooser lpfc;   // long profile file chooser
     
     /*
     public Controller()
@@ -187,22 +145,34 @@ public class Controller
         });
 
         // Set up the user interface controlsHead
+        WrapLayout wrap = new WrapLayout();
+        wrap.setHgap(0);
+        wrap.setVgap(0);
+        JPanel controlsHead = new JPanel(wrap);
         JPanel controlPanel = new JPanel(new BorderLayout());
-        JPanel controlsHead = new JPanel(new GridLayout(1, 3));
-        JPanel controlsHeadsub = new JPanel(new WrapLayout());
+
+        //JPanel controlsHead = new JPanel(new GridLayout(1, 3));
 
         // Initializing the buttons
-    optionsButton = new JRadioButton("PARAMETERS");
-        optionsButton.setPreferredSize(new Dimension(110, 24));
-        optionsButton.setMaximumSize(new Dimension(110, 24));
-	profilesButton = new JRadioButton("DRAW");
-        profilesButton.setPreferredSize(new Dimension(70, 24));
-        profilesButton.setMaximumSize(new Dimension(70, 24));
-	XsectionButton = new JRadioButton("CROSS SECTION");
-        XsectionButton.setPreferredSize(new Dimension(125, 24));
-        XsectionButton.setMaximumSize(new Dimension(125, 24));
-	DrawProfileButton = new JRadioButton("PROFILE");
+        optionsButton = new JRadioButton("PARAMETERS");
+        optionsButton.setMargin(new Insets(0, 0, 0, 0));
+        optionsButton.setFocusPainted(false);
+        optionsButton.setPreferredSize(new Dimension(110, 50));
+        optionsButton.setMaximumSize(new Dimension(110, 50));
 
+        profilesButton = new JRadioButton("DRAW");
+        profilesButton.setMargin(new Insets(0, 0, 0, 0));
+        profilesButton.setFocusPainted(false);
+        profilesButton.setPreferredSize(new Dimension(70, 50));
+        profilesButton.setMaximumSize(new Dimension(70, 50));
+
+        XsectionButton = new JRadioButton("CROSS SECTION");
+        XsectionButton.setPreferredSize(new Dimension(125, 50));
+        XsectionButton.setMaximumSize(new Dimension(125, 50));
+
+        DrawProfileButton = new JRadioButton("PROFILE");
+        DrawProfileButton.setPreferredSize(new Dimension(125, 50));
+        DrawProfileButton.setMaximumSize(new Dimension(125, 50));
 
         optionsButton.setSelected(true);
         optionsButton.setBackground(activeColor);
@@ -215,25 +185,28 @@ public class Controller
 
         // grouping the three buttons which helps in choosing a single button at
         // a time
-/*        ButtonGroup mainOptions = new ButtonGroup();
+        ButtonGroup mainOptions = new ButtonGroup();
         mainOptions.add(optionsButton);
         mainOptions.add(profilesButton);
-        mainOptions.add(XsectionButton);*/
+        mainOptions.add(XsectionButton);
+        mainOptions.add(DrawProfileButton);
 
         // Adding the buttons to controlsHead panel which is the head of the
         // control
         // panel
 
 
+        controlsHead.add(optionsButton);
+        controlsHead.add(profilesButton);
+        controlsHead.add(XsectionButton);
+        controlsHead.add(DrawProfileButton);
+        controlsHead.setBackground(activeColor);
+        controlsHead.setBorder(new EmptyBorder(0, 0, 0, 0));
 
 
-        controlsHeadsub.add(optionsButton);
-        controlsHeadsub.add(profilesButton);
-        controlsHeadsub.add(XsectionButton);
-        controlsHeadsub.add(DrawProfileButton);
-        controlsHeadsub.setBackground(activeColor);
-        controlsHead.add(controlsHeadsub);
-
+        //controlsHead.setBorder(new Border);
+        // controlsHead.setBackground(inactiveColor);
+        //controlsHead.add(controlsHead);
 
 
         // Creating a card layout to display single panel out of the
@@ -348,7 +321,6 @@ public class Controller
         emptyPan.setBackground(activeColor);
 
 
-
         JLabel Along_GW_Fault_Label = new JLabel("Subsidence Rate Along Grand Wash Fault:");
         Along_GW_Fault_Label.setToolTipText(
                 "<html>New Value to add</html>");
@@ -446,7 +418,7 @@ public class Controller
 
         // Initializing the profiles and profiles panels(Cards)
         profiles = new JPanel();
-        Xsection = new JPanel();
+        JPanel xsection = new JPanel();
    /*
    // This button will switch model between profiles and spin modes
    // the counter changes the name on the button from profile to spin and
@@ -495,7 +467,6 @@ public class Controller
         });
 
 
-
         // create XSection File Browser for future use
         xsfc = new JFileChooser();
         xsfc.setMultiSelectionEnabled(false);
@@ -517,7 +488,6 @@ public class Controller
         };
 
 
-
         // Adding buttons to profiles tab
         // profiles.add(profButton);
         profiles.add(clear);
@@ -528,7 +498,7 @@ public class Controller
         // Adding the three main card panels to the main CardPanel
         cardPanel.add("Card1", options);
         cardPanel.add("Card2", profiles);
-        cardPanel.add("Card3", Xsection);
+        cardPanel.add("Card3", xsection);
         //cardPanel.add("Card4", DrawProfile);
 
         // When options button is selected, the options panels card is displayed
@@ -562,28 +532,28 @@ public class Controller
             }
         });
 
-	XsectionButton.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
-		    card.show(cardPanel, "Card2");
-		    profiles.setBackground(activeColor);
-		    profilesButton.setBackground(inactiveColor);
-		    optionsButton.setBackground(inactiveColor);
-		    XsectionButton.setBackground(activeColor);
-		    DrawProfileButton.setBackground(inactiveColor);
-		    Wilsim.v.changeViewMode(View.XVISUALIZER_MODE);
+        XsectionButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                card.show(cardPanel, "Card2");
+                profiles.setBackground(activeColor);
+                profilesButton.setBackground(inactiveColor);
+                optionsButton.setBackground(inactiveColor);
+                XsectionButton.setBackground(activeColor);
+                DrawProfileButton.setBackground(inactiveColor);
+                Wilsim.v.changeViewMode(View.XVISUALIZER_MODE);
 
-		}
-	    });
+            }
+        });
 
-	DrawProfileButton.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
-		    card.show(cardPanel, "Card2");
-		    profiles.setBackground(activeColor);
-		    profilesButton.setBackground(inactiveColor);
-		    optionsButton.setBackground(inactiveColor);
-		    XsectionButton.setBackground(inactiveColor);
-		    DrawProfileButton.setBackground(activeColor);
-		    Wilsim.v.changeViewMode(View.RIVER_PROFILE_MODE);
+        DrawProfileButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                card.show(cardPanel, "Card2");
+                profiles.setBackground(activeColor);
+                profilesButton.setBackground(inactiveColor);
+                optionsButton.setBackground(inactiveColor);
+                XsectionButton.setBackground(inactiveColor);
+                DrawProfileButton.setBackground(activeColor);
+                Wilsim.v.changeViewMode(View.RIVER_PROFILE_MODE);
 
             }
         });
@@ -611,7 +581,7 @@ public class Controller
         // Button to start/pause the simulation
         startStopButton = new JButton();
         startStopButton.setText("Start");
-        startStopButton.setPreferredSize(new Dimension(100, 26));
+        startStopButton.setPreferredSize(new Dimension(100, 40));
         startStopButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
                 Wilsim.m.toggleExecution();
@@ -743,7 +713,7 @@ public class Controller
         siText = new JLabel("           1");
         Wilsim.m.storageIntervals = 1;
         siBar = new JScrollBar(Adjustable.VERTICAL,
-                25-Wilsim.m.storageIntervals, 1, 1, 25);
+                25 - Wilsim.m.storageIntervals, 1, 1, 25);
         // storInterval = 1;
         siBar.addAdjustmentListener(new AdjustmentListener() {
             public void adjustmentValueChanged(AdjustmentEvent e) {
@@ -779,17 +749,18 @@ public class Controller
         JSplitPane middle = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
                 viewPanel, controlPanel);
         middle.setOneTouchExpandable(true);
-        middle.setDividerLocation(500);
+        middle.setDividerLocation(546);
 
 //Provide minimum sizes for the two components in the split pane
         Dimension minimumSize = new Dimension(400, 400);
-        viewPanel.setMinimumSize(minimumSize);
+        viewPanel.setMinimumSize(new Dimension(546, 400));
         controlPanel.setMinimumSize(minimumSize);
+        controlPanel.setMaximumSize(new Dimension(340, 9999));
 
 
         //viewPanel.setMinimumSize(new Dimension(400,600));
-       // middle.add(viewPanel, BorderLayout.CENTER);
-       // middle.add(controlPanel, BorderLayout.EAST);
+        // middle.add(viewPanel, BorderLayout.CENTER);
+        // middle.add(controlPanel, BorderLayout.EAST);
 
         UI.add(bannerPanel, BorderLayout.NORTH);
         UI.add(middle, BorderLayout.CENTER);
@@ -801,26 +772,10 @@ public class Controller
 
     } // createGUI
 
-    public void saveCross() {
+    private void saveCross() {
         //Wilsim.c.outputReady();
         outputXSections();
         outputProfiles();
-    }
-
-    public void outputReady()
-    {
-   /*
-   outputFlag = true;
-   synchronized(attentionRequest)
-       {
-      attentionRequest.boolVal = true;
-      attentionRequest.notify();
-       }
-   */
-
-        try {
-            SwingUtilities.invokeAndWait(outputRun);
-        } catch (Exception e) {}
     }
 
     /*
@@ -853,8 +808,7 @@ public class Controller
     }
     */
 
-    private void outputXSections()
-    {
+    private void outputXSections() {
         // Wilsim.i.log.append("outputXSections:1\n");
         if (XSectionManager.nXSections() < 1) return;  //  Nothing to save
 
@@ -865,13 +819,12 @@ public class Controller
         //Wilsim.i.log.append("XSectionManager.nXSections():  "
         //        + String.valueOf(XSectionManager.nXSections())+ "\n");
 
-        while( toWrite && ! foundWrite) {
+        while (toWrite && !foundWrite) {
             try {
                 int returnVal;
                 returnVal = xsfc.showSaveDialog(UI); // parent component to
                 // // JFileChooser
-                if (returnVal == JFileChooser.APPROVE_OPTION)
-                { // OK button
+                if (returnVal == JFileChooser.APPROVE_OPTION) { // OK button
                     // //
                     // pressed
                     // by user
@@ -879,22 +832,20 @@ public class Controller
                     // selected //
                     // by user
 
-                    if (file.exists() ) {
+                    if (file.exists()) {
                         int overwrite;
                         overwrite = JOptionPane.showConfirmDialog(UI,
-                                file.getName()+ " already exists.  Overwrite?",
+                                file.getName() + " already exists.  Overwrite?",
                                 "Cross Section File Confirmation",
                                 JOptionPane.YES_NO_OPTION,
                                 JOptionPane.QUESTION_MESSAGE);
-                        if(overwrite == JOptionPane.YES_OPTION)
+                        if (overwrite == JOptionPane.YES_OPTION)
                             foundWrite = true;
-                    }
-                    else {
+                    } else {
                         // New, unused file
                         foundWrite = true;
                     }
-                }
-                else {
+                } else {
                     // Cancel
                     toWrite = false;
                 }
@@ -904,16 +855,15 @@ public class Controller
         }
         // Wilsim.i.log.append("File chosen\n");
         // Wilsim.i.log.append("toWrite: " + String.valueOf(toWrite) + "\n");
-        if(toWrite)
-        {
+        if (toWrite) {
             // Wilsim.i.log.append("outputXSections:2\n");
-            try{
+            try {
                 XSection xs = XSectionManager.getXSection(0);
                 float[][] arr = xs.values;
                 // Wilsim.i.log.append("Iterations: " + String.valueOf(arr.length) + "\n");
                 // Wilsim.i.log.append("Profile length: " + String.valueOf(arr[0].length) + "\n");
 
-                if(! file.exists())
+                if (!file.exists())
                     file.createNewFile();
                 // Wilsim.i.log.append("file: " + file.getAbsoluteFile() + "\n");
                 FileWriter fw = new FileWriter(file.getAbsoluteFile());
@@ -927,7 +877,7 @@ public class Controller
                 // Wilsim.i.log.append("nIterations: " + nIterations + "\n");
                 for (int i = 0; i < arr[0].length; i++) {
                     int j;
-                    for(j = 0; j < nIterations - 1; j++) {
+                    for (j = 0; j < nIterations - 1; j++) {
                         // Wilsim.i.log.append("[" + j + "][" + i + "]\n");
              /* 
              if(arr[j] == null)
@@ -960,21 +910,19 @@ public class Controller
         }
     }
 
-    private void outputProfiles()
-    {
+    private void outputProfiles() {
         // Wilsim.i.log.append("outputProfiles:1\n");
 
         boolean foundWrite = false;
         boolean toWrite = true;
         File file = new File("user.home");
 
-        while( toWrite && ! foundWrite) {
+        while (toWrite && !foundWrite) {
             try {
                 int returnVal;
                 returnVal = lpfc.showSaveDialog(UI); // parent component to
                 // // JFileChooser
-                if (returnVal == JFileChooser.APPROVE_OPTION)
-                { // OK button
+                if (returnVal == JFileChooser.APPROVE_OPTION) { // OK button
                     // //
                     // pressed
                     // by user
@@ -982,22 +930,20 @@ public class Controller
                     // selected //
                     // by user
 
-                    if (file.exists() ) {
+                    if (file.exists()) {
                         int overwrite;
                         overwrite = JOptionPane.showConfirmDialog(UI,
-                                file.getName()+ " already exists.  Overwrite?",
+                                file.getName() + " already exists.  Overwrite?",
                                 "Cross Section File Confirmation",
                                 JOptionPane.YES_NO_OPTION,
                                 JOptionPane.QUESTION_MESSAGE);
-                        if(overwrite == JOptionPane.YES_OPTION)
+                        if (overwrite == JOptionPane.YES_OPTION)
                             foundWrite = true;
-                    }
-                    else {
+                    } else {
                         // New, unused file
                         foundWrite = true;
                     }
-                }
-                else {
+                } else {
                     // Cancel
                     toWrite = false;
                 }
@@ -1007,30 +953,27 @@ public class Controller
         }
         // Wilsim.i.log.append("File chosen\n");
         // Wilsim.i.log.append("toWrite: " + String.valueOf(toWrite) + "\n");
-        if(toWrite)
-        {
+        if (toWrite) {
 
             // Wilsim.i.log.append("outputProfiles:2\n");
-            try{
+            try {
                 Profile rv = Wilsim.m.river;
 
                 // Last minute filter hack to get rid of spikes.  Ideally
                 // shouldn't be needed.  To be investigated further
                 final int thresh = 30;
-                for(int k = 7; k >=1 ; k-=2) // Reduce wide peaks to narrow peaks
-                    for(int j = 0; j < rv.getNIterates(); j++)
-                    {
-                        for(int i = k; i < rv.n[j]-k; i++)
-                        {
+                for (int k = 7; k >= 1; k -= 2) // Reduce wide peaks to narrow peaks
+                    for (int j = 0; j < rv.getNIterates(); j++) {
+                        for (int i = k; i < rv.n[j] - k; i++) {
                             float value;
-                            if((rv.values[j][i-k] - rv.values[j][i]) < -thresh
-                                    && (rv.values[j][i+k] - rv.values[j][i]) < -thresh)
-                                rv.values[j][i] = (rv.values[j][i+k] + rv.values[j][i-k]) / 2.0f;
+                            if ((rv.values[j][i - k] - rv.values[j][i]) < -thresh
+                                    && (rv.values[j][i + k] - rv.values[j][i]) < -thresh)
+                                rv.values[j][i] = (rv.values[j][i + k] + rv.values[j][i - k]) / 2.0f;
                         }
                     }
 
                 // Send to file
-                if(! file.exists())
+                if (!file.exists())
                     file.createNewFile();
                 // Wilsim.i.log.append("file: " + file.getAbsoluteFile() + "\n");
                 FileWriter fw = new FileWriter(file.getAbsoluteFile());
@@ -1049,24 +992,22 @@ public class Controller
                 int i = 0;
                 // Wilsim.i.log.append("nIterations: " + nIterations + "\n");
 
-                while(!doneFlag){
+                while (!doneFlag) {
                     doneFlag = true;
                     int j;
-                    if(i < rv.n[0]-1) doneFlag = false; // Another row exists
+                    if (i < rv.n[0] - 1) doneFlag = false; // Another row exists
 
-                    if(i < rv.n[0])
+                    if (i < rv.n[0])
                         bw.write(String.valueOf(rv.distances[0][i]) + ", ");
 
-                    for(j = 0; j < nIterations - 1; j++) {
+                    for (j = 0; j < nIterations - 1; j++) {
                         // Wilsim.i.log.append("[" + j + "][" + i + "]\n");
                         //if(i < rv.n[j]-1) doneFlag = false ;  // Another row exists
 
-                        if(i < rv.n[j])
-                        {
+                        if (i < rv.n[j]) {
                             // bw.write(String.valueOf(rv.distances[j][i]) + ", ");
                             bw.write(String.valueOf(rv.values[j][i]) + ", ");
-                        }
-                        else
+                        } else
                             // bw.write(", , ");
                             bw.write(", ");
                     }

@@ -40,7 +40,7 @@
 
 /** Growable array of floats. */
 
-public class FloatList {
+class FloatList {
     private static final int DEFAULT_SIZE = 10;
 
     private float[] data = new float[DEFAULT_SIZE];

@@ -3,8 +3,8 @@ import javax.swing.JTextArea;
 
 public class InfoPanel
 {
-	protected JTextArea log;
-	JScrollPane bar;
+	JTextArea log;
+	private JScrollPane bar;
 	public void init()
 	{
 		log=new JTextArea(8,50);

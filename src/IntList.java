@@ -40,7 +40,7 @@
 
 /** Growable array of ints. */
 
-public class IntList {
+class IntList {
     private static final int DEFAULT_SIZE = 10;
 
     private int[] data = new int[DEFAULT_SIZE];

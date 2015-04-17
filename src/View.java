@@ -1,9 +1,5 @@
-import javax.media.opengl.GL2;
+import javax.media.opengl.*;
 import javax.media.opengl.awt.GLCanvas;
-import javax.media.opengl.GLAutoDrawable;
-import javax.media.opengl.GLCapabilities;
-import javax.media.opengl.GLEventListener;
-import javax.media.opengl.GLProfile;
 import javax.media.opengl.fixedfunc.*;
 
 import com.jogamp.opengl.util.awt.TextRenderer;
@@ -14,15 +10,15 @@ import java.awt.Font;
 
 public class View implements Runnable, GLEventListener
 {
-    public GLCanvas               canvas;
-    private GLCapabilities        caps;
+    public final GLCanvas               canvas;
+    private final GLCapabilities        caps;
     private GL2                   gl;
 
     private static float[][]      topo;  // Local copy of the height grid
     private static int            latticeSizeX;
     private static int            latticeSizeY;
 
-    private CondVar               newComputation;
+    private final CondVar               newComputation;
     private boolean               newData;
     private boolean               newParams;
     private boolean               newMode;
@@ -38,26 +34,27 @@ public class View implements Runnable, GLEventListener
     private int viewMode = SPIN_MODE;
 
     // Camera parameters
-    private float[] cameraEye = {1, 0, 0};
-    private float[] cameraAt  = {0, 0, 0};
-    private float[] cameraUp  = {0, 1, 0};
-    private float cameraFOV;
-    private float cameraNear;
-    private float cameraFar;
+    private final float[] cameraEye = {1, 0, 0};
+    private final float[] cameraAt  = {0, 0, 0};
+    private final float[] cameraUp  = {0, 1, 0};
+    private final float cameraFOV;
+    private final float cameraNear;
+    private final float cameraFar;
     final private float cameraRadius = 18000.0F;
 
-    private float[] world2cam = new float[16];
+    private final float[] world2cam = new float[16];
 
-    private float[] lightPosition = new float[4];
+    private final float[] lightPosition = new float[4];
 
     // X and Y screen extents at cameraNear distance
     // Useful for positioning UI widgets
-    float screenX, screenY;
+    private float screenX;
+    private float screenY;
 
     // Material parameters
-    private float[] backgroundColor = {1.0f, 1.0f, 1.0f, 1.0f};
-    private float[] directLight = {0.8f, 0.8f, 0.8f, 0.8f};
-    private float[] ambientLight = {0.2f, 0.2f, 0.2f, 1.0f};
+    private final float[] backgroundColor = {1.0f, 1.0f, 1.0f, 1.0f};
+    private final float[] directLight = {0.8f, 0.8f, 0.8f, 0.8f};
+    private final float[] ambientLight = {0.2f, 0.2f, 0.2f, 1.0f};
 
     final private float gridHorizontalScaleFactor = 30.0f;
     // for visualization - change later to take into account true
@@ -77,11 +74,11 @@ public class View implements Runnable, GLEventListener
     private TextRenderer scoreTextEngine;
     private TextRenderer CompassTextEngine;
 
-    final float COLOR_MAX_HEIGHT = 3000.0f;
-    final float COLOR_MIN_HEIGHT = 1400.0f;
+    private final float COLOR_MAX_HEIGHT = 3000.0f;
+    private final float COLOR_MIN_HEIGHT = 1400.0f;
 
-    private float[] vertScaleSample = {1400.0f, 2000.0f, 2500.0f, 3000.0f};
-    private int nVertScaleSamples = 4;
+    private final float[] vertScaleSample = {1400.0f, 2000.0f, 2500.0f, 3000.0f};
+    private final int nVertScaleSamples = 4;
 
 
     // Mouse state
@@ -89,9 +86,9 @@ public class View implements Runnable, GLEventListener
     private int mouseStartX, mouseStartY;
     private int mouseEndX, mouseEndY;
 
-    private float[] mouse2Data = new float[4];
+    private final float[] mouse2Data = new float[4];
 
-    private XSection tempXSection = new XSection();
+    private final XSection tempXSection = new XSection();
 
     // XSection information
     final private float profileScale = 1.1f;  // For borders in profile view
@@ -300,7 +297,7 @@ public class View implements Runnable, GLEventListener
         }
     }
 
-    void init() {
+    private void init() {
         // Wilsim.i.log.append("View : init()\n");
         gl = canvas.getGL().getGL2();
 
@@ -311,25 +308,25 @@ public class View implements Runnable, GLEventListener
         float matShininess[] = {30.0f, 30.0f, 30.0f, 1.0f};
 
         gl.glShadeModel(GLLightingFunc.GL_SMOOTH);
-        gl.glMaterialfv(gl.GL_FRONT_AND_BACK, GLLightingFunc.GL_DIFFUSE,
+        gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GLLightingFunc.GL_DIFFUSE,
                 matDiffuse, 0);
-        gl.glMaterialfv(gl.GL_FRONT_AND_BACK, GLLightingFunc.GL_SPECULAR,
+        gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GLLightingFunc.GL_SPECULAR,
                 matSpecular, 0);
-        gl.glMaterialfv(gl.GL_FRONT_AND_BACK, GLLightingFunc.GL_SHININESS,
+        gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GLLightingFunc.GL_SHININESS,
                 matShininess, 0);
         gl.glLightfv(GLLightingFunc.GL_LIGHT0, GLLightingFunc.GL_DIFFUSE,
                 directLight, 0);
         gl.glLightfv(GLLightingFunc.GL_LIGHT0, GLLightingFunc.GL_SPECULAR,
                 directLight, 0);
 
-        gl.glLightModeli(gl.GL_LIGHT_MODEL_TWO_SIDE, 1);
+        gl.glLightModeli(GL2ES1.GL_LIGHT_MODEL_TWO_SIDE, 1);
         gl.glLightfv(GLLightingFunc.GL_LIGHT0, GLLightingFunc.GL_AMBIENT,
                 ambientLight, 0);
 
-        gl.glEnable(gl.GL_NORMALIZE);
+        gl.glEnable(GLLightingFunc.GL_NORMALIZE);
         //	gl.glEnable(gl.GL_LIGHTING);
-        gl.glEnable(gl.GL_LIGHT0);
-        gl.glEnable(gl.GL_DEPTH_TEST);
+        gl.glEnable(GLLightingFunc.GL_LIGHT0);
+        gl.glEnable(GL.GL_DEPTH_TEST);
 
         // Set up text rendering capability
         vertScaleTextEngine = new TextRenderer(new Font("SansSerif", Font.PLAIN, 14));
@@ -342,8 +339,8 @@ public class View implements Runnable, GLEventListener
 
     public void initModel() {
         // Wilsim.i.log.append("View: initModel()\n");
-        latticeSizeX = Wilsim.m.lattice_size_x;
-        latticeSizeY = Wilsim.m.lattice_size_y;
+        latticeSizeX = Model.lattice_size_x;
+        latticeSizeY = Model.lattice_size_y;
         topo = new float[latticeSizeX + 1][latticeSizeY + 1];
         String str = latticeSizeX + "x" + latticeSizeY;
         // Wilsim.i.log.append("View: initModel(): " + str + '\n');
@@ -399,18 +396,18 @@ public class View implements Runnable, GLEventListener
 
     }
 
-    public void draw(GLAutoDrawable draw) {
+    private void draw(GLAutoDrawable draw) {
         // System.out.println("View: draw()\n");
 
         gl.glClearColor(backgroundColor[0], backgroundColor[1], backgroundColor[2], backgroundColor[3]);
-        gl.glClear(gl.GL_COLOR_BUFFER_BIT | gl.GL_DEPTH_BUFFER_BIT);
+        gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
         gl.glColor3f(0.8f, 0.8f, 0.8f);
 
         // Move more and more into separate drawing modes
         // as functionality diverges
         if (viewMode == PROFILE_MODE) {
             drawXSectionMode();
-            gl.glEnable(gl.GL_LIGHTING);
+            gl.glEnable(GLLightingFunc.GL_LIGHTING);
 
             // Position lights
             gl.glLightfv(GLLightingFunc.GL_LIGHT0, GLLightingFunc.GL_POSITION, lightPosition, 0);
@@ -424,7 +421,7 @@ public class View implements Runnable, GLEventListener
 
             drawTerrain();
 
-            gl.glDisable(gl.GL_LIGHTING);
+            gl.glDisable(GLLightingFunc.GL_LIGHTING);
 
             drawXSections();
 
@@ -439,7 +436,7 @@ public class View implements Runnable, GLEventListener
         } else if (viewMode == SPIN_MODE) {
             // Spin mode
             drawSpinMode();
-            gl.glEnable(gl.GL_LIGHTING);
+            gl.glEnable(GLLightingFunc.GL_LIGHTING);
 
             // Position lights
             gl.glLightfv(GLLightingFunc.GL_LIGHT0, GLLightingFunc.GL_POSITION, lightPosition, 0);
@@ -453,7 +450,7 @@ public class View implements Runnable, GLEventListener
 
             drawTerrain();
 
-            gl.glDisable(gl.GL_LIGHTING);
+            gl.glDisable(GLLightingFunc.GL_LIGHTING);
 
             drawXSections();
 
@@ -468,7 +465,7 @@ public class View implements Runnable, GLEventListener
         } else {
             drawXVISUALIZER_MODE();
 
-            gl.glEnable(gl.GL_LIGHTING);
+            gl.glEnable(GLLightingFunc.GL_LIGHTING);
             drawScaleBar();
             // Position lights
             gl.glLightfv(GLLightingFunc.GL_LIGHT0, GLLightingFunc.GL_POSITION, lightPosition, 0);
@@ -483,7 +480,7 @@ public class View implements Runnable, GLEventListener
             //drawTerrain();
 
 
-            gl.glDisable(gl.GL_LIGHTING);
+            gl.glDisable(GLLightingFunc.GL_LIGHTING);
 
             drawXSections();
 
@@ -581,9 +578,9 @@ public class View implements Runnable, GLEventListener
 
         // Wilsim.i.log.append("View : drawXSections() : " + n + "\n");
 
-        gl.glEnable(gl.GL_BLEND);
-        gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA);
-        gl.glBegin(gl.GL_QUADS);
+        gl.glEnable(GL.GL_BLEND);
+        gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
+        gl.glBegin(GL2GL3.GL_QUADS);
         for (int i = 0; i < n; i++) {
             XSection p = XSectionManager.getXSection(i);
 
@@ -595,11 +592,11 @@ public class View implements Runnable, GLEventListener
 
         }
         gl.glEnd();
-        gl.glDisable(gl.GL_BLEND);
+        gl.glDisable(GL.GL_BLEND);
 
         // Draw top highlights
         gl.glLineWidth(3.0f);
-        gl.glBegin(gl.GL_LINES);
+        gl.glBegin(GL.GL_LINES);
         gl.glColor3f(0.0f, 0.0f, 0.0f);
         for (int i = 0; i < n; i++) {
             XSection p = XSectionManager.getXSection(i);
@@ -616,8 +613,8 @@ public class View implements Runnable, GLEventListener
 
             // Some hackish numbers to keep barb size sane
             dbarb = distance * 0.06f;  // 10% / sqrt(3)
-            dbarb = (float) Math.min(dbarb, 15.0f);  // but no greater than 26.
-            dbarb = (float) Math.max(dbarb, 2.0f); // but no smaller than 3
+            dbarb = Math.min(dbarb, 15.0f);  // but no greater than 26.
+            dbarb = Math.max(dbarb, 2.0f); // but no smaller than 3
 
             dx = dx * dbarb / distance;
             dy = dy * dbarb / distance;
@@ -647,13 +644,13 @@ public class View implements Runnable, GLEventListener
         v2[1] = gridHorizontalScaleFactor / 5.0f;  // Ditto on hack
 
         // Get ready for varying material properties
-        gl.glEnable(gl.GL_COLOR_MATERIAL);
-        gl.glColorMaterial(gl.GL_FRONT_AND_BACK,
+        gl.glEnable(GLLightingFunc.GL_COLOR_MATERIAL);
+        gl.glColorMaterial(GL.GL_FRONT_AND_BACK,
                 GLLightingFunc.GL_AMBIENT_AND_DIFFUSE);
 
         for (int x = 2; x < latticeSizeX - 1; x++) {
             for (int y = 2; y < latticeSizeY - 1; y++) {
-                gl.glBegin(gl.GL_TRIANGLES);
+                gl.glBegin(GL.GL_TRIANGLES);
                 v1[2] = topo[x + 1][y] - topo[x - 1][y];
                 v2[2] = topo[x][y + 1] - topo[x][y - 1];
 
@@ -704,7 +701,7 @@ public class View implements Runnable, GLEventListener
                 gl.glEnd();
             }
         }
-        gl.glDisable(gl.GL_COLOR_MATERIAL);
+        gl.glDisable(GLLightingFunc.GL_COLOR_MATERIAL);
     }
 
     private void drawUI() {
@@ -717,7 +714,7 @@ public class View implements Runnable, GLEventListener
 		*/
             // Draw mouse line
             gl.glLineWidth(3.0f);
-            gl.glBegin(gl.GL_LINES);
+            gl.glBegin(GL.GL_LINES);
             gl.glColor3f(0.0f, 0.0f, 0.0f);
             gl.glVertex3f(mouseStartX,
                     canvas.getHeight() - mouseStartY, -1.2f);
@@ -768,7 +765,7 @@ public class View implements Runnable, GLEventListener
         // Draw colored rectangular scale
         float[] color = new float[3];
 
-        gl.glBegin(gl.GL_QUAD_STRIP);
+        gl.glBegin(GL2.GL_QUAD_STRIP);
         for (int i = 0; i <= 12; i++) {
             map_color((i / 12.0f) * (COLOR_MAX_HEIGHT - COLOR_MIN_HEIGHT)
                     + COLOR_MIN_HEIGHT, color);
@@ -783,7 +780,7 @@ public class View implements Runnable, GLEventListener
         // Outline the scale
 
         gl.glColor3f(0.0f, 0.0f, 0.0f);
-        gl.glBegin(gl.GL_LINE_LOOP);
+        gl.glBegin(GL.GL_LINE_LOOP);
         gl.glVertex3f(scalePosX, scalePosY, -1.5f);
         gl.glVertex3f(scalePosX + scaleWidth, scalePosY, -1.5f);
         gl.glVertex3f(scalePosX + scaleWidth, scalePosY + scaleHeight, -1.5f);
@@ -792,7 +789,7 @@ public class View implements Runnable, GLEventListener
 
         // Draw label tics
         gl.glColor3f(0.0f, 0.0f, 0.0f);
-        gl.glBegin(gl.GL_LINES);
+        gl.glBegin(GL.GL_LINES);
         for (int i = 0; i < nVertScaleSamples; i++) {
             float y;
             y = (vertScaleSample[i] - COLOR_MIN_HEIGHT)
@@ -939,7 +936,7 @@ public class View implements Runnable, GLEventListener
 
         //Draw compass border
         gl.glColor3f(0.0f, 0.0f, 0.0f);
-        gl.glBegin(gl.GL_LINE_LOOP);
+        gl.glBegin(GL.GL_LINE_LOOP);
         gl.glVertex3f(icompasswidth * (-2 / 3.0f), -icompasswidth, -1.5f);
         gl.glVertex3f(0, icompasswidth, -1.0f);
         gl.glVertex3f(icompasswidth * (2 / 3.0f), -icompasswidth, -1.5f);
@@ -947,7 +944,7 @@ public class View implements Runnable, GLEventListener
         gl.glEnd();
 
 //    	//Draw left half of compass arrow
-        gl.glBegin(gl.GL_TRIANGLE_STRIP);
+        gl.glBegin(GL.GL_TRIANGLE_STRIP);
         gl.glColor3f(0.9f, 0.7f, 0.1f);
         gl.glVertex3f(icompasswidth * (-2 / 3.0f), -icompasswidth, -1.5f);
         gl.glColor3f(0.7f, 0.2f, 0.0f);
@@ -957,7 +954,7 @@ public class View implements Runnable, GLEventListener
         gl.glEnd();
 
         //Draw right half of compass arrow
-        gl.glBegin(gl.GL_TRIANGLE_STRIP);
+        gl.glBegin(GL.GL_TRIANGLE_STRIP);
         gl.glColor3f(0.9f, 0.7f, 0.1f);
         gl.glVertex3f(icompasswidth * (2 / 3.0f), -icompasswidth, -1.5f);
         gl.glColor3f(0.7f, 0.2f, 0.0f);
@@ -1036,7 +1033,7 @@ public class View implements Runnable, GLEventListener
         }
     }
 
-    void computeXSectionView() {
+    private void computeXSectionView() {
         // View from above and centered over terrain
 
         world2cam[0] = 1.0f;
@@ -1072,7 +1069,7 @@ public class View implements Runnable, GLEventListener
 
     }
 
-    void computeView(float longitude, float latitude) {
+    private void computeView(float longitude, float latitude) {
         // System.out.println("View: computeView()\n");
         float theta = cameraFOV / 2.0f;
         float ttheta = (float) Math.tan(theta * Math.PI / 180.0f);

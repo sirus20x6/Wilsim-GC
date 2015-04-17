@@ -49,7 +49,6 @@ import java.io.Reader;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -59,13 +58,13 @@ import java.util.StringTokenizer;
  options -- currently requires vertices and normals (only) to be
  present. */
 
-public class ObjReader {
+class ObjReader {
     private int verticesPerFace = -1;
     private FloatBuffer vertices;
     private FloatBuffer normals;
-    private float[] aabbMin = new float[3];
-    private float[] aabbMax = new float[3];
-    private float[] center = new float[3];
+    private final float[] aabbMin = new float[3];
+    private final float[] aabbMax = new float[3];
+    private final float[] center = new float[3];
     private float radius;
     // If we wanted this to be really general we'd have an array of
     // FloatLists for the various kinds of vertices as well
@@ -82,11 +81,11 @@ public class ObjReader {
         this(new InputStreamReader(in));
     }
 
-    public ObjReader(File file) throws IOException {
+    private ObjReader(File file) throws IOException {
         this (new FileReader(file));
     }
 
-    public ObjReader(Reader r) throws IOException {
+    private ObjReader(Reader r) throws IOException {
         BufferedReader reader = new BufferedReader(r);
         String line = null;
         int lineNo = 0;
@@ -103,9 +102,9 @@ public class ObjReader {
 
                     case 'v':
                         if (Character.isWhitespace(line.charAt(1))) {
-                            addVertex(parseFloats(line, 3, floatTmp, lineNo));
+                            addVertex(parseFloats(line, floatTmp, lineNo));
                         } else if (line.startsWith("vn")) {
-                            addVertexNormal(parseFloats(line, 3, floatTmp, lineNo));
+                            addVertexNormal(parseFloats(line, floatTmp, lineNo));
                         } else {
                             throw new IOException("Unsupported vertex command on line " + lineNo);
                         }
@@ -188,7 +187,7 @@ public class ObjReader {
         }
     }
 
-    private float[] parseFloats(String line, int num, float[] tmp, int lineNo) throws IOException {
+    private float[] parseFloats(String line, float[] tmp, int lineNo) throws IOException {
         StringTokenizer tok = new StringTokenizer(line);
         tok.nextToken(); // skip command
         int idx = 0;
@@ -223,8 +222,8 @@ public class ObjReader {
             }
         }
         // Now read the individual indices out of each token
-        for (Iterator iter = tokens.iterator(); iter.hasNext(); ) {
-            String indices = (String) iter.next();
+        for (Object token1 : tokens) {
+            String indices = (String) token1;
             if (tmpFaceIndices == null) {
                 StringTokenizer tmpTok = new StringTokenizer(indices, "/");
                 int numIndicesPerVertex = 0;
@@ -255,7 +254,7 @@ public class ObjReader {
 
     // Don't know the hashing rules for arrays off the top of my head
     static class Indices {
-        int[] data;
+        final int[] data;
         Indices(int[] data) {
             this.data = data;
         }
@@ -282,8 +281,8 @@ public class ObjReader {
 
         public int hashCode() {
             int hash = 0;
-            for (int i = 0; i < data.length; i++) {
-                hash ^= data[i];
+            for (int aData : data) {
+                hash ^= aData;
             }
             return hash;
         }
@@ -302,7 +301,7 @@ public class ObjReader {
                 // Fabricate new vertex and normal index for this one
                 // FIXME: generalize this by putting vertices and vertex
                 // normals in FloatList[] as well
-                condensingMap.put(indices, new Integer(nextIndex));
+                condensingMap.put(indices, nextIndex);
                 int vtxIdx    = 3 * ((indices.data[0]) - 1);
                 int vtxNrmIdx = 3 * ((indices.data[1]) - 1);
                 newVertices.add(tmpVertices.get(vtxIdx + 0));
@@ -314,7 +313,7 @@ public class ObjReader {
                 newIndices.add(nextIndex);
                 ++nextIndex;
             } else {
-                newIndices.add(newIndex.intValue());
+                newIndices.add(newIndex);
             }
         }
         newVertices.trim();

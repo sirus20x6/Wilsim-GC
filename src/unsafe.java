@@ -24,11 +24,11 @@ class UnsafeMemory
         }
     }
 
-    public static final long byteArrayOffset = unsafe.arrayBaseOffset(byte[].class);
+    private static final long byteArrayOffset = unsafe.arrayBaseOffset(byte[].class);
     private static final long floatArrayOffset = unsafe.arrayBaseOffset(float[].class);
 
     private int pos = 0;
-    public final byte[] buffer;
+    private final byte[] buffer;
 
     public UnsafeMemory(final byte[] buffer)
     {
@@ -84,7 +84,7 @@ class UnsafeMemory
     public void unsafeCopyTo(UnsafeMemory dest)
     {
         //unsafe.copyMemory(this.byteArrayOffset, dest.byteArrayOffset, pos);
-        unsafe.copyMemory(this.buffer, byteArrayOffset, dest.buffer, dest.byteArrayOffset, dest.buffer.length);
+        unsafe.copyMemory(this.buffer, byteArrayOffset, dest.buffer, byteArrayOffset, dest.buffer.length);
         dest.pos = this.buffer.length;
     }
 }

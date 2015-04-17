@@ -1,7 +1,7 @@
 import javax.swing.JFrame;
 import java.awt.*;
 
-public class Wilsim extends JFrame {
+class Wilsim extends JFrame {
 	/*
 	 * The Wilsim erosion simulation application.
 	 * 
@@ -25,10 +25,10 @@ public class Wilsim extends JFrame {
 	public static InfoPanel i;
 
 	private Container ui;
-	Thread t1;
-	Thread t2;
+	private Thread t1;
+	private Thread t2;
 
-	public void init() {
+	private void init() {
 		// Called once at beginning of program
 
 		// Get things going here

@@ -2,8 +2,8 @@ import java.util.Scanner;
 
 public class Model implements Runnable {
     private int iterationCount = 0;
-    CondVar executeFlag;
-    CondVar resetFlag;
+    private CondVar executeFlag;
+    private CondVar resetFlag;
     private static final float oneoversqrt2 = 0.70710678118F;
     private static final float sqrt2 = 1.414213562F;
     private static final int stacklimit = 1000000;
@@ -11,8 +11,8 @@ public class Model implements Runnable {
     private float time;
     
     // Model grid parameters
-    protected static int lattice_size_x = 339;
-    protected static int lattice_size_y = 262;
+    static final int lattice_size_x = 339;
+    static final int lattice_size_y = 262;
 
     static final float gridHorizontalSpacingFactor = 720.0f;
     
@@ -22,18 +22,30 @@ public class Model implements Runnable {
     private static float diag;
     private float K;
     // model parameters
-    float last, erosion, C, area, erodeddepth, dist, thresh, capacity, max;
-    int printinterval, i, j, ikeep, dir;
+	private float last;
+	private float erosion;
+	private float C;
+	private float area;
+	private float erodeddepth;
+	private float dist;
+	private float thresh;
+	private float capacity;
+	private float max;
+    private int printinterval;
+	private int i;
+	private int j;
+	private int ikeep;
+	int dir;
     
-    protected final static int profileStartX = 330;
-    protected final static int profileStartY = 79;
+    private final static int profileStartX = 330;
+    private final static int profileStartY = 79;
     public Profile river;
 
     int storageIntervals;
     private int storeCount;
 
     // Time parameters
-    float duration;
+	private float duration;
     private float timestep;
     private static final float presentTime = 6000.0f;  // 6 MYr from start of simulation
     private float storeTime;
@@ -83,10 +95,15 @@ public class Model implements Runnable {
     private static int count;
     
     // Data files
-    Scanner fp0, fp0b, fp0c, fp1, fp1b, f1;
+	private Scanner fp0;
+	private Scanner fp0b;
+	private Scanner fp0c;
+	private Scanner fp1;
+	private Scanner fp1b;
+	private Scanner f1;
     float Along_Grant_Wash_Fault = -1.7F;
-    float Along_Hurricane_Fault = -.15F;
-    float Along_Toroweap_Fault = -.05f;
+    private final float Along_Hurricane_Fault = -.15F;
+    private final float Along_Toroweap_Fault = -.05f;
     
 	@Override
 	public void run() {
@@ -112,31 +129,31 @@ public class Model implements Runnable {
 		}
 	}
 
-	static float[] vector(int nh, int nl) {
+	private static float[] vector(int nl) {
 		return new float[nl + 1];// Math.abs(nh - nl + 1 + NR_END)];
 	}
 
-	static int[] ivector(int nl, int nh) {
+	private static int[] ivector(int nh) {
 		return new int[nh + 1];// [Math.abs(nh - nl + 1 + NR_END)];
 	}
 
-	static float[][] matrix(int nrl, int nrh, int ncl, int nch) {
+	private static float[][] matrix(int nrh, int nch) {
 		return new float[nrh + 1][nch + 1];// Math.abs(nrh - nrl +
 											// 1)][Math.abs(nch - ncl + 1)];
 	}
 
-	static int[][] imatrix(int nrl, int nrh, int ncl, int nch) {
+	private static int[][] imatrix(int nrh, int nch) {
 		return new int[nrh + 1][nch + 1];// [Math.abs(nrh - nrl +
 											// 1)][Math.abs(nch - ncl + 1)];
 	}
 
-	static void push(int i, int j) {
+	private static void push(int i, int j) {
 		count++;
 		stacki[count] = i;
 		stackj[count] = j;
 	}
 
-	static void pop() {
+	private static void pop() {
 		ic = stacki[count];
 		jc = stackj[count];
 		count--;
@@ -317,14 +334,14 @@ public class Model implements Runnable {
 		slope[i][j] = oneoverdeltax * down;
 	}
 
-	static void setupmatrices() {
+	private static void setupmatrices() {
 		int i, j;
 		// the "up" and "down" vectors are pointers that point to themselves on
 		// the grid boundaries, otherwise they point to their neighbors
-		idown = ivector(1, lattice_size_x);
-		iup = ivector(1, lattice_size_x);
-		jup = ivector(1, lattice_size_y);
-		jdown = ivector(1, lattice_size_y);
+		idown = ivector(lattice_size_x);
+		iup = ivector(lattice_size_x);
+		jup = ivector(lattice_size_y);
+		jdown = ivector(lattice_size_y);
 		for (i = 1; i <= lattice_size_x; i++) {
 			idown[i] = i - 1;
 			iup[i] = i + 1;
@@ -337,30 +354,30 @@ public class Model implements Runnable {
 		}
 		jdown[1] = 1;
 		jup[lattice_size_y] = lattice_size_y;
-		topo = matrix(1, lattice_size_x, 1, lattice_size_y);
-		topoorig = matrix(1, lattice_size_x, 1, lattice_size_y);
-		topoold = matrix(1, lattice_size_x, 1, lattice_size_y);
-		topodrain = matrix(1, lattice_size_x, 1, lattice_size_y);
-		topoactual = matrix(1, lattice_size_x, 1, lattice_size_y);
-		wavespeed = matrix(1, lattice_size_x, 1, lattice_size_y);
-		slope = matrix(1, lattice_size_x, 1, lattice_size_y);
-		fac = matrix(1, lattice_size_x, 1, lattice_size_y);
-		area2 = matrix(1, lattice_size_x, 1, lattice_size_y);
-		mask = imatrix(1, lattice_size_x, 1, lattice_size_y);
-		masknew = imatrix(1, lattice_size_x, 1, lattice_size_y);
-		maskhurricane = imatrix(1, lattice_size_x, 1, lattice_size_y);
-		channel = imatrix(1, lattice_size_x, 1, lattice_size_y);
-		U = matrix(1, lattice_size_x, 1, lattice_size_y);
-		flow = matrix(1, lattice_size_x, 1, lattice_size_y);
-		draindiri = imatrix(1, lattice_size_x, 1, lattice_size_y);
-		draindirj = imatrix(1, lattice_size_x, 1, lattice_size_y);
-		rim = vector(1, lattice_size_x);
-		timecut = vector(1, lattice_size_x);
-		stacki = ivector(1, stacklimit);
-		stackj = ivector(1, stacklimit);
+		topo = matrix(lattice_size_x, lattice_size_y);
+		topoorig = matrix(lattice_size_x, lattice_size_y);
+		topoold = matrix(lattice_size_x, lattice_size_y);
+		topodrain = matrix(lattice_size_x, lattice_size_y);
+		topoactual = matrix(lattice_size_x, lattice_size_y);
+		wavespeed = matrix(lattice_size_x, lattice_size_y);
+		slope = matrix(lattice_size_x, lattice_size_y);
+		fac = matrix(lattice_size_x, lattice_size_y);
+		area2 = matrix(lattice_size_x, lattice_size_y);
+		mask = imatrix(lattice_size_x, lattice_size_y);
+		masknew = imatrix(lattice_size_x, lattice_size_y);
+		maskhurricane = imatrix(lattice_size_x, lattice_size_y);
+		channel = imatrix(lattice_size_x, lattice_size_y);
+		U = matrix(lattice_size_x, lattice_size_y);
+		flow = matrix(lattice_size_x, lattice_size_y);
+		draindiri = imatrix(lattice_size_x, lattice_size_y);
+		draindirj = imatrix(lattice_size_x, lattice_size_y);
+		rim = vector(lattice_size_x);
+		timecut = vector(lattice_size_x);
+		stacki = ivector(stacklimit);
+		stackj = ivector(stacklimit);
 	}
 
-	void modelMain() {
+	private void modelMain() {
 
 		executeFlag = new CondVar(false);
 		resetFlag = new CondVar(true);
@@ -784,7 +801,7 @@ public class Model implements Runnable {
 		// print final topography
 	}
 
-	void openDefaultDataFiles() {
+	private void openDefaultDataFiles() {
 		Wilsim.i.log.append("Model: openDefaultDataFiles() \n");
 
 		// Default input files are stored in a .jar file
@@ -821,7 +838,7 @@ public class Model implements Runnable {
 
 	}
 
-	protected void resetCall() {
+	void resetCall() {
 
 		synchronized (resetFlag) {
 			try {
@@ -837,7 +854,7 @@ public class Model implements Runnable {
 		}
 	}
 
-	void reset() {
+	private void reset() {
 		time = 0;
 		scoreFlag = false;
 
@@ -883,7 +900,7 @@ public class Model implements Runnable {
 
 	}
 
-	public void pause() {
+	private void pause() {
 		if (Wilsim.c.pauseValue > 0) {
 
 			float i = Wilsim.c.pauseValue * 1000;

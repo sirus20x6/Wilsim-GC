@@ -92,14 +92,14 @@ public class XSection
 		for(i = 0; i < dx; i++)
 		    {
 			values[0][i] = ((float)i) / dx * distance
-			    * Wilsim.m.gridHorizontalSpacingFactor;
+			    * Model.gridHorizontalSpacingFactor;
 			x += stepX;
 			if(p < 0)
 			    { p += 2 * dy; }
 			else
 			    { p += 2 * (dy - dx); y += stepY; }
 		    }
-		values[0][i] = distance * Wilsim.m.gridHorizontalSpacingFactor;
+		values[0][i] = distance * Model.gridHorizontalSpacingFactor;
 	    }
 	else
 	    {
@@ -108,14 +108,14 @@ public class XSection
 		for(i = 0; i < dy; i++)
 		    {
 			values[0][i] = ((float)i) / dy * distance
-			    * Wilsim.m.gridHorizontalSpacingFactor;
+			    * Model.gridHorizontalSpacingFactor;
 			y += stepY;
 			if(p < 0)
 			    { p += 2 * dx; }
 			else
 			    { p += 2 * (dx - dy); x += stepX; }
 		    }
-		values[0][i] = distance * Wilsim.m.gridHorizontalSpacingFactor;
+		values[0][i] = distance * Model.gridHorizontalSpacingFactor;
 	    }
 
 	if(nIterates == 0)

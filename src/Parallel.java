@@ -13,7 +13,7 @@ class Parallel
                                    final LoopBody<T> loopBody)
     {
         ExecutorService executor = Executors.newFixedThreadPool(iCPU);
-        List<Future<?>> futures  = new LinkedList<Future<?>>();
+        List<Future<?>> futures  = new LinkedList<>();
 
         for (final T param : parameters)
         {
@@ -28,8 +28,7 @@ class Parallel
         for (Future<?> f : futures)
         {
             try   { f.get(); }
-            catch (InterruptedException e) { }
-            catch (ExecutionException e) { }
+            catch (InterruptedException | ExecutionException e) { }
         }
 
         executor.shutdown();
@@ -40,7 +39,7 @@ class Parallel
                            final LoopBody<Integer> loopBody)
     {
         ExecutorService executor = Executors.newFixedThreadPool(iCPU);
-        List<Future<?>> futures  = new LinkedList<Future<?>>();
+        List<Future<?>> futures  = new LinkedList<>();
 
         for (int i=start; i>stop; i--)
         {
@@ -55,8 +54,7 @@ class Parallel
         for (Future<?> f : futures)
         {
             try   { f.get(); }
-            catch (InterruptedException e) { }
-            catch (ExecutionException   e) { }
+            catch (InterruptedException | ExecutionException e) { }
         }
 
         executor.shutdown();
