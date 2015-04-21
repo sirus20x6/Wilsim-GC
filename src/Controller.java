@@ -1,9 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.AdjustmentEvent;
-import java.awt.event.AdjustmentListener;
+import java.awt.event.*;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -30,6 +27,8 @@ public class Controller
 
     // Internal UI variables
     private Container UI;  // The containing UI panel for the controller
+    int wilsimWidth = 1024;
+    int wilsimHeight = 800;
     //private JPanel controlsHead; // contains the options, profiles and
     // hypsometric buttons
 
@@ -149,7 +148,7 @@ public class Controller
         wrap.setHgap(0);
         wrap.setVgap(0);
         JPanel controlsHead = new JPanel(wrap);
-        JPanel controlPanel = new JPanel(new BorderLayout());
+        final JPanel controlPanel = new JPanel(new BorderLayout());
 
         //JPanel controlsHead = new JPanel(new GridLayout(1, 3));
 
@@ -163,16 +162,16 @@ public class Controller
         profilesButton = new JRadioButton("DRAW");
         profilesButton.setMargin(new Insets(0, 0, 0, 0));
         profilesButton.setFocusPainted(false);
-        profilesButton.setPreferredSize(new Dimension(70, 50));
-        profilesButton.setMaximumSize(new Dimension(70, 50));
+        profilesButton.setPreferredSize(new Dimension(60, 50));
+        profilesButton.setMaximumSize(new Dimension(60, 50));
 
         XsectionButton = new JRadioButton("CROSS SECTION");
         XsectionButton.setPreferredSize(new Dimension(125, 50));
         XsectionButton.setMaximumSize(new Dimension(125, 50));
 
         DrawProfileButton = new JRadioButton("PROFILE");
-        DrawProfileButton.setPreferredSize(new Dimension(125, 50));
-        DrawProfileButton.setMaximumSize(new Dimension(125, 50));
+        DrawProfileButton.setPreferredSize(new Dimension(80, 50));
+        DrawProfileButton.setMaximumSize(new Dimension(80, 50));
 
         optionsButton.setSelected(true);
         optionsButton.setBackground(activeColor);
@@ -581,7 +580,6 @@ public class Controller
         // Button to start/pause the simulation
         startStopButton = new JButton();
         startStopButton.setText("Start");
-        startStopButton.setPreferredSize(new Dimension(100, 40));
         startStopButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
                 Wilsim.m.toggleExecution();
@@ -746,18 +744,22 @@ public class Controller
         //JPanel middle = new JPanel(new BorderLayout());
 
         //Create a split pane with the two scroll panes in it.
-        JSplitPane middle = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
-                viewPanel, controlPanel);
-        middle.setOneTouchExpandable(true);
-        middle.setDividerLocation(546);
+        JPanel middle = new JPanel(new BorderLayout());
 
-//Provide minimum sizes for the two components in the split pane
-        Dimension minimumSize = new Dimension(400, 400);
-        viewPanel.setMinimumSize(new Dimension(546, 400));
-        controlPanel.setMinimumSize(minimumSize);
-        controlPanel.setMaximumSize(new Dimension(340, 9999));
+        middle.add(viewPanel, BorderLayout.CENTER);
+        middle.add(controlPanel, BorderLayout.EAST);
 
+        UI.add(bannerPanel, BorderLayout.NORTH);
+        UI.add(middle, BorderLayout.CENTER);
 
+        middle.addComponentListener(new ComponentAdapter()
+        {
+            public void componentResized(ComponentEvent evt) {
+                Component c = (Component)evt.getSource();
+
+                controlPanel.setPreferredSize(new Dimension(395, controlPanel.getSize().height));
+            }
+        });
         //viewPanel.setMinimumSize(new Dimension(400,600));
         // middle.add(viewPanel, BorderLayout.CENTER);
         // middle.add(controlPanel, BorderLayout.EAST);
@@ -777,36 +779,6 @@ public class Controller
         outputXSections();
         outputProfiles();
     }
-
-    /*
-    public void run()
-    {
-   while(true)
-       {
-      if(!attentionRequest.boolVal)
-          {
-         synchronized(attentionRequest)
-             {
-            try{
-                attentionRequest.wait();
-            } catch (Exception e) {}
-             }
-         continue;
-          }
-      if(outputFlag)
-          {
-         outputXSections();
-
-         outputFlag = false;
-          }
-
-      synchronized(attentionRequest)
-          {
-         attentionRequest.boolVal = false;
-          }
-       }
-    }
-    */
 
     private void outputXSections() {
         // Wilsim.i.log.append("outputXSections:1\n");

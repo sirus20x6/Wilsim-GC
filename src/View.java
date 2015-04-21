@@ -93,8 +93,6 @@ public class View implements Runnable, GLEventListener
     // XSection information
     final private float profileScale = 1.1f;  // For borders in profile view
 
-    private XSectionManager xSMgr;
-
     public View() {
         // System.out.println("View: View()\n");
         // Log not available here
@@ -395,6 +393,37 @@ public class View implements Runnable, GLEventListener
         draw(drawable);
 
     }
+    private void drawprofileMode(){
+        drawXSectionMode();
+        gl.glEnable(GLLightingFunc.GL_LIGHTING);
+
+        // Position lights
+        gl.glLightfv(GLLightingFunc.GL_LIGHT0, GLLightingFunc.GL_POSITION, lightPosition, 0);
+
+        // Recenter and resposition grid
+        // gl.glRotatef(180f, 1.0f, 1.0f, .0f);
+        gl.glScalef(gridHorizontalScaleFactor, -gridHorizontalScaleFactor, 1.0f);
+        gl.glTranslatef(-latticeSizeX / 2, -latticeSizeY / 2, -1800);
+        // Z translation is currently a hack based on the grid.  Roughly 1800 m for
+        // the Grand Canyon
+
+        drawTerrain();
+
+        gl.glDisable(GLLightingFunc.GL_LIGHTING);
+
+        drawXSections();
+
+        // Now draw UI stuff on top
+        gl.glMatrixMode(GLMatrixFunc.GL_PROJECTION);
+        gl.glLoadIdentity();
+        gl.glOrtho(0.0f, canvas.getWidth(), 0.0f, canvas.getHeight(), 1.0f, 2.0f);
+        gl.glMatrixMode(GLMatrixFunc.GL_MODELVIEW);
+        gl.glLoadIdentity();
+
+        drawUI();
+
+    }
+
 
     private void draw(GLAutoDrawable draw) {
         // System.out.println("View: draw()\n");
@@ -405,94 +434,12 @@ public class View implements Runnable, GLEventListener
 
         // Move more and more into separate drawing modes
         // as functionality diverges
-        if (viewMode == PROFILE_MODE) {
-            drawXSectionMode();
-            gl.glEnable(GLLightingFunc.GL_LIGHTING);
 
-            // Position lights
-            gl.glLightfv(GLLightingFunc.GL_LIGHT0, GLLightingFunc.GL_POSITION, lightPosition, 0);
+        if (viewMode == PROFILE_MODE)   drawprofileMode();
 
-            // Recenter and resposition grid
-            // gl.glRotatef(180f, 1.0f, 1.0f, .0f);
-            gl.glScalef(gridHorizontalScaleFactor, -gridHorizontalScaleFactor, 1.0f);
-            gl.glTranslatef(-latticeSizeX / 2, -latticeSizeY / 2, -1800);
-            // Z translation is currently a hack based on the grid.  Roughly 1800 m for
-            // the Grand Canyon
+        else if (viewMode == SPIN_MODE) drawSpinMode();
 
-            drawTerrain();
-
-            gl.glDisable(GLLightingFunc.GL_LIGHTING);
-
-            drawXSections();
-
-            // Now draw UI stuff on top
-            gl.glMatrixMode(GLMatrixFunc.GL_PROJECTION);
-            gl.glLoadIdentity();
-            gl.glOrtho(0.0f, canvas.getWidth(), 0.0f, canvas.getHeight(), 1.0f, 2.0f);
-            gl.glMatrixMode(GLMatrixFunc.GL_MODELVIEW);
-            gl.glLoadIdentity();
-
-            drawUI();
-        } else if (viewMode == SPIN_MODE) {
-            // Spin mode
-            drawSpinMode();
-            gl.glEnable(GLLightingFunc.GL_LIGHTING);
-
-            // Position lights
-            gl.glLightfv(GLLightingFunc.GL_LIGHT0, GLLightingFunc.GL_POSITION, lightPosition, 0);
-
-            // Recenter and resposition grid
-            // gl.glRotatef(180f, 1.0f, 1.0f, .0f);
-            gl.glScalef(gridHorizontalScaleFactor, -gridHorizontalScaleFactor, 1.0f);
-            gl.glTranslatef(-latticeSizeX / 2, -latticeSizeY / 2, -1800);
-            // Z translation is currently a hack based on the grid.  Roughly 1800 m for
-            // the Grand Canyon
-
-            drawTerrain();
-
-            gl.glDisable(GLLightingFunc.GL_LIGHTING);
-
-            drawXSections();
-
-            // Now draw UI stuff on top
-            gl.glMatrixMode(GLMatrixFunc.GL_PROJECTION);
-            gl.glLoadIdentity();
-            gl.glOrtho(0.0f, canvas.getWidth(), 0.0f, canvas.getHeight(), 1.0f, 2.0f);
-            gl.glMatrixMode(GLMatrixFunc.GL_MODELVIEW);
-            gl.glLoadIdentity();
-
-            drawUI();
-        } else {
-            drawXVISUALIZER_MODE();
-
-            gl.glEnable(GLLightingFunc.GL_LIGHTING);
-            drawScaleBar();
-            // Position lights
-            gl.glLightfv(GLLightingFunc.GL_LIGHT0, GLLightingFunc.GL_POSITION, lightPosition, 0);
-
-            // Recenter and resposition grid
-            // gl.glRotatef(180f, 1.0f, 1.0f, .0f);
-            gl.glScalef(gridHorizontalScaleFactor, -gridHorizontalScaleFactor, 1.0f);
-            gl.glTranslatef(-latticeSizeX / 2, -latticeSizeY / 2, -1800);
-            // Z translation is currently a hack based on the grid.  Roughly 1800 m for
-            // the Grand Canyon
-
-            //drawTerrain();
-
-
-            gl.glDisable(GLLightingFunc.GL_LIGHTING);
-
-            drawXSections();
-
-            // Now draw UI stuff on top
-            gl.glMatrixMode(GLMatrixFunc.GL_PROJECTION);
-            gl.glLoadIdentity();
-            gl.glOrtho(0.0f, canvas.getWidth(), 0.0f, canvas.getHeight(), 1.0f, 2.0f);
-            gl.glMatrixMode(GLMatrixFunc.GL_MODELVIEW);
-            gl.glLoadIdentity();
-
-            drawUI();
-        }
+        else    drawXVISUALIZER_MODE();
 
 
         synchronized (newComputation) {
@@ -522,6 +469,35 @@ public class View implements Runnable, GLEventListener
         gl.glMatrixMode(GLMatrixFunc.GL_MODELVIEW);
         gl.glLoadIdentity();
         gl.glMultMatrixf(world2cam, 0);
+
+        // Spin mode
+
+        gl.glEnable(GLLightingFunc.GL_LIGHTING);
+
+        // Position lights
+        gl.glLightfv(GLLightingFunc.GL_LIGHT0, GLLightingFunc.GL_POSITION, lightPosition, 0);
+
+        // Recenter and resposition grid
+        // gl.glRotatef(180f, 1.0f, 1.0f, .0f);
+        gl.glScalef(gridHorizontalScaleFactor, -gridHorizontalScaleFactor, 1.0f);
+        gl.glTranslatef(-latticeSizeX / 2, -latticeSizeY / 2, -1800);
+        // Z translation is currently a hack based on the grid.  Roughly 1800 m for
+        // the Grand Canyon
+
+        drawTerrain();
+
+        gl.glDisable(GLLightingFunc.GL_LIGHTING);
+
+        drawXSections();
+
+        // Now draw UI stuff on top
+        gl.glMatrixMode(GLMatrixFunc.GL_PROJECTION);
+        gl.glLoadIdentity();
+        gl.glOrtho(0.0f, canvas.getWidth(), 0.0f, canvas.getHeight(), 1.0f, 2.0f);
+        gl.glMatrixMode(GLMatrixFunc.GL_MODELVIEW);
+        gl.glLoadIdentity();
+
+        drawUI();
 
 
     }
@@ -564,6 +540,33 @@ public class View implements Runnable, GLEventListener
 
 	private void drawXVISUALIZER_MODE()
 	{
+        gl.glEnable(GLLightingFunc.GL_LIGHTING);
+        drawScaleBar();
+        // Position lights
+        gl.glLightfv(GLLightingFunc.GL_LIGHT0, GLLightingFunc.GL_POSITION, lightPosition, 0);
+
+        // Recenter and resposition grid
+        // gl.glRotatef(180f, 1.0f, 1.0f, .0f);
+        gl.glScalef(gridHorizontalScaleFactor, -gridHorizontalScaleFactor, 1.0f);
+        gl.glTranslatef(-latticeSizeX / 2, -latticeSizeY / 2, -1800);
+        // Z translation is currently a hack based on the grid.  Roughly 1800 m for
+        // the Grand Canyon
+
+        //drawTerrain();
+
+
+        gl.glDisable(GLLightingFunc.GL_LIGHTING);
+
+        drawXSections();
+
+        // Now draw UI stuff on top
+        gl.glMatrixMode(GLMatrixFunc.GL_PROJECTION);
+        gl.glLoadIdentity();
+        gl.glOrtho(0.0f, canvas.getWidth(), 0.0f, canvas.getHeight(), 1.0f, 2.0f);
+        gl.glMatrixMode(GLMatrixFunc.GL_MODELVIEW);
+        gl.glLoadIdentity();
+
+        drawUI();
 
 	}
 
@@ -584,7 +587,7 @@ public class View implements Runnable, GLEventListener
         for (int i = 0; i < n; i++) {
             XSection p = XSectionManager.getXSection(i);
 
-            gl.glColor4f(0.5f, 0.5f, 0.5f, 0.6f);
+            gl.glColor4f(1.0f, 0.1f, 0.1f, 0.6f);
             gl.glVertex3f(p.startX, p.startY, COLOR_MIN_HEIGHT);
             gl.glVertex3f(p.endX, p.endY, COLOR_MIN_HEIGHT);
             gl.glVertex3f(p.endX, p.endY, COLOR_MAX_HEIGHT);
@@ -727,7 +730,7 @@ public class View implements Runnable, GLEventListener
         drawVertScale();
         //drawScaleBar();
         if (viewMode == SPIN_MODE) drawCompass();
-        //drawCompass();
+
         if (viewMode == SPIN_MODE && Wilsim.m.scoreFlag)
             //drawScore();   // Temporarily removed until sane values emerge
             ;
@@ -823,9 +826,12 @@ public class View implements Runnable, GLEventListener
     }
 
     private void drawScaleBar() {
+        if (XSectionManager.getXSection(0) !=null && XSectionManager.getXSection(0).dMaxValues != -1) {
 
         float scaleHeight = canvas.getHeight();
         if (scaleHeight > 300.0f) scaleHeight = 300.0f;
+
+
 
         float scaleBorder = 0.03f; // Fraction of screen height
         scaleHeight = (1.0f - 2 * scaleBorder) * scaleHeight; // Give a little border
@@ -835,7 +841,10 @@ public class View implements Runnable, GLEventListener
         //	scalePosX = canvas.getHeight() * scaleBorder;
         //	scalePosY = canvas.getHeight() * (1.0f - scaleBorder) - scaleHeight;
         scalePosX = 10.0f;
-        scalePosY = canvas.getHeight() - 100.0f - scaleHeight;
+        scalePosY = 320.0f - scaleHeight;
+
+        float textPosX, textPosY;
+        textPosX = scalePosX + scaleWidth + 10.0f;
 
 
         // Calculate divisions and division locations
@@ -852,82 +861,109 @@ public class View implements Runnable, GLEventListener
 
         /********************************************/
 
-        gl.glColor3f(0.0f, 0.0f, 0.0f);
-        gl.glBegin(GL2.GL_LINE_LOOP);
-        gl.glVertex3f(scalePosX * 5, scalePosY + 30.0f, -1.5f);
-        gl.glVertex3f(scalePosX * 8 + scaleHeight, scalePosY + 30.0f, -1.5f);
-        gl.glVertex3f(scalePosX * 5, scalePosY + 30.0f, -1.5f);
-        // gl.glVertex3f(scalePosX + scaleWidth, scaleHeight , -1.5f);
-        //gl.glVertex3f(scalePosX, scalePosY + scaleHeight, -1.5f);
-        gl.glEnd();
-
-        // Draw label tics
-        gl.glColor3f(0.0f, 0.0f, 0.0f);
-        gl.glBegin(GL2.GL_LINES);
-        int nVertScaleSamples = 4;
 
 
-        gl.glVertex3f(scalePosX * 5, scalePosY + 30.0f, -1.5f);
-        gl.glVertex3f(scalePosX * 5, scalePosY + 35.0f, -1.5f);
-        gl.glVertex3f(scalePosX * 5, scalePosY + 30.0f, -1.5f);
 
 
-        gl.glVertex3f(128, scalePosY + 30.0f, -1.5f);
-        gl.glVertex3f(128, scalePosY + 35.0f, -1.5f);
-        gl.glVertex3f(128, scalePosY + 30.0f, -1.5f);
-
-        gl.glVertex3f(206, scalePosY + 30.0f, -1.5f);
-        gl.glVertex3f(206, scalePosY + 35.0f, -1.5f);
-        gl.glVertex3f(206, scalePosY + 30.0f, -1.5f);
-
-        gl.glVertex3f(284, scalePosY + 30.0f, -1.5f);
-        gl.glVertex3f(284, scalePosY + 35.0f, -1.5f);
-        gl.glVertex3f(284, scalePosY + 30.0f, -1.5f);
-
-        gl.glVertex3f(362, scalePosY + 30.0f, -1.5f);
-        gl.glVertex3f(362, scalePosY + 35.0f, -1.5f);
-        gl.glVertex3f(362, scalePosY + 30.0f, -1.5f);
 
 
-        gl.glEnd();
-
-        // Draw labels
 
 
-        vertScaleTextEngine.beginRendering(canvas.getWidth(), canvas.getHeight());
-        gl.glMatrixMode(5888);
-        gl.glPushMatrix();
+            // Draw label tics
+            gl.glColor3f(0.0f, 0.0f, 0.0f);
+            gl.glBegin(GL2.GL_LINE_STRIP);
+            gl.glLineWidth(2.0f);
 
-        gl.glRotatef(90, 0, 0, 1);
-        vertScaleTextEngine.setColor(0.0f, 0.0f, 0.0f, 1.0f);
 
-        float textPosX, textPosY;
-        textPosX = scalePosX + scaleWidth + 10.0f;
+            float drawScaleX = canvas.getWidth() / (XSectionManager.getXSection(0).crossSectionMaxX - XSectionManager.getXSection(0).crossSectionMinX);
+            float drawScaleY = canvas.getHeight() / (XSectionManager.getXSection(0).crossSectionMaxY - XSectionManager.getXSection(0).crossSectionMinY);
+            drawScaleY *= 20;
 
-        float total = 244800;
-        //61200
+            for (int i = 1; i < XSectionManager.getXSection(0).dMaxValues; i++) {
+                gl.glVertex3f((XSectionManager.getXSection(0).values[0][i] - XSectionManager.getXSection(0).crossSectionMinX) * drawScaleX, XSectionManager.getXSection(0).values[1][i] * drawScaleY + 30.0f, -1.5f);
 
-        for (int i = 0; i < 5; i++) {
-            textPosY = 78 * i;
+                System.out.print("X = " + XSectionManager.getXSection(0).values[0][i] + " ");
+                System.out.print("Y = " + XSectionManager.getXSection(0).values[1][i] + " \n");
 
-            String Label = Float.toString(total);
-            total = total - 61200.0f;
-            vertScaleTextEngine.draw(Label, (int) textPosX - 30, (int) textPosY - 362);
-        }
+                System.out.print("X = " + XSectionManager.getXSection(0).values[0][i + 1] + " ");
+                System.out.print("Y = " + XSectionManager.getXSection(0).values[1][i + 1] + " \n");
+
+            }
+            System.out.println("dMax is " + XSectionManager.getXSection(0).dMaxValues);
+            System.out.println("dMin is " + XSectionManager.getXSection(0).dMinValues);
+            System.out.println(drawScaleX);
+            System.out.println(drawScaleY);
+
+
+            System.out.println(canvas.getHeight());
+
+            gl.glEnd();
+            gl.glColor3f(0.0f, 0.0f, 0.0f);
+            gl.glBegin(GL2.GL_LINES);
+            gl.glVertex3f(scalePosX * 5, scalePosY + 30.0f, -1.5f);
+            gl.glVertex3f(50 + (40000 * drawScaleX), scalePosY + 30.0f, -1.5f);
+            gl.glEnd();
+
+
+            // Draw label tics
+            gl.glColor3f(0.0f, 0.0f, 0.0f);
+            gl.glBegin(GL2.GL_LINES);
+            gl.glVertex3f(50, scalePosY + 30.0f, -1.5f);
+            gl.glVertex3f(50, scalePosY + 35.0f, -1.5f);
+            System.out.println("Line 50 * drawScaleX " + (50 * drawScaleX));
+            gl.glVertex3f(50 + (10000 * drawScaleX), scalePosY + 30.0f, -1.5f);
+            gl.glVertex3f(50 + (10000 * drawScaleX), scalePosY + 35.0f, -1.5f);
+            System.out.println("Line 10050 * drawScaleX " + (10050 * drawScaleX));
+            gl.glVertex3f(50 + (20000 * drawScaleX), scalePosY + 30.0f, -1.5f);
+            gl.glVertex3f(50 + (20000 * drawScaleX), scalePosY + 35.0f, -1.5f);
+            System.out.println("Line 20050 * drawScaleX " + (20050 * drawScaleX));
+            gl.glVertex3f(50 + (30000 * drawScaleX), scalePosY + 30.0f, -1.5f);
+            gl.glVertex3f(50 + (30000 * drawScaleX), scalePosY + 35.0f, -1.5f);
+            System.out.println("Line 30050 * drawScaleX " + (30050 * drawScaleX));
+            gl.glVertex3f(50 + (40000 * drawScaleX), scalePosY + 30.0f, -1.5f);
+            gl.glVertex3f(50 + (40000 * drawScaleX), scalePosY + 35.0f, -1.5f);
+            System.out.println("Line 40050 * drawScaleX " + (40050 * drawScaleX));
+
+
+            gl.glEnd();
+
+            // Draw labels
+
+
+            vertScaleTextEngine.beginRendering(canvas.getWidth(), canvas.getHeight());
+            gl.glMatrixMode(5888);
+            gl.glPushMatrix();
+
+            gl.glRotatef(270, 0, 0, 1);
+            vertScaleTextEngine.setColor(0.0f, 0.0f, 0.0f, 1.0f);
+
+
+            int total = 0;
+            //61200
+
+            for (int i = 0; i < 5; i++) {
+                textPosY = (float) (10000 * i * drawScaleX);
+
+                String Label = Float.toString(total);
+                total = total + 10000;
+                vertScaleTextEngine.draw(Label, (int) textPosX - 90, (int) textPosY + 50);
+
+                System.out.println("TextPosY " + ((int) textPosY -50));
+            }
 
         vertScaleTextEngine.endRendering();
+        }
     }
 
     private void drawCompass() {
         // Positions the compass in the upper right corner
-        float compassHeight = canvas.getHeight();
-        float compassWidth = 0.05f;
-        float icompasswidth = canvas.getWidth() * compassWidth;
+        float compassScaleFactor = 0.05f;
+        float iCompassWidth = canvas.getWidth() * compassScaleFactor;
         float ccx;
         float ccy;
-        if (icompasswidth < 20.0f) icompasswidth = 20.0f;
-        ccx = canvas.getWidth() - icompasswidth - 20;
-        ccy = canvas.getHeight() - icompasswidth - 20;
+        if (iCompassWidth < 20.0f) iCompassWidth = 20.0f;
+        ccx = canvas.getWidth() - iCompassWidth - 20;
+        ccy = canvas.getHeight() - iCompassWidth - 20;
 
         // Rotates the compass with the model, points to North
         gl.glPushMatrix();
@@ -937,30 +973,30 @@ public class View implements Runnable, GLEventListener
         //Draw compass border
         gl.glColor3f(0.0f, 0.0f, 0.0f);
         gl.glBegin(GL.GL_LINE_LOOP);
-        gl.glVertex3f(icompasswidth * (-2 / 3.0f), -icompasswidth, -1.5f);
-        gl.glVertex3f(0, icompasswidth, -1.0f);
-        gl.glVertex3f(icompasswidth * (2 / 3.0f), -icompasswidth, -1.5f);
-        gl.glVertex3f(0, icompasswidth * (-1 / 3.0f), -1.5f);
+        gl.glVertex3f(iCompassWidth * (-2 / 3.0f), -iCompassWidth, -1.5f);
+        gl.glVertex3f(0, iCompassWidth, -1.0f);
+        gl.glVertex3f(iCompassWidth * (2 / 3.0f), -iCompassWidth, -1.5f);
+        gl.glVertex3f(0, iCompassWidth * (-1 / 3.0f), -1.5f);
         gl.glEnd();
 
 //    	//Draw left half of compass arrow
         gl.glBegin(GL.GL_TRIANGLE_STRIP);
         gl.glColor3f(0.9f, 0.7f, 0.1f);
-        gl.glVertex3f(icompasswidth * (-2 / 3.0f), -icompasswidth, -1.5f);
+        gl.glVertex3f(iCompassWidth * (-2 / 3.0f), -iCompassWidth, -1.5f);
         gl.glColor3f(0.7f, 0.2f, 0.0f);
-        gl.glVertex3f(0, icompasswidth, -1.5f);
+        gl.glVertex3f(0, iCompassWidth, -1.5f);
         gl.glColor3f(1.0f, 0.8f, 0.1f);
-        gl.glVertex3f(0, icompasswidth * (-1 / 3.0f), -1.5f);
+        gl.glVertex3f(0, iCompassWidth * (-1 / 3.0f), -1.5f);
         gl.glEnd();
 
         //Draw right half of compass arrow
         gl.glBegin(GL.GL_TRIANGLE_STRIP);
         gl.glColor3f(0.9f, 0.7f, 0.1f);
-        gl.glVertex3f(icompasswidth * (2 / 3.0f), -icompasswidth, -1.5f);
+        gl.glVertex3f(iCompassWidth * (2 / 3.0f), -iCompassWidth, -1.5f);
         gl.glColor3f(0.7f, 0.2f, 0.0f);
-        gl.glVertex3f(0, icompasswidth, -1.5f);
+        gl.glVertex3f(0, iCompassWidth, -1.5f);
         gl.glColor3f(1.0f, 0.8f, 0.1f);
-        gl.glVertex3f(0, icompasswidth * (-1 / 3.0f), -1.5f);
+        gl.glVertex3f(0, iCompassWidth * (-1 / 3.0f), -1.5f);
         gl.glEnd();
 
         CompassTextEngine.beginRendering(canvas.getWidth(), canvas.getHeight());

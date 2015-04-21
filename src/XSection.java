@@ -6,6 +6,10 @@ public class XSection
 
     // Line endpoints
     int startX, startY, endX, endY;
+	int dMaxValues = -1;
+	int dMinValues = -1;
+	float crossSectionMaxX, crossSectionMinX;
+	float crossSectionMaxY, crossSectionMinY;
 
     private int maxNIterates, nIterates, nValues;
     float [][] values;
@@ -67,14 +71,14 @@ public class XSection
 
 	// Do a Bresenham-like line stepping
 
-	int dx, dy, sx, sy, stepX, stepY;
+	int dx, dy, sx, sy, stepX, stepY, dMax, dMin;
 	int p;
 
 	sx = endX - startX;
 	sy = endY - startY;
 
-	if(sx < 0) dx = -sx; else dx = sx;  // dx = abs(sx)
-	if(sy < 0) dy = -sy; else dy = sy;
+		dx = Math.abs(sx);
+		dy = Math.abs(sy);
 
 	if(sx < 0) stepX = -1; else stepX = 1;
 	if(sy < 0) stepY = -1; else stepY = 1;
@@ -85,46 +89,46 @@ public class XSection
 
 	x = startX; y = startY;
 
-	if(dx > dy)
-	    {
+	if(dx > dy) {
+		dMax = dx;
+		dMin = dy;
+	}
+		else{
+		dMax = dy;
+		dMin = dx;
+	}
 		// Conditional step in y
-		p = 2 * dy - dx;
-		for(i = 0; i < dx; i++)
+		p = 2 * dMin - dMax;
+		for(i = 0; i < dMax; i++)
 		    {
-			values[0][i] = ((float)i) / dx * distance
+			values[0][i] = ((float)i) / dMax * distance
 			    * Model.gridHorizontalSpacingFactor;
 			x += stepX;
 			if(p < 0)
-			    { p += 2 * dy; }
+			    { p += 2 * dMin; }
 			else
-			    { p += 2 * (dy - dx); y += stepY; }
+			    { p += 2 * (dMin - dMax); y += stepY; }
+
+
+					if (values[0][i] > crossSectionMaxX){
+						crossSectionMaxX = values[0][i];
+					}
+					if (values[0][i] < crossSectionMinX){
+						crossSectionMinX = values[0][i];
+					}
+
+
 		    }
 		values[0][i] = distance * Model.gridHorizontalSpacingFactor;
-	    }
-	else
-	    {
-		// Conditional step in x
-		p = 2 * dx - dy;
-		for(i = 0; i < dy; i++)
-		    {
-			values[0][i] = ((float)i) / dy * distance
-			    * Model.gridHorizontalSpacingFactor;
-			y += stepY;
-			if(p < 0)
-			    { p += 2 * dx; }
-			else
-			    { p += 2 * (dx - dy); x += stepX; }
-		    }
-		values[0][i] = distance * Model.gridHorizontalSpacingFactor;
-	    }
+
+
 
 	if(nIterates == 0)
 	    nIterates = 1;
 
     } // computeDistances
 
-    void appendXSectionValues(float [][] terrain)
-    {
+    void appendXSectionValues(float [][] terrain) {
 	Wilsim.i.log.append("Xsection::appendXSectionValues()\n");
 	if(nIterates > maxNIterates) return;
 	
@@ -132,61 +136,62 @@ public class XSection
 
 	// Do a Bresenham-like line stepping
 
-	int dx, dy, sx, sy, stepX, stepY;
+	int dx, dy, sx, sy, stepX, stepY, dMax, dMin;
 	int p;
 
 	sx = endX - startX;
 	sy = endY - startY;
 
-	if(sx < 0) dx = -sx; else dx = sx;  // dx = abs(sx)
-	if(sy < 0) dy = -sy; else dy = sy;
+		dx = Math.abs(sx);
+		dy = Math.abs(sy);
 
 	if(sx < 0) stepX = -1; else stepX = 1;
 	if(sy < 0) stepY = -1; else stepY = 1;
 
-	int x, y, i;
+	int x, y;
 
 	x = startX; y = startY;
+		if (startX > 339) startX = 339; // bounds check
 
-	if(dx > dy)
-	    {
+	if(dx > dy) {
+		dMax = dx;
+		dMin = dy;
+	}
+		else {
+		dMax = dy;
+		dMin = dx;
+	}
+		if (startY + dMax > 262) startY = 262; //Bounds check
+		dMaxValues = dMax;
+		dMinValues = dMin;
 		// Conditional step in y
-		p = 2 * dy - dx;
-		for(i = 0; i < dx; i++)
-		    {
+		p = 2 * dMin - dMax;
+
+		{
+			int i = 0; // block scope for whatever reason the command after the for loop is.
+			for (i = 0; i < dMax; i++) {
+				values[nIterates][i] = terrain[x][y];
+
+				if (values[0][i] > crossSectionMaxY){
+					crossSectionMaxY = values[0][i];
+				}
+				if (values[0][i] < crossSectionMinY){
+					crossSectionMinY = values[0][i];
+				}
+
+
+				x += stepX;
+				if (p < 0) {
+					p += 2 * dMin;
+				} else {
+					p += 2 * (dMin - dMax);
+					y += stepY;
+				}
+			}
 			values[nIterates][i] = terrain[x][y];
-			x += stepX;
-			if(p < 0)
-			    { p += 2 * dy; }
-			else
-			    { p += 2 * (dy - dx); y += stepY; }
-		    }
-		values[nIterates][i] = terrain[x][y];
-	    }
-	else
-	    {
-		// Conditional step in x
-		p = 2 * dx - dy;
-		for(i = 0; i < dy; i++)
-		    {
-			values[nIterates][i] = terrain[x][y];
-			y += stepY;
-			if(p < 0)
-			    { p += 2 * dx; }
-			else
-			    { p += 2 * (dx - dy); x += stepX; }
-		    }
-		values[nIterates][i] = terrain[x][y];
-	    }
+		}
 
 	nIterates++;
-		for (float[] row : values) {
-			//for each number in the row
-			for (float j : row) {
-				System.out.print(j + " ");
-			}
-			System.out.println("");
-		}
     }
 
 

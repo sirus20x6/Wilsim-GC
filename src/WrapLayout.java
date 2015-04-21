@@ -5,7 +5,7 @@ import javax.swing.SwingUtilities;
 /**
  *  FlowLayout subclass that fully supports wrapping of components.
  */
-class WrapLayout extends FlowLayout
+public class WrapLayout extends FlowLayout
 {
     private Dimension preferredLayoutSize;
 
