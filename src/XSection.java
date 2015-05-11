@@ -11,7 +11,11 @@ public class XSection
 	float crossSectionMaxX, crossSectionMinX;
 	float crossSectionMaxY, crossSectionMinY;
 
-    private int maxNIterates, nIterates, nValues;
+	public int getMaxNIterates() {
+		return maxNIterates;
+	}
+
+	private int maxNIterates, nIterates, nValues;
     float [][] values;
 
     XSection()
@@ -108,7 +112,6 @@ public class XSection
 			    { p += 2 * dMin; }
 			else
 			    { p += 2 * (dMin - dMax); y += stepY; }
-
 
 					if (values[0][i] > crossSectionMaxX){
 						crossSectionMaxX = values[0][i];

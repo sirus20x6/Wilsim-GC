@@ -490,6 +490,7 @@ public class View implements Runnable, GLEventListener
 
         drawXSections();
 
+
         // Now draw UI stuff on top
         gl.glMatrixMode(GLMatrixFunc.GL_PROJECTION);
         gl.glLoadIdentity();
@@ -498,6 +499,7 @@ public class View implements Runnable, GLEventListener
         gl.glLoadIdentity();
 
         drawUI();
+        drawVertScale();
 
 
     }
@@ -541,7 +543,7 @@ public class View implements Runnable, GLEventListener
 	private void drawXVISUALIZER_MODE()
 	{
         gl.glEnable(GLLightingFunc.GL_LIGHTING);
-        drawScaleBar();
+
         // Position lights
         gl.glLightfv(GLLightingFunc.GL_LIGHT0, GLLightingFunc.GL_POSITION, lightPosition, 0);
 
@@ -566,6 +568,8 @@ public class View implements Runnable, GLEventListener
         gl.glMatrixMode(GLMatrixFunc.GL_MODELVIEW);
         gl.glLoadIdentity();
 
+        drawScaleBar();
+
         drawUI();
 
 	}
@@ -587,7 +591,7 @@ public class View implements Runnable, GLEventListener
         for (int i = 0; i < n; i++) {
             XSection p = XSectionManager.getXSection(i);
 
-            gl.glColor4f(1.0f, 0.1f, 0.1f, 0.6f);
+            gl.glColor4f(0.1f, 0.1f, 0.86f, 0.35f);
             gl.glVertex3f(p.startX, p.startY, COLOR_MIN_HEIGHT);
             gl.glVertex3f(p.endX, p.endY, COLOR_MIN_HEIGHT);
             gl.glVertex3f(p.endX, p.endY, COLOR_MAX_HEIGHT);
@@ -727,8 +731,7 @@ public class View implements Runnable, GLEventListener
             gl.glLineWidth(1.0f);
         }
         newUI = false;
-        drawVertScale();
-        //drawScaleBar();
+
         if (viewMode == SPIN_MODE) drawCompass();
 
         if (viewMode == SPIN_MODE && Wilsim.m.scoreFlag)
@@ -854,19 +857,6 @@ public class View implements Runnable, GLEventListener
         float[] color = new float[3];
 
 
-        /********************************************/
-        //Attempt to use objreader.java
-        /********************************************/
-
-
-        /********************************************/
-
-
-
-
-
-
-
 
 
             // Draw label tics
@@ -877,11 +867,24 @@ public class View implements Runnable, GLEventListener
 
             float drawScaleX = canvas.getWidth() / (XSectionManager.getXSection(0).crossSectionMaxX - XSectionManager.getXSection(0).crossSectionMinX);
             float drawScaleY = canvas.getHeight() / (XSectionManager.getXSection(0).crossSectionMaxY - XSectionManager.getXSection(0).crossSectionMinY);
-            drawScaleY *= 20;
+            drawScaleX *= .5;
+            drawScaleY *= 15;
+
+
+
+            float hue = (float) XSectionManager.getXSection(0).getNIterates() / XSectionManager.getXSection(0).getMaxNIterates(); //hue
+            float saturation = 1.0f; //saturation
+            float brightness = 1.0f; //brightness
+
+            Color myRGBColor = Color.getHSBColor(hue, saturation, brightness);
+            gl.glColor3f(myRGBColor.getRed(), myRGBColor.getGreen(), myRGBColor.getBlue());
 
             for (int i = 1; i < XSectionManager.getXSection(0).dMaxValues; i++) {
-                gl.glVertex3f((XSectionManager.getXSection(0).values[0][i] - XSectionManager.getXSection(0).crossSectionMinX) * drawScaleX, XSectionManager.getXSection(0).values[1][i] * drawScaleY + 30.0f, -1.5f);
-
+                //gl.glVertex3f((XSectionManager.getXSection(0).values[0][i] - XSectionManager.getXSection(0).crossSectionMinX) * drawScaleX, XSectionManager.getXSection(0).values[1][i] * drawScaleY + 30.0f, -1.5f);
+                gl.glVertex3f((
+                                XSectionManager.getXSection(0).values[0][i] - XSectionManager.getXSection(0).crossSectionMinX) * drawScaleX,
+                        XSectionManager.getXSection(0).values[1][i] * drawScaleY
+                        , -1.5f);
                 System.out.print("X = " + XSectionManager.getXSection(0).values[0][i] + " ");
                 System.out.print("Y = " + XSectionManager.getXSection(0).values[1][i] + " \n");
 
@@ -893,6 +896,7 @@ public class View implements Runnable, GLEventListener
             System.out.println("dMin is " + XSectionManager.getXSection(0).dMinValues);
             System.out.println(drawScaleX);
             System.out.println(drawScaleY);
+            System.out.println("Max Y is " + XSectionManager.getXSection(0).crossSectionMaxY);
 
 
             System.out.println(canvas.getHeight());
