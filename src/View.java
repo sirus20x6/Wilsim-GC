@@ -8,35 +8,34 @@ import java.awt.event.MouseEvent;
 import java.awt.Color;
 import java.awt.Font;
 
-public class View implements Runnable, GLEventListener
-{
-    public final GLCanvas               canvas;
-    private final GLCapabilities        caps;
-    private GL2                   gl;
+public class View implements Runnable, GLEventListener {
+    public final GLCanvas canvas;
+    private final GLCapabilities caps;
+    private GL2 gl;
 
-    private static float[][]      topo;  // Local copy of the height grid
-    private static int            latticeSizeX;
-    private static int            latticeSizeY;
+    private static float[][] topo;  // Local copy of the height grid
+    private static int latticeSizeX;
+    private static int latticeSizeY;
 
-    private final CondVar               newComputation;
-    private boolean               newData;
-    private boolean               newParams;
-    private boolean               newMode;
-    private boolean               newUI;
+    private final CondVar newComputation;
+    private boolean newData;
+    private boolean newParams;
+    private boolean newMode;
+    private boolean newUI;
 
     // Modes
     final static public int SPIN_MODE = 0;
     final static public int PROFILE_MODE = 1;
     final static public int FLY_MODE = 2;  // Someday
-	final static public int XVISUALIZER_MODE = 3;
-	final static public int RIVER_PROFILE_MODE = 4;
+    final static public int XVISUALIZER_MODE = 3;
+    final static public int RIVER_PROFILE_MODE = 4;
 
     private int viewMode = SPIN_MODE;
 
     // Camera parameters
     private final float[] cameraEye = {1, 0, 0};
-    private final float[] cameraAt  = {0, 0, 0};
-    private final float[] cameraUp  = {0, 1, 0};
+    private final float[] cameraAt = {0, 0, 0};
+    private final float[] cameraUp = {0, 1, 0};
     private final float cameraFOV;
     private final float cameraNear;
     private final float cameraFar;
@@ -149,7 +148,7 @@ public class View implements Runnable, GLEventListener
         @Override
         public void mousePressed(MouseEvent m) {
         /* Wilsim.i.log.append("View : button_down() (" + m.getX() + ", "
-				+ m.getY() + ")\n");
+                + m.getY() + ")\n");
 	    */
 
             mouseEndX = mouseStartX = m.getX();
@@ -393,7 +392,8 @@ public class View implements Runnable, GLEventListener
         draw(drawable);
 
     }
-    private void drawprofileMode(){
+
+    private void drawprofileMode() {
         drawXSectionMode();
         gl.glEnable(GLLightingFunc.GL_LIGHTING);
 
@@ -435,11 +435,11 @@ public class View implements Runnable, GLEventListener
         // Move more and more into separate drawing modes
         // as functionality diverges
 
-        if (viewMode == PROFILE_MODE)   drawprofileMode();
+        if (viewMode == PROFILE_MODE) drawprofileMode();
 
         else if (viewMode == SPIN_MODE) drawSpinMode();
 
-        else    drawXVISUALIZER_MODE();
+        else drawXVISUALIZER_MODE();
 
 
         synchronized (newComputation) {
@@ -540,8 +540,7 @@ public class View implements Runnable, GLEventListener
         gl.glMultMatrixf(world2cam, 0);
     }
 
-	private void drawXVISUALIZER_MODE()
-	{
+    private void drawXVISUALIZER_MODE() {
         gl.glEnable(GLLightingFunc.GL_LIGHTING);
 
         // Position lights
@@ -572,16 +571,14 @@ public class View implements Runnable, GLEventListener
 
         drawUI();
 
-	}
+    }
 
-	private void drawRIVER_PROFILE_MODE()
-	{
+    private void drawRIVER_PROFILE_MODE() {
 
-	}
+    }
 
-    private void drawXSections()
-    {
-	int n = XSectionManager.nXSections();
+    private void drawXSections() {
+        int n = XSectionManager.nXSections();
 
         // Wilsim.i.log.append("View : drawXSections() : " + n + "\n");
 
@@ -829,11 +826,12 @@ public class View implements Runnable, GLEventListener
     }
 
     private void drawScaleBar() {
-        if (XSectionManager.getXSection(0) !=null && XSectionManager.getXSection(0).dMaxValues != -1) {
+        gl.glClearColor(.75f, .75f, .75f, 1.0f);
+        gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
+
 
         float scaleHeight = canvas.getHeight();
         if (scaleHeight > 300.0f) scaleHeight = 300.0f;
-
 
 
         float scaleBorder = 0.03f; // Fraction of screen height
@@ -853,110 +851,110 @@ public class View implements Runnable, GLEventListener
         // Calculate divisions and division locations
         // Hardwired for now
 
-        // Draw colored rectangular scale
-        float[] color = new float[3];
+        float drawScaleX = 0.01911016f; // defaults
+        float drawScaleY = 0.33095807f;
+        float saturation = 1.0f; //saturation
+        float brightness = 1.0f; //brightness
 
 
+//for (int x = XSectionManager.getXSection(0).getNIterates(); x < XSectionManager.getXSection(0).getMaxNIterates(); x++) {
 
 
-            // Draw label tics
-            gl.glColor3f(0.0f, 0.0f, 0.0f);
-            gl.glBegin(GL2.GL_LINE_STRIP);
-            gl.glLineWidth(2.0f);
+        gl.glEnd();
+
+        if (XSectionManager.getXSection(0) != null && XSectionManager.getXSection(0).getNIterates() > 0) {
+            drawScaleX = .8f * (canvas.getWidth() / (XSectionManager.getXSection(0).crossSectionMaxX - XSectionManager.getXSection(0).crossSectionMinX));
+            drawScaleY = 15.0f * (canvas.getHeight() / (XSectionManager.getXSection(0).crossSectionMaxY - XSectionManager.getXSection(0).crossSectionMinY));
+
+            for (int x = 1; x <= XSectionManager.getXSection(0).getNIterates(); x++){
+
+                float hue = (float) x / (XSectionManager.getXSection(0).getMaxNIterates() + 1 ); //hue
+                Color myRGBColor = Color.getHSBColor(hue, saturation, brightness);
+//                System.out.println("x is " + x + " getMaxNIterates is " + XSectionManager.getXSection(0).getMaxNIterates());
+
+                gl.glBegin(GL2.GL_LINE_STRIP);
+                gl.glColor3f(myRGBColor.getRed(), myRGBColor.getGreen(), myRGBColor.getBlue());
+                gl.glLineWidth(3.5f);
 
 
-            float drawScaleX = canvas.getWidth() / (XSectionManager.getXSection(0).crossSectionMaxX - XSectionManager.getXSection(0).crossSectionMinX);
-            float drawScaleY = canvas.getHeight() / (XSectionManager.getXSection(0).crossSectionMaxY - XSectionManager.getXSection(0).crossSectionMinY);
-            drawScaleX *= .5;
-            drawScaleY *= 15;
+                System.out.println(XSectionManager.getXSection(0).values[x].length );
+                for (int i = 1; i < XSectionManager.getXSection(0).values[x].length -1 ; i++) {
+                    //for (int i = 1; i < XSectionManager.getXSection(0).dMaxValues; i++) {
+
+//                    System.out.println("x is " + x);
+                    gl.glVertex3f(XSectionManager.getXSection(0).values[0][i] * drawScaleX,
+                            XSectionManager.getXSection(0).values[x][i] * drawScaleY,
+                            -1.55f + (x * .001f));
+                    System.out.print("X = " + XSectionManager.getXSection(0).values[0][i] + " ");
+                    System.out.print("Y = " + XSectionManager.getXSection(0).values[x][i] + " \n");
+                }
+                gl.glEnd();
+        }
+//            System.out.println("x is " + (x - 1));
+//            System.out.println("NIterates is " + XSectionManager.getXSection(0).getNIterates());
+//            System.out.println("getMaxNIterates is " + XSectionManager.getXSection(0).getMaxNIterates());
+        }
+
+//}
+
+        //System.out.println(canvas.getHeight());
 
 
-
-            float hue = (float) XSectionManager.getXSection(0).getNIterates() / XSectionManager.getXSection(0).getMaxNIterates(); //hue
-            float saturation = 1.0f; //saturation
-            float brightness = 1.0f; //brightness
-
-            Color myRGBColor = Color.getHSBColor(hue, saturation, brightness);
-            gl.glColor3f(myRGBColor.getRed(), myRGBColor.getGreen(), myRGBColor.getBlue());
-
-            for (int i = 1; i < XSectionManager.getXSection(0).dMaxValues; i++) {
-                //gl.glVertex3f((XSectionManager.getXSection(0).values[0][i] - XSectionManager.getXSection(0).crossSectionMinX) * drawScaleX, XSectionManager.getXSection(0).values[1][i] * drawScaleY + 30.0f, -1.5f);
-                gl.glVertex3f((
-                                XSectionManager.getXSection(0).values[0][i] - XSectionManager.getXSection(0).crossSectionMinX) * drawScaleX,
-                        XSectionManager.getXSection(0).values[1][i] * drawScaleY
-                        , -1.5f);
-                System.out.print("X = " + XSectionManager.getXSection(0).values[0][i] + " ");
-                System.out.print("Y = " + XSectionManager.getXSection(0).values[1][i] + " \n");
-
-                System.out.print("X = " + XSectionManager.getXSection(0).values[0][i + 1] + " ");
-                System.out.print("Y = " + XSectionManager.getXSection(0).values[1][i + 1] + " \n");
-
-            }
-            System.out.println("dMax is " + XSectionManager.getXSection(0).dMaxValues);
-            System.out.println("dMin is " + XSectionManager.getXSection(0).dMinValues);
-            System.out.println(drawScaleX);
-            System.out.println(drawScaleY);
-            System.out.println("Max Y is " + XSectionManager.getXSection(0).crossSectionMaxY);
+        gl.glColor3f(0.0f, 0.0f, 0.0f);
+        gl.glBegin(GL2.GL_LINES);
+        gl.glVertex3f(scalePosX * 5, scalePosY + 30.0f, -1.5f);
+        gl.glVertex3f(50 + (40000 * drawScaleX), scalePosY + 30.0f, -1.5f);
+        gl.glEnd();
 
 
-            System.out.println(canvas.getHeight());
-
-            gl.glEnd();
-            gl.glColor3f(0.0f, 0.0f, 0.0f);
-            gl.glBegin(GL2.GL_LINES);
-            gl.glVertex3f(scalePosX * 5, scalePosY + 30.0f, -1.5f);
-            gl.glVertex3f(50 + (40000 * drawScaleX), scalePosY + 30.0f, -1.5f);
-            gl.glEnd();
-
-
-            // Draw label tics
-            gl.glColor3f(0.0f, 0.0f, 0.0f);
-            gl.glBegin(GL2.GL_LINES);
-            gl.glVertex3f(50, scalePosY + 30.0f, -1.5f);
-            gl.glVertex3f(50, scalePosY + 35.0f, -1.5f);
-            System.out.println("Line 50 * drawScaleX " + (50 * drawScaleX));
-            gl.glVertex3f(50 + (10000 * drawScaleX), scalePosY + 30.0f, -1.5f);
-            gl.glVertex3f(50 + (10000 * drawScaleX), scalePosY + 35.0f, -1.5f);
-            System.out.println("Line 10050 * drawScaleX " + (10050 * drawScaleX));
-            gl.glVertex3f(50 + (20000 * drawScaleX), scalePosY + 30.0f, -1.5f);
-            gl.glVertex3f(50 + (20000 * drawScaleX), scalePosY + 35.0f, -1.5f);
-            System.out.println("Line 20050 * drawScaleX " + (20050 * drawScaleX));
-            gl.glVertex3f(50 + (30000 * drawScaleX), scalePosY + 30.0f, -1.5f);
-            gl.glVertex3f(50 + (30000 * drawScaleX), scalePosY + 35.0f, -1.5f);
-            System.out.println("Line 30050 * drawScaleX " + (30050 * drawScaleX));
-            gl.glVertex3f(50 + (40000 * drawScaleX), scalePosY + 30.0f, -1.5f);
-            gl.glVertex3f(50 + (40000 * drawScaleX), scalePosY + 35.0f, -1.5f);
-            System.out.println("Line 40050 * drawScaleX " + (40050 * drawScaleX));
+        // Draw label tics
+        gl.glColor3f(0.0f, 0.0f, 0.0f);
+        gl.glBegin(GL2.GL_LINES);
+        gl.glVertex3f(50, scalePosY + 30.0f, -1.5f);
+        gl.glVertex3f(50, scalePosY + 35.0f, -1.5f);
+        //System.out.println("Line 50 * drawScaleX " + (50 * drawScaleX));
+        gl.glVertex3f(50 + (10000 * drawScaleX), scalePosY + 30.0f, -1.5f);
+        gl.glVertex3f(50 + (10000 * drawScaleX), scalePosY + 35.0f, -1.5f);
+        //System.out.println("Line 10050 * drawScaleX " + (10050 * drawScaleX));
+        gl.glVertex3f(50 + (20000 * drawScaleX), scalePosY + 30.0f, -1.5f);
+        gl.glVertex3f(50 + (20000 * drawScaleX), scalePosY + 35.0f, -1.5f);
+        //System.out.println("Line 20050 * drawScaleX " + (20050 * drawScaleX));
+        gl.glVertex3f(50 + (30000 * drawScaleX), scalePosY + 30.0f, -1.5f);
+        gl.glVertex3f(50 + (30000 * drawScaleX), scalePosY + 35.0f, -1.5f);
+        //System.out.println("Line 30050 * drawScaleX " + (30050 * drawScaleX));
+        gl.glVertex3f(50 + (40000 * drawScaleX), scalePosY + 30.0f, -1.5f);
+        gl.glVertex3f(50 + (40000 * drawScaleX), scalePosY + 35.0f, -1.5f);
+        //System.out.println("Line 40050 * drawScaleX " + (40050 * drawScaleX));
 
 
-            gl.glEnd();
+        gl.glEnd();
 
-            // Draw labels
-
-
-            vertScaleTextEngine.beginRendering(canvas.getWidth(), canvas.getHeight());
-            gl.glMatrixMode(5888);
-            gl.glPushMatrix();
-
-            gl.glRotatef(270, 0, 0, 1);
-            vertScaleTextEngine.setColor(0.0f, 0.0f, 0.0f, 1.0f);
+        // Draw labels
 
 
-            int total = 0;
-            //61200
+        vertScaleTextEngine.beginRendering(canvas.getWidth(), canvas.getHeight());
+        gl.glMatrixMode(5888);
+        gl.glPushMatrix();
 
-            for (int i = 0; i < 5; i++) {
-                textPosY = (float) (10000 * i * drawScaleX);
+        gl.glRotatef(270, 0, 0, 1);
+        vertScaleTextEngine.setColor(0.0f, 0.0f, 0.0f, 1.0f);
 
-                String Label = Float.toString(total);
-                total = total + 10000;
-                vertScaleTextEngine.draw(Label, (int) textPosX - 90, (int) textPosY + 50);
 
-                System.out.println("TextPosY " + ((int) textPosY -50));
-            }
+        int total = 0;
+        //61200
+
+        for (int i = 0; i < 5; i++) {
+            textPosY = (float) (10000 * i * drawScaleX);
+
+            String Label = Float.toString(total);
+            total = total + 10000;
+            vertScaleTextEngine.draw(Label, (int) textPosX - 90, (int) textPosY + 50);
+
+            //System.out.println("TextPosY " + ((int) textPosY -50));
+        }
 
         vertScaleTextEngine.endRendering();
-        }
+
     }
 
     private void drawCompass() {
