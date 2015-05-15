@@ -175,7 +175,7 @@ public class View implements Runnable, GLEventListener {
                     // bounds would be better.
 
 		    /* Wilsim.i.log.append("View : button_down() mouse(" 
-					+ m.getX() + ", "+ m.getY() + ")\n");
+                    + m.getX() + ", "+ m.getY() + ")\n");
 		    Wilsim.i.log.append("View : button_down() data(" 
 					+ tempXSection.startX + ", "
 					+ tempXSection.startY + ")\n");
@@ -639,7 +639,7 @@ public class View implements Runnable, GLEventListener {
         float[] v1 = new float[3];
         float[] v2 = new float[3];
         float[] norm = new float[3];
-        float[] color = new float[3];
+        float[] color = new float[4];
 
         v1[0] = gridHorizontalScaleFactor / 5.0f;  // Scale factor is a hack
         v1[1] = 0.0f;
@@ -661,7 +661,7 @@ public class View implements Runnable, GLEventListener {
                 cross(norm, v2, v1);
 
                 gl.glNormal3fv(norm, 0);
-
+/*
                 map_color(topo[x][y], color);
                 gl.glColor3f(color[0], color[1], color[2]);
                 // debug_color(x, y);
@@ -699,6 +699,70 @@ public class View implements Runnable, GLEventListener {
                 map_color(topo[x + 1][y], color);
                 // gl.glColor3fv(color, 0);
                 gl.glColor3f(color[0], color[1], color[2]);
+                // debug_color(x+1, y);
+                gl.glVertex3f(x + 1, y, topo[x + 1][y]);*/
+
+
+                gl.glColor4f(color[0], color[1], color[2], 1.0f);
+                gl.glVertex3f(2, 261, 1800.0f);
+                gl.glVertex3f(12, 261, 1800.0f);
+                gl.glVertex3f(2, 251, 1800.0f);
+
+                gl.glVertex3f(2, 251, 1800.0f);
+                gl.glVertex3f(12, 261, 1800.0f);
+                gl.glVertex3f(12, 251, 1800.0f);
+
+
+                gl.glColor3f(1.0f, 1.0f, 1.0f);
+                gl.glVertex3f(12, 261, 1800.0f);
+                gl.glVertex3f(22, 261, 1800.0f);
+                gl.glVertex3f(12, 251, 1800.0f);
+
+                gl.glVertex3f(12, 251, 1800.0f);
+                gl.glVertex3f(22, 261, 1800.0f);
+                gl.glVertex3f(22, 251, 1800.0f);
+
+
+
+
+
+                map_color4(topo[x][y], color);
+                gl.glColor4f(color[0], color[1], color[2], color[3]);
+                // debug_color(x, y);
+                gl.glVertex3f(x, y, topo[x][y]);
+
+                map_color4(topo[x + 1][y], color);
+                // gl.glColor3fv(color, 0);
+                gl.glColor4f(color[0], color[1], color[2], color[3]);
+                // debug_color(x+1, y);
+                gl.glVertex3f(x + 1, y, topo[x + 1][y]);
+
+                map_color4(topo[x][y + 1], color);
+                // gl.glColor3fv(color, 0);
+                gl.glColor4f(color[0], color[1], color[2], color[3]);
+                // debug_color(x, y+1);
+                gl.glVertex3f(x, y + 1, topo[x][y + 1]);
+
+                v1[2] = topo[x + 2][y + 1] - topo[x][y + 1];
+                v2[2] = topo[x + 1][y + 2] - topo[x + 1][y];
+
+                cross(norm, v2, v1);
+
+                gl.glColor4f(color[0], color[1], color[2], color[3]);
+                // gl.glColor3fv(color, 0);
+                gl.glColor3f(color[0], color[1], color[2]);
+                // debug_color(x+1, y+1);
+                gl.glVertex3f(x + 1, y + 1, topo[x + 1][y + 1]);
+
+                gl.glColor4f(color[0], color[1], color[2], color[3]);
+                // gl.glColor3fv(color, 0);
+                gl.glColor3f(color[0], color[1], color[2]);
+                // debug_color(x, y+1);
+                gl.glVertex3f(x, y + 1, topo[x][y + 1]);
+
+                map_color4(topo[x + 1][y], color);
+                // gl.glColor3fv(color, 0);
+                gl.glColor4f(color[0], color[1], color[2], color[3]);
                 // debug_color(x+1, y);
                 gl.glVertex3f(x + 1, y, topo[x + 1][y]);
 
@@ -866,30 +930,33 @@ public class View implements Runnable, GLEventListener {
             drawScaleX = .8f * (canvas.getWidth() / (XSectionManager.getXSection(0).crossSectionMaxX - XSectionManager.getXSection(0).crossSectionMinX));
             drawScaleY = 15.0f * (canvas.getHeight() / (XSectionManager.getXSection(0).crossSectionMaxY - XSectionManager.getXSection(0).crossSectionMinY));
 
-            for (int x = 1; x <= XSectionManager.getXSection(0).getNIterates(); x++){
+            for (int x = 1; x <= XSectionManager.getXSection(0).getNIterates(); x++) {
 
-                float hue = (float) x / (XSectionManager.getXSection(0).getMaxNIterates() + 1 ); //hue
-                Color myRGBColor = Color.getHSBColor(hue, saturation, brightness);
+                Color myRGBColor = Color.getHSBColor((float) x / (XSectionManager.getXSection(0).getMaxNIterates() + 1), saturation, brightness);
 //                System.out.println("x is " + x + " getMaxNIterates is " + XSectionManager.getXSection(0).getMaxNIterates());
 
                 gl.glBegin(GL2.GL_LINE_STRIP);
-                gl.glColor3f(myRGBColor.getRed(), myRGBColor.getGreen(), myRGBColor.getBlue());
+                System.out.println(myRGBColor.getRed() / 255.0f);
+                System.out.println(myRGBColor.getGreen() / 255.0f);
+                System.out.println(myRGBColor.getBlue() / 255.0f);
+                gl.glColor3f(myRGBColor.getRed() / 255.0f, myRGBColor.getGreen() / 255.0f, myRGBColor.getBlue() / 255.0f);
                 gl.glLineWidth(3.5f);
 
-
-                System.out.println(XSectionManager.getXSection(0).values[x].length );
-                for (int i = 1; i < XSectionManager.getXSection(0).values[x].length -1 ; i++) {
-                    //for (int i = 1; i < XSectionManager.getXSection(0).dMaxValues; i++) {
+                if (XSectionManager.getXSection(0).values[x] != null) {
+                    System.out.println(XSectionManager.getXSection(0).values[x].length);
+                    for (int i = 1; i < XSectionManager.getXSection(0).values[x].length - 1; i++) {
+                        //for (int i = 1; i < XSectionManager.getXSection(0).dMaxValues; i++) {
 
 //                    System.out.println("x is " + x);
-                    gl.glVertex3f(XSectionManager.getXSection(0).values[0][i] * drawScaleX,
-                            XSectionManager.getXSection(0).values[x][i] * drawScaleY,
-                            -1.55f + (x * .001f));
-                    System.out.print("X = " + XSectionManager.getXSection(0).values[0][i] + " ");
-                    System.out.print("Y = " + XSectionManager.getXSection(0).values[x][i] + " \n");
+                        gl.glVertex3f(XSectionManager.getXSection(0).values[0][i] * drawScaleX,
+                                XSectionManager.getXSection(0).values[x][i] * drawScaleY,
+                                -1.55f + (x * .001f));
+                        //System.out.print("X = " + XSectionManager.getXSection(0).values[0][i] + " ");
+                        //System.out.print("Y = " + XSectionManager.getXSection(0).values[x][i] + " \n");
+                    }
                 }
                 gl.glEnd();
-        }
+            }
 //            System.out.println("x is " + (x - 1));
 //            System.out.println("NIterates is " + XSectionManager.getXSection(0).getNIterates());
 //            System.out.println("getMaxNIterates is " + XSectionManager.getXSection(0).getMaxNIterates());
@@ -1259,6 +1326,45 @@ public class View implements Runnable, GLEventListener {
             color[0] = 0.906f + (t - 0.5f) * 0.180f;
             color[1] = 0.640f + (t - 0.5f) * 0.680f;
             color[2] = 0.180f + (t - 0.5f) * 0.773f;
+        }
+
+    }
+    private void map_color4(float height, float color[]) {
+
+        float t = (height - COLOR_MIN_HEIGHT) / (COLOR_MAX_HEIGHT - COLOR_MIN_HEIGHT);
+
+        // Clamp to range, just in case
+        if (t < 0.0) t = 0.0f;
+        if (t > 1.0) t = 1.0f;
+
+	/*
+	// Light green through red
+
+	if (t <= 0.33)
+	    {
+		color[0] = (t) / 0.33f;
+		color[1] = 1.0f;
+		color[2] = (0.33f - t) / 0.33f;
+	    }
+	else
+	    {
+		color[0] = 1.0f;
+		color[1] = (1.0f - t) / 0.67f;
+		color[2] = 0.0f;
+	    }
+	*/
+
+        // Brown yellow map
+        if (t < 0.5) {
+            color[0] = 0.488f + t * 0.836f;
+            color[1] = 0.164f + t * 0.953f;
+            color[2] = 0.094f + t * 0.172f;
+            color[3] = 0.35f;
+        } else {
+            color[0] = 0.906f + (t - 0.5f) * 0.180f;
+            color[1] = 0.640f + (t - 0.5f) * 0.680f;
+            color[2] = 0.180f + (t - 0.5f) * 0.773f;
+            color[3] = 0.35f;
         }
 
     }
