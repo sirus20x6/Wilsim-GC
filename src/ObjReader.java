@@ -304,10 +304,10 @@ class ObjReader {
                 condensingMap.put(indices, nextIndex);
                 int vtxIdx    = 3 * ((indices.data[0]) - 1);
                 int vtxNrmIdx = 3 * ((indices.data[1]) - 1);
-                newVertices.add(tmpVertices.get(vtxIdx + 0));
+                newVertices.add(tmpVertices.get(vtxIdx));
                 newVertices.add(tmpVertices.get(vtxIdx + 1));
                 newVertices.add(tmpVertices.get(vtxIdx + 2));
-                newVertexNormals.add(tmpVertexNormals.get(vtxNrmIdx + 0));
+                newVertexNormals.add(tmpVertexNormals.get(vtxNrmIdx));
                 newVertexNormals.add(tmpVertexNormals.get(vtxNrmIdx + 1));
                 newVertexNormals.add(tmpVertexNormals.get(vtxNrmIdx + 2));
                 newIndices.add(nextIndex);
@@ -333,17 +333,17 @@ class ObjReader {
     private void computeBoundingBox() {
         for (int i = 0; i < vertices.capacity(); i += 3) {
             if (i == 0) {
-                aabbMin[0] = vertices.get(i + 0);
+                aabbMin[0] = vertices.get(i);
                 aabbMin[1] = vertices.get(i + 1);
                 aabbMin[2] = vertices.get(i + 2);
-                aabbMax[0] = vertices.get(i + 0);
+                aabbMax[0] = vertices.get(i);
                 aabbMax[1] = vertices.get(i + 1);
                 aabbMax[2] = vertices.get(i + 2);
             } else {
-                aabbMin[0] = Math.min(aabbMin[0], vertices.get(i + 0));
+                aabbMin[0] = Math.min(aabbMin[0], vertices.get(i));
                 aabbMin[1] = Math.min(aabbMin[1], vertices.get(i + 1));
                 aabbMin[2] = Math.min(aabbMin[2], vertices.get(i + 2));
-                aabbMax[0] = Math.max(aabbMax[0], vertices.get(i + 0));
+                aabbMax[0] = Math.max(aabbMax[0], vertices.get(i));
                 aabbMax[1] = Math.max(aabbMax[1], vertices.get(i + 1));
                 aabbMax[2] = Math.max(aabbMax[2], vertices.get(i + 2));
             }

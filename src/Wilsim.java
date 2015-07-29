@@ -10,13 +10,7 @@ class Wilsim extends JFrame {
 	 * UI event handling remains in the applet thread.
 	 */
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
-	/**
-	 * 
-	 */
 
 	public static Model m;
 	public static View v;

@@ -1,5 +1,3 @@
-import java.util.Vector;
-
 class XSectionManager
 {
     static private int n; // Number of profiles stored
@@ -14,43 +12,45 @@ class XSectionManager
 
     static void init()
     {
-	Wilsim.i.log.append("XSectionManager::init()\n");
+        Wilsim.i.log.append("XSectionManager::init()\n");
 
-	n = 0;
-	p = new XSection();
-       //myP.add(p);
+        n = 0;
+        p = new XSection();
+        //myP.add(p);
     }
 
     static public int addXSection()
     {
-	// Returns an index to a XSection which can be manipulated
-	// as needed
+        // Returns an index to a XSection which can be manipulated
+        // as needed
 
-	Wilsim.i.log.append("XSectionManager::addXSection()\n");
-	// Only one profile for now
-	//n++;
+        Wilsim.i.log.append("XSectionManager::addXSection()\n");
+        // Only one profile for now
+        //n++;
         return n = 1;
 
     }
 
     static public XSection getXSection(int index)
     {
-	//Wilsim.i.log.append("XSectionManager::getXSection()\n");
+        //Wilsim.i.log.append("XSectionManager::getXSection()\n");
 
-	if(index <= n)
-        return p;
-	    //return myP.elementAt(index);
+        if(index <= n)
+            return p;
+            //return myP.elementAt(index);
 
-	else
-	    return null;
+        else
+            return null;
     }
 
     static public void reset()
     {
-	Wilsim.i.log.append("XSectionManager::reset()\n");
-	
-	// Get rid of all XSections
-	n = 0;
+        Wilsim.i.log.append("XSectionManager::reset()\n");
+
+        // Get rid of all XSections
+        p = null;
+        n = 0;
+
     }
 
     static public void clear(int nIntervals) {
@@ -70,8 +70,8 @@ class XSectionManager
 
     static public int nXSections()
     {
-	return n;
+        return n;
     }
-    
+
 }
 

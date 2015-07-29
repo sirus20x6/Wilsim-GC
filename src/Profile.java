@@ -4,7 +4,20 @@ public class Profile
     // over multiple iterations.  
 
 
-    private int nIterates, nValues;
+    private int nIterates;
+    private int nValues;
+
+    public int getProcessed() {
+        return processed;
+    }
+    public void resetProcessed(){
+        processed = 0;
+    }
+    public void processedpp(){
+        processed++;
+    }
+
+    private int processed;
     // Initially unsure whether or not profile follows same path every iteration
     // In hindsight, appears to be the same
 
@@ -22,6 +35,7 @@ public class Profile
 	// Wilsim.i.log.append("Profile::init(" + nI + ", " + nV + ")\n");
 	nIterates = nI;
 	nValues = nV;
+    processed = 0;
 	
 	values = new float [nI][];
 	distances = new float [nI][];

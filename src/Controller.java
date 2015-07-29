@@ -1,13 +1,17 @@
+import com.jogamp.opengl.awt.GLCanvas;
+import com.sun.deploy.util.StringUtils;
+import javafx.scene.control.CheckBox;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.util.ArrayList;
 
 import static java.lang.Math.abs;
 
-import javax.media.opengl.awt.GLCanvas;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 
@@ -27,8 +31,8 @@ public class Controller
 
     // Internal UI variables
     private Container UI;  // The containing UI panel for the controller
-    int wilsimWidth = 1024;
-    int wilsimHeight = 800;
+    int wilsimWidth = 1200;
+    int wilsimHeight = 1024;
     //private JPanel controlsHead; // contains the options, profiles and
     // hypsometric buttons
 
@@ -39,6 +43,9 @@ public class Controller
     private JPanel optionsBody; // Contains the two cards -> initial &
     // parameters
     private JPanel profiles; // panel to hold profiles
+    private JPanel profileNorth; // panel to hold profiles
+    private JPanel profileSouth; // panel to hold profiles
+    private JPanel xsection;
 
     private JPanel cardPanel; // Panel to hold the main three panels
     private CardLayout card; // Main cardlayout to display one panel at a time
@@ -72,6 +79,10 @@ public class Controller
     private JScrollBar kstrongBar;
     private JScrollBar Along_GW_Fault;
     private JLabel Along_GW_Fault_Text;
+    public JLabel timeLegend;
+    public ArrayList<String> sectionTimes;
+    private boolean HGridBool;
+    private boolean VGridBool;
 
     JButton saveBtn;
 
@@ -81,6 +92,7 @@ public class Controller
     // to set the color of main card panels
     private final Color inactiveColor = new Color(205, 133, 63);
     private final Color activeColor = new Color(227, 207, 87);
+    private final Color grey = new Color (127,127,127);
 
     float duration;
     float kfctor;
@@ -110,13 +122,20 @@ public class Controller
     }
     */
 
+    public boolean isHGridBool() {
+        return HGridBool;
+    }
+    public boolean isVGridBool() {
+        return VGridBool;
+    }
+
     void createGUI(final Container c, GLCanvas glc) {
 
         UI = c;
 
         // Border Layout by default
         // Set up the graphics panel
-        JPanel viewPanel = new JPanel();
+        final JPanel viewPanel = new JPanel();
         viewPanel.setLayout(new BorderLayout());
 
 
@@ -143,11 +162,9 @@ public class Controller
             }
         });
 
+        Font font = new Font(("SansSerif"), Font.PLAIN,12);
         // Set up the user interface controlsHead
-        WrapLayout wrap = new WrapLayout();
-        wrap.setHgap(0);
-        wrap.setVgap(0);
-        JPanel controlsHead = new JPanel(wrap);
+        JPanel controlsHead = new JPanel(new GridLayout(2,2));
         final JPanel controlPanel = new JPanel(new BorderLayout());
 
         //JPanel controlsHead = new JPanel(new GridLayout(1, 3));
@@ -158,20 +175,29 @@ public class Controller
         optionsButton.setFocusPainted(false);
         optionsButton.setPreferredSize(new Dimension(110, 50));
         optionsButton.setMaximumSize(new Dimension(110, 50));
+        optionsButton.setFont(font);
+
+
 
         profilesButton = new JRadioButton("DRAW");
         profilesButton.setMargin(new Insets(0, 0, 0, 0));
         profilesButton.setFocusPainted(false);
-        profilesButton.setPreferredSize(new Dimension(60, 50));
-        profilesButton.setMaximumSize(new Dimension(60, 50));
+        profilesButton.setPreferredSize(new Dimension(70, 50));
+        profilesButton.setMaximumSize(new Dimension(70, 50));
+        profilesButton.setFont(font);
+
 
         XsectionButton = new JRadioButton("CROSS SECTION");
         XsectionButton.setPreferredSize(new Dimension(125, 50));
         XsectionButton.setMaximumSize(new Dimension(125, 50));
+        XsectionButton.setFont(font);
+
 
         DrawProfileButton = new JRadioButton("PROFILE");
         DrawProfileButton.setPreferredSize(new Dimension(80, 50));
         DrawProfileButton.setMaximumSize(new Dimension(80, 50));
+        DrawProfileButton.setFont(font);
+
 
         optionsButton.setSelected(true);
         optionsButton.setBackground(activeColor);
@@ -216,15 +242,11 @@ public class Controller
         // Initializing the buttons of options category
         JRadioButton parameterButton = new JRadioButton("Parameters");
 
-        // Initializing the Xsection panel
-        options = new JPanel(new BorderLayout());
-        options.setBackground(activeColor);
-        options.setBorder(new EmptyBorder(10, 10, 10, 10));
 
         // Initializing the options panel
         options = new JPanel(new BorderLayout());
         options.setBackground(activeColor);
-        options.setBorder(new EmptyBorder(10, 10, 10, 10));
+        options.setBorder(new EmptyBorder(0, 0, 0, 0));
 
         // Initializing the optionsbody panel to cardlayout so that one
         // card(between initial and parameters) can be displayed at a time.
@@ -243,12 +265,12 @@ public class Controller
 
         // Declaring Initial Conditions panel values and adding them to the
         // panel
-        JLabel endTime = new JLabel("Simulation End Time : ");
+        JLabel endTime = new JLabel("Simulation End Time :   ");
         endTime.setToolTipText(
                 "<html>The time when the simulation will end<br />" +
                         "(the simulation starts 6 million years before<br />" +
                         "present).</html>");
-        Myr = new JLabel("       0 Myr (Present)");
+        Myr = new JLabel("<html><br />0 Myr <br />(Present)</html>");
         duration = 6000;
         //timeBar = new JScrollBar(JScrollBar.VERTICAL, 0, 1, 0, 7);
         timeBar = new JScrollBar(Adjustable.VERTICAL, 6, 1, 0, 7);
@@ -259,10 +281,10 @@ public class Controller
                 // int timeValue = timeBar.getValue();
                 int timeValue = 6 - timeBar.getValue();
                 if (timeValue > 0)
-                    Myr.setText("       " + String.valueOf(timeValue)
-                            + "  Myr (in the future)");
+                    Myr.setText("<html><br />" + String.valueOf(timeValue)
+                            + " Myr <br />(in the future)</html>");
                 if (timeValue == 0)
-                    Myr.setText("       0 Myr (Present)");
+                    Myr.setText("<html><br /> 0 Myr <br />(Present)</html>");
                 duration = 6000 + (1000 * timeValue);
 
             }
@@ -286,14 +308,14 @@ public class Controller
                 "<html>The rate at which cliffs wear back laterally:<br />" +
                         "a value of 0.5m kyr\u207B\u00B9 means the cliff will<br />" +
                         "wear back 0.5m per 1000 years.</html>");
-        rate = new JLabel("              0.5  m/kyr");
+        rate = new JLabel("       0.5  m/kyr");
         cliffRateScroll = new JScrollBar(Adjustable.VERTICAL, 200, 25, 0, 251);
         cliffRateScroll.setValue(200);
         cliffRateScroll.addAdjustmentListener(new AdjustmentListener() {
             public void adjustmentValueChanged(AdjustmentEvent e) {
                 float cliff = 250 - cliffRateScroll.getValue();
                 cliffRate = cliff / 100;
-                rate.setText("              " + String.valueOf(cliffRate)
+                rate.setText("       " + String.valueOf(cliffRate)
                         + "  m/kyr");
 
             }
@@ -311,19 +333,21 @@ public class Controller
         // Declaring kstrong and kfactor as panels and adding border to the
         // panel
 
-        JLabel subsidence = new JLabel("Subsidence rate along faults");
+       // JLabel subsidence = new JLabel("Subsidence rate<br>along faults");
         JPanel subsidencePan = new JPanel(new BorderLayout());
-        subsidencePan.add(subsidence, BorderLayout.WEST);
+       // subsidencePan.add(subsidence, BorderLayout.WEST);
         subsidencePan.setBackground(activeColor);
 
         JPanel emptyPan = new JPanel(new BorderLayout());
         emptyPan.setBackground(activeColor);
 
 
-        JLabel Along_GW_Fault_Label = new JLabel("Subsidence Rate Along Grand Wash Fault:");
+        JLabel Along_GW_Fault_Label = new JLabel("<html>Subsidence Rate Along<br />Grand Wash Fault:<br /></html>");
         Along_GW_Fault_Label.setToolTipText(
-                "<html>New Value to add</html>");
-        Along_GW_Fault_Text = new JLabel("          1.7 m/kyr ");
+                "<html>Subsidence rate along Grand Wash Fault<br />" +
+                      "in meter per thousand years. This is essentially<br />" +
+                        "a base level drop rate.</html>");
+        Along_GW_Fault_Text = new JLabel("<html><br />1.7 m/kyr </html>");
         Along_GW_Fault = new JScrollBar(Adjustable.VERTICAL, 35, 0, 0, 226);
         Along_GW_Fault.setValue(81);
         Along_GW_Fault.addAdjustmentListener(new AdjustmentListener() {
@@ -333,8 +357,8 @@ public class Controller
                 /*new = KStrong / 100.0f;*/
                 // Have to fake division for proper printing
                 // without flipping to scientific notation
-                Along_GW_Fault_Text.setText("              "
-                        + String.format("%.02f", abs(Wilsim.m.Along_Grant_Wash_Fault)) + " m/kyr ");
+                Along_GW_Fault_Text.setText("<html><br />"
+                        + String.format("%.02f", abs(Wilsim.m.Along_Grant_Wash_Fault)) + " m/kyr  </html>");
             }
         });
 
@@ -353,8 +377,8 @@ public class Controller
                         "is 5 times more erodible than the hard rock<br />" +
                         "layer.</html>");
 
-        strong = new JLabel("              0.00015 kyr\u207B\u00B9");
-        factor = new JLabel("           5");
+        strong = new JLabel("        0.00015 kyr\u207B\u00B9");
+        factor = new JLabel("    5");
         kstrongBar = new JScrollBar(Adjustable.VERTICAL, 35, 1, 0, 51);
         kfactorBar = new JScrollBar(Adjustable.VERTICAL, 5, 1, 0, 10);
         // initial values
@@ -363,7 +387,7 @@ public class Controller
         kfactorBar.addAdjustmentListener(new AdjustmentListener() {
             public void adjustmentValueChanged(AdjustmentEvent e) {
                 int KFactor = 9 - kfactorBar.getValue() + 1;
-                factor.setText("           " + String.valueOf(KFactor));
+                factor.setText("    " + String.valueOf(KFactor));
                 kfctor = KFactor;
 
             }
@@ -376,7 +400,7 @@ public class Controller
                 kstrng = KStrong / 100.0f;
                 // Have to fake division for proper printing
                 // without flipping to scientific notation
-                strong.setText("              "
+                strong.setText("        "
                         + String.format("0.000%02d", KStrong)
                         + " kyr\u207B\u00B9");
 
@@ -417,7 +441,10 @@ public class Controller
 
         // Initializing the profiles and profiles panels(Cards)
         profiles = new JPanel();
-        JPanel xsection = new JPanel();
+        profileNorth = new JPanel();
+        profileSouth = new JPanel();
+        profiles.setLayout(new BoxLayout(profiles, BoxLayout.PAGE_AXIS));
+        xsection = new JPanel();
    /*
    // This button will switch model between profiles and spin modes
    // the counter changes the name on the button from profile to spin and
@@ -441,30 +468,63 @@ public class Controller
    */
 
         //this button clears the drawn profiles on the model
+        sectionTimes = new ArrayList<>(1);
+        //sectionTimes.add("");
+
         JButton clear = new JButton("Clear");
+
+
+        timeLegend = new JLabel();
         clear.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent arg0) {
                 Wilsim.v.resetXSections();
+
             }
         });
 
-        JButton initialize = new JButton("Initialize");
-        initialize.addActionListener(new ActionListener() {
+        final Checkbox HGrid = new Checkbox("Horizontal Grid Lines");
+        HGrid.setBackground(grey);
+        final Checkbox VGrid = new Checkbox("Vertical Grid Lines");
+        VGrid.setBackground(grey);
+
+        HGrid.addItemListener(new ItemListener() {
+            public void itemStateChanged(ItemEvent e) {
+                if (HGrid.getState() == true) {
+                    HGridBool = true;
+                }
+                else {HGridBool = false;
+                }
+            }
+        });
+
+        VGrid.addItemListener(new ItemListener() {
+            public void itemStateChanged(ItemEvent e) {
+                if (VGrid.getState() == true) {
+                    VGridBool = true;
+                }
+                else {VGridBool = false;
+                }
+            }
+        });
+
+/*
+        //JButton initialize = new JButton("Initialize");
+        //initialize.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent arg0) {
                 Wilsim.v.resetXSections();
             }
         });
 
-        JButton display = new JButton("Display");
-        display.addActionListener(new ActionListener() {
+        //JButton display = new JButton("Display");
+       *//* display.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent arg0) {
                 Wilsim.v.resetXSections();
             }
         });
-
+*/
 
         // create XSection File Browser for future use
         xsfc = new JFileChooser();
@@ -489,9 +549,18 @@ public class Controller
 
         // Adding buttons to profiles tab
         // profiles.add(profButton);
-        profiles.add(clear);
+        profileNorth.add(HGrid);
+        profileNorth.add(VGrid);
+        profileSouth.add(timeLegend);
+        profiles.add(profileNorth);
+        profiles.add(profileSouth);
+
+
+        profiles.add(Box.createVerticalGlue());
+        xsection.add(clear);
+        /*
         profiles.add(initialize);
-        profiles.add(display);
+        profiles.add(display);*/
         // profiles.add(savetoText);
 
         // Adding the three main card panels to the main CardPanel
@@ -503,6 +572,9 @@ public class Controller
         // When options button is selected, the options panels card is displayed
         optionsButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+
+                viewPanel.add(viewHorScroll, BorderLayout.SOUTH);
+                viewPanel.add(viewVerScroll, BorderLayout.EAST);
                 card.show(cardPanel, "Card1");
                 options.setBackground(activeColor);
                 optionsButton.setBackground(activeColor);
@@ -520,8 +592,27 @@ public class Controller
         // displayed
         profilesButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                card.show(cardPanel, "Card2");
+
+
+                viewPanel.remove(viewHorScroll);
+                viewPanel.remove(viewVerScroll);
+/*
+                viewVerScroll.setBackground(new Color(1, 0, 0, 0));
+                viewVerScroll.setLayout(null);
+                viewVerScroll.setPreferredSize(null);
+
+                viewVerScroll.setBounds(10, 35, 250, 525);
+                viewVerScroll.setBackground(new Color(1, 0, 0, 0));
+                viewVerScroll.setPreferredSize(new Dimension(0, 0));
+                viewVerScroll.setBorder(null);
+                //viewVerScroll.setViewportBorder(null);
+                viewVerScroll.setBorder(null);
+*/
+
+
+                card.show(cardPanel, "Card3");
                 profiles.setBackground(activeColor);
+                xsection.setBackground(activeColor);
                 profilesButton.setBackground(activeColor);
                 optionsButton.setBackground(inactiveColor);
                 XsectionButton.setBackground(inactiveColor);
@@ -533,8 +624,13 @@ public class Controller
 
         XsectionButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+
+                viewPanel.remove(viewHorScroll);
+                viewPanel.remove(viewVerScroll);
                 card.show(cardPanel, "Card2");
-                profiles.setBackground(activeColor);
+                profiles.setBackground(grey);
+                profileNorth.setBackground(grey);
+                profileSouth.setBackground(grey);
                 profilesButton.setBackground(inactiveColor);
                 optionsButton.setBackground(inactiveColor);
                 XsectionButton.setBackground(activeColor);
@@ -546,8 +642,10 @@ public class Controller
 
         DrawProfileButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                viewPanel.remove(viewHorScroll);
+                viewPanel.remove(viewVerScroll);
                 card.show(cardPanel, "Card2");
-                profiles.setBackground(activeColor);
+                profiles.setBackground(grey);
                 profilesButton.setBackground(inactiveColor);
                 optionsButton.setBackground(inactiveColor);
                 XsectionButton.setBackground(inactiveColor);
@@ -572,8 +670,13 @@ public class Controller
         // Adding the three control buttons and the three panels to the main
         // control panel
         JPanel controlsBody = new JPanel(new BorderLayout());
-        JPanel controlsBodySub = new JPanel(new WrapLayout());
+
+
+
         controlsBody.add(controlsHead, "North");
+        //controlsBody.add(controlsHeadBtm, "Center");
+
+
         controlsBody.add(cardPanel, "Center");
         controlPanel.add(controlsBody, "Center");
 
@@ -610,19 +713,19 @@ public class Controller
 
             }
         });
-        JPanel startPanel = new JPanel();
-        startPanel.add(startStopButton);
-        startPanel.add(progressBar);
-        startPanel.add(rset);
-        startPanel.add(saveBtn);
+        JPanel startPanel = new JPanel(new BorderLayout());
+        startPanel.add(startStopButton, "West");
+        startPanel.add(progressBar, "North");
+        startPanel.add(rset, "Center");
+        startPanel.add(saveBtn, "East");
         controlPanel.add(startPanel, BorderLayout.SOUTH);
-        controlPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+        controlPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
 
-// ImageIcon banner = new ImageIcon(getClass().getResource("res/bn.jpg"));
-        ImageIcon banner = new ImageIcon("res/bn.jpg");
-        JLabel bannerLabel = new JLabel(banner);
+        //ImageIcon banner = new ImageIcon(getClass().getResource("bn.jpg"));
+        //ImageIcon banner = new ImageIcon("res/bn.jpg");
+        //JLabel bannerLabel = new JLabel(banner);
         JPanel bannerPanel = new JPanel(new GridLayout(1, 1));
-        bannerPanel.add(bannerLabel);
+       // bannerPanel.add(bannerLabel);
 
    /* // Pause points
 
@@ -708,15 +811,15 @@ public class Controller
                         "a value of 1 means that they will be saved once (at the end<br />" +
                         "of simulation); a value of 6 means that they will be saved<br />" +
                         "at the end of 6 equal intervals over the simulation duration.</html>");
-        siText = new JLabel("           1");
-        Wilsim.m.storageIntervals = 1;
+        siText = new JLabel("        6");
+        Wilsim.m.storageIntervals = 6;
         siBar = new JScrollBar(Adjustable.VERTICAL,
                 25 - Wilsim.m.storageIntervals, 1, 1, 25);
         // storInterval = 1;
         siBar.addAdjustmentListener(new AdjustmentListener() {
             public void adjustmentValueChanged(AdjustmentEvent e) {
                 int siFactor = 25 - siBar.getValue();
-                siText.setText("            " + String.valueOf(siFactor));
+                siText.setText("         " + String.valueOf(siFactor));
                 Wilsim.m.storageIntervals = siFactor;
                 //        storInterval = siBar.getValue();
             }
@@ -757,7 +860,7 @@ public class Controller
             public void componentResized(ComponentEvent evt) {
                 Component c = (Component)evt.getSource();
 
-                controlPanel.setPreferredSize(new Dimension(395, controlPanel.getSize().height));
+                controlPanel.setPreferredSize(new Dimension(250, controlPanel.getSize().height));
             }
         });
         //viewPanel.setMinimumSize(new Dimension(400,600));
@@ -849,7 +952,7 @@ public class Controller
                 // Wilsim.i.log.append("nIterations: " + nIterations + "\n");
                 for (int i = 0; i < arr[0].length; i++) {
                     int j;
-                    for (j = 0; j < nIterations - 1; j++) {
+                    for (j = 0; j < nIterations; j++) {
                         // Wilsim.i.log.append("[" + j + "][" + i + "]\n");
              /* 
              if(arr[j] == null)
