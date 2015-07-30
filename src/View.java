@@ -1040,7 +1040,7 @@ private final float COLOR_MIN_HEIGHT = 1400.0f;
             for(int y = 1; y < latticeSizeY; y++)
             {
 
-                v1[2] = Model.topo1dim[x+1 + y * latticeSizeX] - Model.topo1dim[x-1 + y * latticeSizeX];
+                v1[2] = Wilsim.m.topo1dim[x+1 + y * latticeSizeX] - Model.topo1dim[x-1 + y * latticeSizeX];
                 v2[2] = Model.topo1dim[x + (y+1) * latticeSizeX] - Model.topo1dim[x + (y-1) * latticeSizeX];
 
                 cross(norm, v2, v1);
