@@ -23,6 +23,7 @@ import javax.swing.border.EmptyBorder;
 public class Controller
 
 {
+    File curDir = new File("user.home");
     /*
     // Communication variables
     private CondVar               attentionRequest;
@@ -99,8 +100,6 @@ public class Controller
     float kstrng;
     float cliffRate;
     float pauseValue;
-    Border kstrLine;
-    Border kfactLine;
 
 
     private JLabel siText;
@@ -112,6 +111,7 @@ public class Controller
     // XSection file chooser
     private JFileChooser xsfc;  // XSection file chooser
     private JFileChooser lpfc;   // long profile file chooser
+    private JFileChooser topofc;   // long profile file chooser
     
     /*
     public Controller()
@@ -202,9 +202,6 @@ public class Controller
         optionsButton.setSelected(true);
         optionsButton.setBackground(activeColor);
         profilesButton.setBackground(inactiveColor);
-        profilesButton.setToolTipText(
-                "<html>Left-click and drag a line where you want<br />" +
-                        "to place the cross-section.</html>");
         XsectionButton.setBackground(inactiveColor);
         DrawProfileButton.setBackground(inactiveColor);
 
@@ -255,6 +252,9 @@ public class Controller
 
         // Initializing and adding the initial conditions and parameters panels
         // (to hold their appropriate values) to optionsBody panel
+        JPanel test = new JPanel (new FlowLayout());
+        Box verticalBox = Box.createVerticalBox();
+
         JPanel parameter = new JPanel(new GridLayout(6, 1));
         parameterButton.setBackground(activeColor);
         parameter.setBackground(activeColor);
@@ -271,8 +271,9 @@ public class Controller
                         "(the simulation starts 6 million years before<br />" +
                         "present).</html>");
         Myr = new JLabel("<html><br />0 Myr <br />(Present)</html>");
+        //Myr.setBounds(2, 2, 2, 2);
         duration = 6000;
-        //timeBar = new JScrollBar(JScrollBar.VERTICAL, 0, 1, 0, 7);
+
         timeBar = new JScrollBar(Adjustable.VERTICAL, 6, 1, 0, 7);
 
         // progress bar to display the model evolution in time
@@ -292,9 +293,14 @@ public class Controller
 
         // creating each option in the paramter at a panel and adding border to
         // them
+        verticalBox.add(Box.createVerticalGlue());
+        verticalBox.add(Myr);
+        verticalBox.add(Box.createVerticalGlue());
+        verticalBox.setBackground(activeColor);
+        //test.add(Myr, BorderLayout.SOUTH);
         JPanel time = new JPanel(new BorderLayout());
         time.add(endTime, BorderLayout.WEST);
-        time.add(Myr, BorderLayout.CENTER);
+        time.add(Myr,BorderLayout.CENTER);
         time.add(timeBar, BorderLayout.EAST);
         time.setBackground(activeColor);
         // adding border to time parameter
@@ -532,6 +538,7 @@ public class Controller
         xsfc.setCurrentDirectory(new File("user.home"));
         xsfc.setDialogTitle("Save Cross Section File");
 
+
         // create long profile file browser for futre use
         lpfc = new JFileChooser();
         lpfc.setMultiSelectionEnabled(false);
@@ -539,12 +546,18 @@ public class Controller
         lpfc.setDialogTitle("Save Long Profile File");
 
 
-        outputRun = new Runnable() {
+        topofc = new JFileChooser();
+        topofc.setMultiSelectionEnabled(false);
+        topofc.setCurrentDirectory(new File("user.home"));
+        topofc.setDialogTitle("Save Topographic File");
+
+/*        outputRun = new Runnable() {
             public void run() {
                 outputXSections();
                 outputProfiles();
+                outputTopo();
             }
-        };
+        };*/
 
 
         // Adding buttons to profiles tab
@@ -578,7 +591,7 @@ public class Controller
                 card.show(cardPanel, "Card1");
                 options.setBackground(activeColor);
                 optionsButton.setBackground(activeColor);
-
+                profilesButton.setToolTipText("");
                 profilesButton.setBackground(inactiveColor);
                 XsectionButton.setBackground(inactiveColor);
                 DrawProfileButton.setBackground(inactiveColor);
@@ -616,6 +629,9 @@ public class Controller
                 profilesButton.setBackground(activeColor);
                 optionsButton.setBackground(inactiveColor);
                 XsectionButton.setBackground(inactiveColor);
+                profilesButton.setToolTipText(
+                        "<html>Left-click and drag a line where you want<br />" +
+                                "to place the cross-section.</html>");
                 DrawProfileButton.setBackground(inactiveColor);
                 Wilsim.v.changeViewMode(View.PROFILE_MODE);
 
@@ -631,6 +647,7 @@ public class Controller
                 profiles.setBackground(grey);
                 profileNorth.setBackground(grey);
                 profileSouth.setBackground(grey);
+                profilesButton.setToolTipText("");
                 profilesButton.setBackground(inactiveColor);
                 optionsButton.setBackground(inactiveColor);
                 XsectionButton.setBackground(activeColor);
@@ -646,6 +663,9 @@ public class Controller
                 viewPanel.remove(viewVerScroll);
                 card.show(cardPanel, "Card2");
                 profiles.setBackground(grey);
+                profileNorth.setBackground(grey);
+                profileSouth.setBackground(grey);
+                profilesButton.setToolTipText("");
                 profilesButton.setBackground(inactiveColor);
                 optionsButton.setBackground(inactiveColor);
                 XsectionButton.setBackground(inactiveColor);
@@ -879,17 +899,101 @@ public class Controller
 
     private void saveCross() {
         //Wilsim.c.outputReady();
-        outputXSections();
-        outputProfiles();
+        //remember dir choosen
+        outputTopo(
+                outputProfiles(
+                        outputXSections(curDir)
+                )
+        );
+
     }
-
-    private void outputXSections() {
-        // Wilsim.i.log.append("outputXSections:1\n");
-        if (XSectionManager.nXSections() < 1) return;  //  Nothing to save
-
+    private File outputTopo(File lastDir) {
         boolean foundWrite = false;
         boolean toWrite = true;
-        File file = new File("user.home");
+        File file = lastDir;
+
+        topofc.setCurrentDirectory(lastDir);
+
+        if (Wilsim.m.storageIntervals < 0) return curDir;
+
+
+
+        while (toWrite && !foundWrite) {
+            try {
+                int returnVal;
+                returnVal = topofc.showSaveDialog(UI); // parent component to
+                // // JFileChooser
+                if (returnVal == JFileChooser.APPROVE_OPTION) { // OK button
+                    // //
+                    // pressed
+                    // by user
+                    file = topofc.getSelectedFile(); // get File
+                    curDir = topofc.getCurrentDirectory();
+                    System.out.println(curDir.toString());
+                    // selected //
+                    // by user
+
+                    if (file.exists()) {
+                        int overwrite;
+                        overwrite = JOptionPane.showConfirmDialog(UI,
+                                file.getName() + " already exists.  Overwrite?",
+                                "Topographic File Confirmation",
+                                JOptionPane.YES_NO_OPTION,
+                                JOptionPane.QUESTION_MESSAGE);
+                        if (overwrite == JOptionPane.YES_OPTION)
+                            foundWrite = true;
+                    } else {
+                        // New, unused file
+                        foundWrite = true;
+                    }
+                } else {
+                    // Cancel
+                    toWrite = false;
+                }
+            } catch (Exception er) {
+                er.getCause();
+            }
+        }
+        if (toWrite) {
+
+            try {
+
+                float[][] arr = Wilsim.m.topoSave;
+
+
+                if (!file.exists())
+                    file.createNewFile();
+
+                FileWriter fw = new FileWriter(file.getAbsoluteFile());
+
+                BufferedWriter bw = new BufferedWriter(fw);
+                int nIterations = Wilsim.m.storageIntervals;
+                int j,i;
+                for (j = 0; j < nIterations; j++) {
+                for (i = 0; i < arr[0].length; i++) {
+
+                        bw.write(String.valueOf(arr[j][i]) + ", ");
+                }
+                    bw.write("\n");
+                }
+                bw.close();
+                // Wilsim.i.log.append("Done");
+            } catch (Exception er) {
+                er.getCause();
+            }
+        }
+
+return curDir;
+    }
+
+    private File outputXSections(File lastDir) {
+        boolean foundWrite = false;
+        boolean toWrite = true;
+        File file = lastDir;
+
+        topofc.setCurrentDirectory(lastDir);
+
+        if (Wilsim.m.storageIntervals < 0) return curDir;
 
         //Wilsim.i.log.append("XSectionManager.nXSections():  "
         //        + String.valueOf(XSectionManager.nXSections())+ "\n");
@@ -904,6 +1008,7 @@ public class Controller
                     // pressed
                     // by user
                     file = xsfc.getSelectedFile(); // get File
+                    curDir = xsfc.getCurrentDirectory();
                     // selected //
                     // by user
 
@@ -983,14 +1088,16 @@ public class Controller
                 er.getCause();
             }
         }
+        return curDir;
     }
 
-    private void outputProfiles() {
-        // Wilsim.i.log.append("outputProfiles:1\n");
-
+    private File outputProfiles(File lastDir) {
         boolean foundWrite = false;
         boolean toWrite = true;
-        File file = new File("user.home");
+        File file = lastDir;
+        lpfc.setCurrentDirectory(lastDir);
+
+        if (Wilsim.m.storageIntervals < 0) return curDir;
 
         while (toWrite && !foundWrite) {
             try {
@@ -1002,6 +1109,7 @@ public class Controller
                     // pressed
                     // by user
                     file = lpfc.getSelectedFile(); // get File
+                    curDir = lpfc.getCurrentDirectory();
                     // selected //
                     // by user
 
@@ -1098,6 +1206,6 @@ public class Controller
                 er.getCause();
             }
         }
+        return curDir;
     }
-
 }

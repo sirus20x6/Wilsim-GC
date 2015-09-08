@@ -1512,7 +1512,7 @@ gl.glPopMatrix();
 
                         gl.glVertex3f((XSectionManager.getXSection(0).values[0][i / 5] * drawScaleX + (720 * (float) mu) * drawScaleX) + 75,
                                 (float) answer * drawScaleY + 87,
-                                -1.55f + (x * .001f));
+                                -1.4f + (x * .001f));
                     }
                 }
                 gl.glEnd();
@@ -1538,6 +1538,8 @@ gl.glPopMatrix();
 
         gl.glVertex3f(75, scalePosY + 0.0f, -1.5f);
         gl.glVertex3f(75, scalePosY + 2000.0f, -1.5f);
+
+        gl.glColor3f(0.3f, 0.3f, 0.3f);
 
         for (int x = 0; x < 41; x++) {
             gl.glVertex3f(75 + x * (10000 * drawScaleX), scalePosY + 0.0f, -1.5f);
@@ -1623,7 +1625,7 @@ gl.glPopMatrix();
 
 
         // Draw label tics
-        gl.glColor3f(0.0f, 0.0f, 0.0f);
+        gl.glColor3f(0.3f, 0.3f, 0.3f);
         gl.glBegin(GL.GL_LINES);
         int total = 3000;
         int tick = 250;
@@ -1715,7 +1717,7 @@ gl.glPopMatrix();
 
 
         //final float[] vertScaleSample2 = {1250.0f, 1500.0f, 1750.0f, 2000.0f, 2250.0f, 2500.0f, 2750.0f, 3000.0f};
-        gl.glColor3f(0.0f, 0.0f, 0.0f);
+        gl.glColor3f(0.3f, 0.3f, 0.3f);
         gl.glBegin(GL.GL_LINES);
         int total = 3000;
         int tick = 250;
@@ -1824,7 +1826,6 @@ gl.glPopMatrix();
         for (int k = 7; k >= 1; k -= 2) // Reduce wide peaks to narrow peaks
             for (int j = 0; j < Wilsim.m.river.getNIterates(); j++) {
                 for (int i = k; i < Wilsim.m.river.n[j] - k; i++) {
-                    float value;
                     if ((Wilsim.m.river.values[j][i - k] - Wilsim.m.river.values[j][i]) < -thresh
                             && (Wilsim.m.river.values[j][i + k] - Wilsim.m.river.values[j][i]) < -thresh)
                         Wilsim.m.river.values[j][i] = (Wilsim.m.river.values[j][i + k] + Wilsim.m.river.values[j][i - k]) / 2.0f;
@@ -1857,7 +1858,7 @@ gl.glPopMatrix();
 
                         gl.glVertex3f((Wilsim.m.river.distances[0][i] * drawScaleX) + 74,
                                 (Wilsim.m.river.values[x][i] * drawScaleY) + 87,
-                                -1.55f + (x * .001f));
+                                -1.4f + (x * .001f));
 
                     }
                 }
@@ -1884,6 +1885,7 @@ gl.glPopMatrix();
         gl.glVertex3f(75, scalePosY + 0.0f, -1.5f);
         gl.glVertex3f(75, scalePosY + 2000.0f, -1.5f);
 
+        gl.glColor3f(0.3f, 0.3f, 0.3f);
         for (int x = 0; x < 41; x++) {
             gl.glVertex3f(75 + x * (100000 * drawScaleX), scalePosY + 0.0f, -1.5f);
 
