@@ -50,7 +50,7 @@ public class View implements Runnable, GLEventListener {
     private final float cameraFOV;
     private final float cameraNear;
     private final float cameraFar;
-    final private float cameraRadius = 18000.0F;
+    final private float cameraRadius = 32000.0F;
     private ShaderState st;
     private GLArrayDataServer colors;
 
@@ -496,7 +496,7 @@ private final float COLOR_MIN_HEIGHT = 1400.0f;
         // Recenter and resposition grid
         // gl.glRotatef(180f, 1.0f, 1.0f, .0f);
         gl.glScalef(gridHorizontalScaleFactor, -gridHorizontalScaleFactor +2, 1.0f);
-        gl.glTranslatef(-latticeSizeX / 2, -latticeSizeY / 2, -1800);
+        gl.glTranslatef(-latticeSizeX / 2, -latticeSizeY / 2, -1900);
         // Z translation is currently a hack based on the grid.  Roughly 1800 m for
         // the Grand Canyon
 
@@ -1169,7 +1169,7 @@ private final float COLOR_MIN_HEIGHT = 1400.0f;
 
         float km = 13.888888888f;
         int offset = 1;
-        int verty = 270;
+        int verty = 540;
 
         gl.glLineWidth(1.0f);
         gl.glColor3f(0.0f, 0.0f, 0.0f);
@@ -1205,10 +1205,10 @@ private final float COLOR_MIN_HEIGHT = 1400.0f;
         gl.glColor3f(0f, 0f, 0f);
         gl.glLineWidth(2.0f);
         gl.glPushMatrix();
-        gl.glTranslatef(-10f, 270 + 10f, 1820.f);
+        gl.glTranslatef(-10f, verty + 10f, 1820.f);
         gl.glScalef(0.07f, -0.07f, 0.0f);
         renderStrokeString(GLUT.STROKE_MONO_ROMAN, "0km");
-        gl.glTranslatef(130f, 270 - 275f, 1820.f);
+        gl.glTranslatef(130f, verty - 540f, 1820.f);
         renderStrokeString(GLUT.STROKE_MONO_ROMAN, "25km 50km    100km");
 gl.glPopMatrix();
 

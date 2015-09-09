@@ -14,16 +14,16 @@ public class Model implements Runnable {
     private float time;
 
     // Model grid parameters
-    static final short lattice_size_x = 339;
-    static final short lattice_size_y = 262;
-    static final float gridHorizontalSpacingFactor = 720.0f;
+    static final short lattice_size_x = 678;
+    static final short lattice_size_y = 524;
+    static final float gridHorizontalSpacingFactor = 360.0f;
     private static final float oneoverdeltax = (float) 1.0 / gridHorizontalSpacingFactor;
     private static float diag;
     private float max;
     private int i;
     private int j;
-    private final static short profileStartX = 330;
-    private final static short profileStartY = 79;
+    private final static short profileStartX = 660;
+    private final static short profileStartY = 158;
     private static final int oneDimSize = (lattice_size_x + 1) * (lattice_size_y + 1);
     public Profile river;
 
@@ -470,14 +470,14 @@ public class Model implements Runnable {
                 // defines subsidence rate of lower Colorado River trough
                 // (defined as a triangular domain) of 1.7 m/kyr for 300 kyr
                 for (i = 1; i <= lattice_size_x; i++)
-                    for (j = 1; j <= 81; j++) {
+                    for (j = 1; j <= 162; j++) {
                         U1d[i + j * lattice_size_x] = 0.0F;
                     }
 
 
                 for (i = 1; i <= lattice_size_x; i++)
                     for (j = 82; j <= lattice_size_y; j++) {
-                        if ((0.4 * j + i < 75) && (time < 300))
+                        if ((0.4 * j + i < 150) && (time < 300))
                             U1d[i + j * lattice_size_x] = Along_Grant_Wash_Fault;
                         else
                             U1d[i + j * lattice_size_x] = 0.0F;
@@ -790,7 +790,7 @@ public class Model implements Runnable {
         fp0c = new Scanner(getClass().getResourceAsStream(
                 "input_files/grandcanyonrim.txt"));
 
-        //Wilsim.i.log.append("Model: opened grandcanyonrim.txt\n");
+        //Wilsim.i.log.append("Model: opened grandcanyonrim-hr.txt\n");
 
         fp1 = new Scanner(getClass().getResourceAsStream(
                 "input_files/grandcanyoninitialtopo.txt"));
