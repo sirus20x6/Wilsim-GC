@@ -1,7 +1,6 @@
 import java.awt.*;
 import java.util.BitSet;
 import java.util.Scanner;
-import com.amd.aparapi.Kernel;
 
 public class Model implements Runnable {
     private int iterationCount = 0;
@@ -14,16 +13,16 @@ public class Model implements Runnable {
     private float time;
 
     // Model grid parameters
-    static final short lattice_size_x = 339;
-    static final short lattice_size_y = 262;
-    static final float gridHorizontalSpacingFactor = 720.0f;
+    static final short lattice_size_x = 678;
+    static final short lattice_size_y = 524;
+    static final float gridHorizontalSpacingFactor = 360.0f;
     private static final float oneoverdeltax = (float) 1.0 / gridHorizontalSpacingFactor;
     private static float diag;
     private float max;
     private int i;
     private int j;
-    private final static short profileStartX = 330;
-    private final static short profileStartY = 79;
+    private final static short profileStartX = 660;
+    private final static short profileStartY = 158;
     private static final int oneDimSize = (lattice_size_x + 1) * (lattice_size_y + 1);
     public Profile river;
 
@@ -280,12 +279,12 @@ public class Model implements Runnable {
             diag = 1;
         }
         if (j > 0)
-        if (topodrain[i][j - 1] - topodrain[i][j] < down) {
-            down = topodrain[i][j - 1] - topodrain[i][j];
-            draindiri[i][j] = i;
-            draindirj[i][j] = (short) (j - 1);
-            diag = 1;
-        }
+            if (topodrain[i][j - 1] - topodrain[i][j] < down) {
+                down = topodrain[i][j - 1] - topodrain[i][j];
+                draindiri[i][j] = i;
+                draindirj[i][j] = (short) (j - 1);
+                diag = 1;
+            }
         if ((topodrain[i + 1][j + 1] - topodrain[i][j]) * oneoversqrt2 < down) {
             down = (topodrain[i + 1][j + 1] - topodrain[i][j]) * oneoversqrt2;
             draindiri[i][j] = (short) (i + 1);
@@ -300,21 +299,21 @@ public class Model implements Runnable {
             diag = sqrt2;
         }
         if (j > 0)
-        if ((topodrain[i + 1][j - 1] - topodrain[i][j]) * oneoversqrt2 < down) {
-            down = (topodrain[i + 1][j - 1] - topodrain[i][j])
-                    * oneoversqrt2;
-            draindiri[i][j] = (short) (i + 1);
-            draindirj[i][j] = (short) (j - 1);
-            diag = sqrt2;
-        }
+            if ((topodrain[i + 1][j - 1] - topodrain[i][j]) * oneoversqrt2 < down) {
+                down = (topodrain[i + 1][j - 1] - topodrain[i][j])
+                        * oneoversqrt2;
+                draindiri[i][j] = (short) (i + 1);
+                draindirj[i][j] = (short) (j - 1);
+                diag = sqrt2;
+            }
         if (j > 0)
-        if ((topodrain[i - 1][j - 1] - topodrain[i][j]) * oneoversqrt2 < down) {
-            down = (topodrain[i - 1][j - 1] - topodrain[i][j])
-                    * oneoversqrt2;
-            draindiri[i][j] = (short) (i - 1);
-            draindirj[i][j] = (short) (j - 1);
-            diag = sqrt2;
-        }
+            if ((topodrain[i - 1][j - 1] - topodrain[i][j]) * oneoversqrt2 < down) {
+                down = (topodrain[i - 1][j - 1] - topodrain[i][j])
+                        * oneoversqrt2;
+                draindiri[i][j] = (short) (i - 1);
+                draindirj[i][j] = (short) (j - 1);
+                diag = sqrt2;
+            }
         slope1d[i + j * lattice_size_x] = -oneoverdeltax * (down);
     }
 
@@ -470,14 +469,14 @@ public class Model implements Runnable {
                 // defines subsidence rate of lower Colorado River trough
                 // (defined as a triangular domain) of 1.7 m/kyr for 300 kyr
                 for (i = 1; i <= lattice_size_x; i++)
-                    for (j = 1; j <= 81; j++) {
+                    for (j = 1; j <= 162; j++) {
                         U1d[i + j * lattice_size_x] = 0.0F;
                     }
 
 
                 for (i = 1; i <= lattice_size_x; i++)
                     for (j = 82; j <= lattice_size_y; j++) {
-                        if ((0.4 * j + i < 75) && (time < 300))
+                        if ((0.4 * j + i < 150) && (time < 300))
                             U1d[i + j * lattice_size_x] = Along_Grant_Wash_Fault;
                         else
                             U1d[i + j * lattice_size_x] = 0.0F;
@@ -496,7 +495,7 @@ public class Model implements Runnable {
             max = 0;
 
             for (int i = mask.nextSetBit(0); i >= 0; i = mask.nextSetBit(i + 1)) {
-            //for (int i = getGlobalId(); i >= 0; i = mask.nextSetBit(i + 1)) {
+                //for (int i = getGlobalId(); i >= 0; i = mask.nextSetBit(i + 1)) {
                 //calculatedownhillslope(i);
                 calculatedownhillslope((short) (i % lattice_size_x), (short) (i / lattice_size_x));
                 //float erodeddepth = topoorig[(i % lattice_size_x)][(i / lattice_size_x)] - topo1dim[i];
@@ -610,42 +609,42 @@ public class Model implements Runnable {
             t2.join();
 */
 
-        float erosion = 0;
+            float erosion = 0;
 
-        for (i = 1; i <= lattice_size_x; i++)
-            for (j = 1; j <= lattice_size_y; j++)
+            for (i = 1; i <= lattice_size_x; i++)
+                for (j = 1; j <= lattice_size_y; j++)
 
-                if (mask.get(i + j * lattice_size_x)) {
-                    if ((channel1d[i + j * lattice_size_x] == 1)
-                            && (wavespeed1d[i + j * lattice_size_x] * slope1d[i + j * lattice_size_x] > thresh)) {
-                        topo1dim[i + j * lattice_size_x] -= timestep
-                                * (wavespeed1d[i + j * lattice_size_x] * slope1d[i + j * lattice_size_x] - thresh);
-                        erosion += (wavespeed1d[i + j * lattice_size_x] * slope1d[i + j * lattice_size_x] - thresh);
-                    } else {
-                        topo1dim[i + j * lattice_size_x] -= timestep
-                                * (wavespeed1d[i + j * lattice_size_x] * slope1d[i + j * lattice_size_x]);
-                        erosion += wavespeed1d[i + j * lattice_size_x] *slope1d[i + j * lattice_size_x];
+                    if (mask.get(i + j * lattice_size_x)) {
+                        if ((channel1d[i + j * lattice_size_x] == 1)
+                                && (wavespeed1d[i + j * lattice_size_x] * slope1d[i + j * lattice_size_x] > thresh)) {
+                            topo1dim[i + j * lattice_size_x] -= timestep
+                                    * (wavespeed1d[i + j * lattice_size_x] * slope1d[i + j * lattice_size_x] - thresh);
+                            erosion += (wavespeed1d[i + j * lattice_size_x] * slope1d[i + j * lattice_size_x] - thresh);
+                        } else {
+                            topo1dim[i + j * lattice_size_x] -= timestep
+                                    * (wavespeed1d[i + j * lattice_size_x] * slope1d[i + j * lattice_size_x]);
+                            erosion += wavespeed1d[i + j * lattice_size_x] *slope1d[i + j * lattice_size_x];
+                        }
                     }
-                }
 
 
-        time += timestep;  // KD - Why here?
+            time += timestep;  // KD - Why here?
 
-        // Courant stability criterion is checked here and timestep is
-        // reduced if the criterion is not met
-        if (max > 0.9 * deltax / timestep) {
-            time -= timestep;
-            timestep /= 2.0;
+            // Courant stability criterion is checked here and timestep is
+            // reduced if the criterion is not met
+            if (max > 0.9 * deltax / timestep) {
+                time -= timestep;
+                timestep /= 2.0;
 
-        } else {
-            // fprintf(fp5,"%f %f\n",time,erosion);
+            } else {
+                // fprintf(fp5,"%f %f\n",time,erosion);
 				/*
 				 * bw_fp5 = new BufferedWriter(fp5); bw_fp5.write(time + " " +
 				 * erosion); bw_fp5.newLine();
 				 */
-            if (max < 0.6 * deltax / timestep)
-                timestep *= 1.2;
-        }
+                if (max < 0.6 * deltax / timestep)
+                    timestep *= 1.2;
+            }
 
             if (time >= storeTime) {
                 //topoSave[storeCount].clone(topo1dim);
@@ -675,100 +674,100 @@ public class Model implements Runnable {
                     i = draindiri[i][j];
                     j = draindirj[ikeep][j];
                 }
-            river.n[storeCount] = count;
+                river.n[storeCount] = count;
 
-            // Wilsim.i.log.append("storeTime: " + storeTime + "\n");
+                // Wilsim.i.log.append("storeTime: " + storeTime + "\n");
 
-            storeCount++;  // Storage completed
-            storeTime = ((float) (storeCount + 1) / storageIntervals) * duration;
-            river.processedpp();
+                storeCount++;  // Storage completed
+                storeTime = ((float) (storeCount + 1) / storageIntervals) * duration;
+                river.processedpp();
 
-            String myTime;
-            String set = "";
+                String myTime;
+                String set = "";
 
-            Color myRGBColor = Color.getHSBColor((float) (storeCount - 1) / (Wilsim.m.storageIntervals + 1), 1.0f, 1.0f);
+                Color myRGBColor = Color.getHSBColor((float) (storeCount - 1) / (Wilsim.m.storageIntervals + 1), 1.0f, 1.0f);
 
-            if (Wilsim.m.getTime() < 6000) {
-                myTime = "<sup>_____</sup> " + String.valueOf((float) Math.round(((6000f - Wilsim.m.getTime()) / 10)) / 100) + " Million Years Ago</font><br>";
-            } else if (Wilsim.m.getTime() < 6500) {
-                myTime = "<sup>_____</sup> Present</font><br>";
-            } else {
-                myTime = "<sup>_____</sup> " + String.valueOf((float) Math.round(((Wilsim.m.getTime() - 6000f) / 10)) / 100) + " Million Years in the Future</font><br>";
-            }
-            Wilsim.c.sectionTimes.add("<font color =#" +
-                    String.format("%02X", myRGBColor.getRed()) +
-                    String.format("%02X", myRGBColor.getGreen()) +
-                    String.format("%02X", myRGBColor.getBlue()) + ">" + myTime);
-            for (String s : Wilsim.c.sectionTimes) {
-                set += s;
-            }
-            Wilsim.c.timeLegend.setText("<html>" + set + "</html>");
-        }
-
-        Wilsim.c.progressBar.setMaximum((int) duration - 1);
-        Wilsim.c.progressBar.setValue((int) time);
-        if (time < 1000)
-            Wilsim.c.progressBar.setString("6M Years ago");
-        else if (time < 2000)
-            Wilsim.c.progressBar.setString("5M Years ago");
-        else if (time < 3000)
-            Wilsim.c.progressBar.setString("4M Years ago");
-        else if (time < 4000)
-            Wilsim.c.progressBar.setString("3M Years ago");
-        else if (time < 5000)
-            Wilsim.c.progressBar.setString("2M Years ago");
-        else if (time < 6000)
-            Wilsim.c.progressBar.setString("1M Years ago");
-        else if (time < 7000)
-            Wilsim.c.progressBar.setString("Present");
-        else if (time < 8000)
-            Wilsim.c.progressBar.setString("1M Years in future");
-        else if (time < 9000)
-            Wilsim.c.progressBar.setString("2M Years in future");
-        else if (time < 10000)
-            Wilsim.c.progressBar.setString("3M Years in future");
-        else if (time < 11000)
-            Wilsim.c.progressBar.setString("4M Years in future");
-        else if (time < 12000)
-            Wilsim.c.progressBar.setString("5M Years in future");
-        else // (time < 13000)
-            Wilsim.c.progressBar.setString("6M Years in future");
-
-        Wilsim.c.progressBar.setIndeterminate(false);
-
-        // Check score
-        if (!scoreFlag && time >= presentTime) {
-            // Compute score
-            score = 0.0f;
-            double value;
-            int score_count;
-            score_count = 0;
-            // Stay away from borders for now
-            for (i = 2; i < lattice_size_x - 1; i++)
-                for (j = 2; j < lattice_size_y - 1; j++) {
-                    if (!((j > 81) && (0.4 * j + i < 75))) {
-                        value = topo1dim[i + j * lattice_size_x] - topoactual1d[i + j * lattice_size_x];
-                        //value = topo1dim[i + j * lattice_size_x] - topoactual1d[i + j * lattice_size_x];
-                        score += value * value;
-                        score_count++;
-                    }
+                if (Wilsim.m.getTime() < 6000) {
+                    myTime = "<sup>_____</sup> " + String.valueOf((float) Math.round(((6000f - Wilsim.m.getTime()) / 10)) / 100) + " Million Years Ago</font><br>";
+                } else if (Wilsim.m.getTime() < 6500) {
+                    myTime = "<sup>_____</sup> Present</font><br>";
+                } else {
+                    myTime = "<sup>_____</sup> " + String.valueOf((float) Math.round(((Wilsim.m.getTime() - 6000f) / 10)) / 100) + " Million Years in the Future</font><br>";
                 }
-            Wilsim.i.log.append("score_count: " + score_count + "\n");
-            score /= score_count;
-            score = Math.sqrt(score);
-            scoreFlag = true;
-        }
+                Wilsim.c.sectionTimes.add("<font color =#" +
+                        String.format("%02X", myRGBColor.getRed()) +
+                        String.format("%02X", myRGBColor.getGreen()) +
+                        String.format("%02X", myRGBColor.getBlue()) + ">" + myTime);
+                for (String s : Wilsim.c.sectionTimes) {
+                    set += s;
+                }
+                Wilsim.c.timeLegend.setText("<html>" + set + "</html>");
+            }
 
-        //Wilsim.v.loadModel(topo);  // Notify view of data
-        Wilsim.v.newComp();
-        iterationCount++;
-        Thread.yield();
-        pause();
-        // Wilsim.i.log.append(time + " \n");
-    } // main simulation loop
+            Wilsim.c.progressBar.setMaximum((int) duration - 1);
+            Wilsim.c.progressBar.setValue((int) time);
+            if (time < 1000)
+                Wilsim.c.progressBar.setString("6M Years ago");
+            else if (time < 2000)
+                Wilsim.c.progressBar.setString("5M Years ago");
+            else if (time < 3000)
+                Wilsim.c.progressBar.setString("4M Years ago");
+            else if (time < 4000)
+                Wilsim.c.progressBar.setString("3M Years ago");
+            else if (time < 5000)
+                Wilsim.c.progressBar.setString("2M Years ago");
+            else if (time < 6000)
+                Wilsim.c.progressBar.setString("1M Years ago");
+            else if (time < 7000)
+                Wilsim.c.progressBar.setString("Present");
+            else if (time < 8000)
+                Wilsim.c.progressBar.setString("1M Years in future");
+            else if (time < 9000)
+                Wilsim.c.progressBar.setString("2M Years in future");
+            else if (time < 10000)
+                Wilsim.c.progressBar.setString("3M Years in future");
+            else if (time < 11000)
+                Wilsim.c.progressBar.setString("4M Years in future");
+            else if (time < 12000)
+                Wilsim.c.progressBar.setString("5M Years in future");
+            else // (time < 13000)
+                Wilsim.c.progressBar.setString("6M Years in future");
 
-    // print final topography
-}
+            Wilsim.c.progressBar.setIndeterminate(false);
+
+            // Check score
+            if (!scoreFlag && time >= presentTime) {
+                // Compute score
+                score = 0.0f;
+                double value;
+                int score_count;
+                score_count = 0;
+                // Stay away from borders for now
+                for (i = 2; i < lattice_size_x - 1; i++)
+                    for (j = 2; j < lattice_size_y - 1; j++) {
+                        if (!((j > 81) && (0.4 * j + i < 75))) {
+                            value = topo1dim[i + j * lattice_size_x] - topoactual1d[i + j * lattice_size_x];
+                            //value = topo1dim[i + j * lattice_size_x] - topoactual1d[i + j * lattice_size_x];
+                            score += value * value;
+                            score_count++;
+                        }
+                    }
+                Wilsim.i.log.append("score_count: " + score_count + "\n");
+                score /= score_count;
+                score = Math.sqrt(score);
+                scoreFlag = true;
+            }
+
+            //Wilsim.v.loadModel(topo);  // Notify view of data
+            Wilsim.v.newComp();
+            iterationCount++;
+            Thread.yield();
+            pause();
+            // Wilsim.i.log.append(time + " \n");
+        } // main simulation loop
+
+        // print final topography
+    }
 
     private void openDefaultDataFiles() {
         Wilsim.i.log.append("Model: openDefaultDataFiles() \n");
@@ -790,7 +789,7 @@ public class Model implements Runnable {
         fp0c = new Scanner(getClass().getResourceAsStream(
                 "input_files/grandcanyonrim.txt"));
 
-        //Wilsim.i.log.append("Model: opened grandcanyonrim.txt\n");
+        //Wilsim.i.log.append("Model: opened grandcanyonrim-hr.txt\n");
 
         fp1 = new Scanner(getClass().getResourceAsStream(
                 "input_files/grandcanyoninitialtopo.txt"));
