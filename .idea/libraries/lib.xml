@@ -1,20 +1,15 @@
 <component name="libraryTable">
   <library name="lib">
     <CLASSES>
-      <root url="file://$PROJECT_DIR$/../../jogl/jar" />
-      <root url="file://$PROJECT_DIR$/../../aparapi" />
-      <root url="file://$PROJECT_DIR$/../../aparapi" />
+      <root url="file://$USER_HOME$/school/jogl" />
+      <root url="file://$USER_HOME$/school/jogl/jar" />
     </CLASSES>
-    <JAVADOC>
-      <root url="file://$PROJECT_DIR$/../../aparapi/api" />
-    </JAVADOC>
+    <JAVADOC />
     <NATIVE>
       <root url="file://$USER_HOME$/school/jogl/lib" />
-      <root url="file://$PROJECT_DIR$/../../jogl/jar" />
-      <root url="file://$PROJECT_DIR$/../../aparapi" />
+      <root url="file://$USER_HOME$/school/jogl/lib/linux-i586" />
     </NATIVE>
     <SOURCES />
-    <jarDirectory url="file://$PROJECT_DIR$/../../aparapi" recursive="false" />
-    <jarDirectory url="file://$PROJECT_DIR$/../../jogl/jar" recursive="false" />
+    <jarDirectory url="file://$USER_HOME$/school/jogl/jar" recursive="false" />
   </library>
 </component>

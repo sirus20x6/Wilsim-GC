@@ -18,7 +18,7 @@ public class View implements Runnable, GLEventListener {
     private final ImmModeSink immModeSink = ImmModeSink.createFixed(3 * 3,
             3, GL.GL_FLOAT, // vertex
             3, GL.GL_FLOAT, // color
-            0, GL.GL_FLOAT, // normal
+            3, GL.GL_FLOAT, // normal
             0, GL.GL_FLOAT, // texCoords
             GL.GL_STATIC_DRAW);
     private GL2 gl;
@@ -50,7 +50,7 @@ public class View implements Runnable, GLEventListener {
     private final float cameraFOV;
     private final float cameraNear;
     private final float cameraFar;
-    final private float cameraRadius = 18000.0F;
+    final private float cameraRadius = 32000.0F;
     private ShaderState st;
     private GLArrayDataServer colors;
 
@@ -88,8 +88,8 @@ public class View implements Runnable, GLEventListener {
     private boolean repaint;
 
     private final float COLOR_MAX_HEIGHT = 3000.0f;
-//    private final float COLOR_MIN_HEIGHT = 1200.0f;
-private final float COLOR_MIN_HEIGHT = 1400.0f;
+    //    private final float COLOR_MIN_HEIGHT = 1200.0f;
+    private final float COLOR_MIN_HEIGHT = 1400.0f;
 
     private final float[] vertScaleSample = {1400.0f, 2000.0f, 2500.0f, 3000.0f};
     private final int nVertScaleSamples = 4;
@@ -496,7 +496,7 @@ private final float COLOR_MIN_HEIGHT = 1400.0f;
         // Recenter and resposition grid
         // gl.glRotatef(180f, 1.0f, 1.0f, .0f);
         gl.glScalef(gridHorizontalScaleFactor, -gridHorizontalScaleFactor +2, 1.0f);
-        gl.glTranslatef(-latticeSizeX / 2, -latticeSizeY / 2, -1800);
+        gl.glTranslatef(-latticeSizeX / 2, -latticeSizeY / 2, -1900);
         // Z translation is currently a hack based on the grid.  Roughly 1800 m for
         // the Grand Canyon
 
@@ -583,7 +583,6 @@ private final float COLOR_MIN_HEIGHT = 1400.0f;
 
 
         drawTerrain();
-
 
 
         gl.glDisable(GLLightingFunc.GL_LIGHTING);
@@ -1012,7 +1011,7 @@ private final float COLOR_MIN_HEIGHT = 1400.0f;
     }*/
 
 
-    private void drawTerrainasdf()
+    private void drawTerrain()
     {
         float [] v1 = new float[3];
         float [] v2 = new float[3];
@@ -1030,59 +1029,98 @@ private final float COLOR_MIN_HEIGHT = 1400.0f;
         gl.glColorMaterial(GL.GL_FRONT_AND_BACK,
                 GLLightingFunc.GL_AMBIENT_AND_DIFFUSE);
 
-
-        //gl.glBegin(GL.GL_TRIANGLE_STRIP);
         immModeSink.glBegin(GL.GL_TRIANGLE_STRIP);
 
 
-        for(int x = 1; x < latticeSizeX; x++) {
+
+        for(int x = 1; x < 50; x++) {
 
             for(int y = 1; y < latticeSizeY; y++)
             {
-
-                v1[2] = Wilsim.m.topo1dim[x+1 + y * latticeSizeX] - Model.topo1dim[x-1 + y * latticeSizeX];
+                v1[2] = Model.topo1dim[x+1 + y * latticeSizeX] - Model.topo1dim[x-1 + y * latticeSizeX];
                 v2[2] = Model.topo1dim[x + (y+1) * latticeSizeX] - Model.topo1dim[x + (y-1) * latticeSizeX];
-
                 cross(norm, v2, v1);
-                immModeSink.glNormal3f(0, 0, 0);
-
-
+                immModeSink.glNormal3f(norm[0],norm[1],norm[2]);
                 immModeSink.glColor3f(Model.vert_color2[x + y * Model.lattice_size_x].x, Model.vert_color2[(x + y * Model.lattice_size_x)].y, Model.vert_color2[(x + y * Model.lattice_size_x)].z);
                 immModeSink.glVertex3f(x, y, Model.topo1dim[x + y * latticeSizeX]);
+
+                x++;
+
+                v1[2] = Model.topo1dim[x+1 + y * latticeSizeX] - Model.topo1dim[x-1 + y * latticeSizeX];
+                v2[2] = Model.topo1dim[x + (y+1) * latticeSizeX] - Model.topo1dim[x + (y-1) * latticeSizeX];
+                cross(norm, v2, v1);
+                immModeSink.glNormal3f(norm[0],norm[1],norm[2]);
                 immModeSink.glColor3f(Model.vert_color2[x + y * Model.lattice_size_x].x, Model.vert_color2[(x + y * Model.lattice_size_x)].y, Model.vert_color2[(x + y * Model.lattice_size_x)].z);
-                immModeSink.glVertex3f(x + 1, y, Model.topo1dim[(x + 1) + y * latticeSizeX]);
+                immModeSink.glVertex3f(x, y, Model.topo1dim[x + y * latticeSizeX]);
+                x--;
             }
 
             //degenerate triangles
 
             //eff
+            immModeSink.glNormal3f(0f,0f,0f);
+            immModeSink.glColor3f(0f, 0f, 0f);
             immModeSink.glVertex3f(x, latticeSizeY, Model.topo1dim[x + latticeSizeY * latticeSizeX]);
+            immModeSink.glNormal3f(0f, 0f, 0f);
+            immModeSink.glColor3f(0f, 0f, 0f);
             immModeSink.glVertex3f(x + 1, latticeSizeY, Model.topo1dim[(x + 1) + latticeSizeY * latticeSizeX]);
+            immModeSink.glNormal3f(0f, 0f, 0f);
+            immModeSink.glColor3f(0f, 0f, 0f);
             immModeSink.glVertex3f(x + 1, latticeSizeY, Model.topo1dim[(x + 1) + latticeSizeY * latticeSizeX]);
 
             //FFG
+            immModeSink.glNormal3f(0f, 0f, 0f);
+            immModeSink.glColor3f(0f, 0f, 0f);
             immModeSink.glVertex3f(x + 1, latticeSizeY, Model.topo1dim[(x + 1) + latticeSizeY * latticeSizeX]);
+            immModeSink.glNormal3f(0f, 0f, 0f);
+            immModeSink.glColor3f(0f, 0f, 0f);
             immModeSink.glVertex3f(x + 1, latticeSizeY, Model.topo1dim[(x + 1) + latticeSizeY * latticeSizeX]);
+            immModeSink.glNormal3f(0f, 0f, 0f);
+            immModeSink.glColor3f(0f, 0f, 0f);
             immModeSink.glVertex3f(x, 1, Model.topo1dim[x + latticeSizeX]);
 
             //FGG
+            immModeSink.glNormal3f(0f, 0f, 0f);
+            immModeSink.glColor3f(0f, 0f, 0f);
             immModeSink.glVertex3f(x + 1, latticeSizeY, Model.topo1dim[(x + 1) + latticeSizeY * latticeSizeX]);
+            immModeSink.glNormal3f(0f, 0f, 0f);
+            immModeSink.glColor3f(0f, 0f, 0f);
             immModeSink.glVertex3f(x, 1, Model.topo1dim[x + latticeSizeX]);
+            immModeSink.glNormal3f(0f, 0f, 0f);
+            immModeSink.glColor3f(0f, 0f, 0f);
             immModeSink.glVertex3f(x, 1, Model.topo1dim[x + latticeSizeX]);
 
             //GGH
+            immModeSink.glNormal3f(0f, 0f, 0f);
+            immModeSink.glColor3f(0f, 0f, 0f);
             immModeSink.glVertex3f(x, 1, Model.topo1dim[x + latticeSizeX]);
+            immModeSink.glNormal3f(0f, 0f, 0f);
+            immModeSink.glColor3f(0f, 0f, 0f);
             immModeSink.glVertex3f(x, 1, Model.topo1dim[x + latticeSizeX]);
+            immModeSink.glNormal3f(0f, 0f, 0f);
+            immModeSink.glColor3f(0f, 0f, 0f);
             immModeSink.glVertex3f(x + 1, 1, Model.topo1dim[(x + 1) + latticeSizeX]);
 
             //GHG
+            immModeSink.glNormal3f(0f, 0f, 0f);
+            immModeSink.glColor3f(0f, 0f, 0f);
             immModeSink.glVertex3f(x, 1, Model.topo1dim[x + latticeSizeX]);
+            immModeSink.glNormal3f(0f, 0f, 0f);
+            immModeSink.glColor3f(0f, 0f, 0f);
             immModeSink.glVertex3f(x + 1, 1, Model.topo1dim[(x + 1) + latticeSizeX]);
+            immModeSink.glNormal3f(0f, 0f, 0f);
+            immModeSink.glColor3f(0f, 0f, 0f);
             immModeSink.glVertex3f(x, 1, Model.topo1dim[x + latticeSizeX]);
 
             //GGH
+            immModeSink.glNormal3f(0f, 0f, 0f);
+            immModeSink.glColor3f(0f, 0f, 0f);
             immModeSink.glVertex3f(x, 1, Model.topo1dim[x + latticeSizeX]);
+            immModeSink.glNormal3f(0f, 0f, 0f);
+            immModeSink.glColor3f(0f, 0f, 0f);
             immModeSink.glVertex3f(x, 1, Model.topo1dim[x + latticeSizeX]);
+            immModeSink.glNormal3f(0f,0f,0f);
+            immModeSink.glColor3f(0f,0f,0f);
             immModeSink.glVertex3f(x + 1, 1, Model.topo1dim[(x + 1) + latticeSizeX]);
         }
 
@@ -1091,7 +1129,7 @@ private final float COLOR_MIN_HEIGHT = 1400.0f;
 
     }
 
-    private void drawTerrain()
+    private void drawTerraindirect()
     {
         // Need a separate vertex normal for each quad -- this implementation is inefficient
         // Should be computed once and stored when grid is loaded
@@ -1128,8 +1166,16 @@ private final float COLOR_MIN_HEIGHT = 1400.0f;
                 gl.glNormal3fv(norm, 0);
                 gl.glColor3f(Model.vert_color2[x + y * Model.lattice_size_x].x, Model.vert_color2[(x + y * Model.lattice_size_x)].y, Model.vert_color2[(x + y * Model.lattice_size_x)].z);
                 gl.glVertex3f(x, y, Model.topo1dim[x + y * latticeSizeX]);
+
+                x++;
+
+                v1[2] = Model.topo1dim[x+1 + y * latticeSizeX] - Model.topo1dim[x-1 + y * latticeSizeX];
+                v2[2] = Model.topo1dim[x + (y+1) * latticeSizeX] - Model.topo1dim[x + (y-1) * latticeSizeX];
+                cross(norm, v2, v1);
+                gl.glNormal3fv(norm, 0);
                 gl.glColor3f(Model.vert_color2[x + y * Model.lattice_size_x].x, Model.vert_color2[(x + y * Model.lattice_size_x)].y, Model.vert_color2[(x + y * Model.lattice_size_x)].z);
-                gl.glVertex3f(x + 1, y, Model.topo1dim[(x + 1) + y * latticeSizeX]);
+                gl.glVertex3f(x, y, Model.topo1dim[x + y * latticeSizeX]);
+                x--;
             }
 
             //degenerate triangles
@@ -1169,7 +1215,7 @@ private final float COLOR_MIN_HEIGHT = 1400.0f;
 
         float km = 13.888888888f;
         int offset = 1;
-        int verty = 270;
+        int verty = 540;
 
         gl.glLineWidth(1.0f);
         gl.glColor3f(0.0f, 0.0f, 0.0f);
@@ -1205,12 +1251,12 @@ private final float COLOR_MIN_HEIGHT = 1400.0f;
         gl.glColor3f(0f, 0f, 0f);
         gl.glLineWidth(2.0f);
         gl.glPushMatrix();
-        gl.glTranslatef(-10f, 270 + 10f, 1820.f);
+        gl.glTranslatef(-10f, verty + 10f, 1820.f);
         gl.glScalef(0.07f, -0.07f, 0.0f);
         renderStrokeString(GLUT.STROKE_MONO_ROMAN, "0km");
-        gl.glTranslatef(130f, 270 - 275f, 1820.f);
+        gl.glTranslatef(130f, verty - 540f, 1820.f);
         renderStrokeString(GLUT.STROKE_MONO_ROMAN, "25km 50km    100km");
-gl.glPopMatrix();
+        gl.glPopMatrix();
 
 
 
@@ -1409,7 +1455,7 @@ gl.glPopMatrix();
         //System.out.println("Line 40050 * drawScaleX " + (40050 * drawScaleX));
 
 
-       // gl.glEnd();
+        // gl.glEnd();
         // Draw labels
 
         vertScaleTextEngine.beginRendering(canvas.getWidth(), canvas.getHeight());
@@ -1477,7 +1523,7 @@ gl.glPopMatrix();
 //for (int x = XSectionManager.getXSection(0).getNIterates(); x < XSectionManager.getXSection(0).getMaxNIterates(); x++) {
 
 
-       // gl.glEnd();
+        // gl.glEnd();
 
 
 
@@ -1646,7 +1692,7 @@ gl.glPopMatrix();
             }
 
         }
-            gl.glEnd();
+        gl.glEnd();
 
 
 
@@ -1678,7 +1724,7 @@ gl.glPopMatrix();
 
         if (lastGridH != Wilsim.c.isHGridBool()){
             canvas.repaint();
-           // repaint = false;
+            // repaint = false;
         }
     }
 
@@ -1820,17 +1866,17 @@ gl.glPopMatrix();
 
 
         if (Wilsim.m.river != null && Wilsim.m.river.getProcessed() > 0) {
-        // Last minute filter hack to get rid of spikes.  Ideally
-        // shouldn't be needed.  To be investigated further
-        final int thresh = 30;
-        for (int k = 7; k >= 1; k -= 2) // Reduce wide peaks to narrow peaks
-            for (int j = 0; j < Wilsim.m.river.getNIterates(); j++) {
-                for (int i = k; i < Wilsim.m.river.n[j] - k; i++) {
-                    if ((Wilsim.m.river.values[j][i - k] - Wilsim.m.river.values[j][i]) < -thresh
-                            && (Wilsim.m.river.values[j][i + k] - Wilsim.m.river.values[j][i]) < -thresh)
-                        Wilsim.m.river.values[j][i] = (Wilsim.m.river.values[j][i + k] + Wilsim.m.river.values[j][i - k]) / 2.0f;
+            // Last minute filter hack to get rid of spikes.  Ideally
+            // shouldn't be needed.  To be investigated further
+            final int thresh = 30;
+            for (int k = 7; k >= 1; k -= 2) // Reduce wide peaks to narrow peaks
+                for (int j = 0; j < Wilsim.m.river.getNIterates(); j++) {
+                    for (int i = k; i < Wilsim.m.river.n[j] - k; i++) {
+                        if ((Wilsim.m.river.values[j][i - k] - Wilsim.m.river.values[j][i]) < -thresh
+                                && (Wilsim.m.river.values[j][i + k] - Wilsim.m.river.values[j][i]) < -thresh)
+                            Wilsim.m.river.values[j][i] = (Wilsim.m.river.values[j][i + k] + Wilsim.m.river.values[j][i - k]) / 2.0f;
+                    }
                 }
-            }
 
 
 
@@ -2246,7 +2292,7 @@ gl.glPopMatrix();
         if (t > 1.0) t = 1.0f;
 
 
-	// Light green through red
+        // Light green through red
 
 
 /*	else
