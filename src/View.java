@@ -13,19 +13,21 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 
 public class View implements Runnable, GLEventListener {
+
+    private static int latticeSizeX = Wilsim.m.lattice_size_x;
+    private static int latticeSizeY = Wilsim.m.lattice_size_y;
     public final GLCanvas canvas;
     private final GLCapabilities caps;
-    private final ImmModeSink immModeSink = ImmModeSink.createFixed(3 * 3,
+    private final ImmModeSink immModeSink = ImmModeSink.createFixed(Wilsim.m.oneDimSize,
             3, GL.GL_FLOAT, // vertex
             3, GL.GL_FLOAT, // color
             3, GL.GL_FLOAT, // normal
             0, GL.GL_FLOAT, // texCoords
-            GL.GL_STATIC_DRAW);
+            GL.GL_DYNAMIC_DRAW);
     private GL2 gl;
 
     private static float[][][] topoColor;
-    private static int latticeSizeX;
-    private static int latticeSizeY;
+
 
     private final CondVar newComputation;
     private boolean newData;
@@ -310,7 +312,7 @@ public class View implements Runnable, GLEventListener {
         }
     }
 
-    public void init(final GLAutoDrawable glautodrawable) {
+    public void init(final GLAutoDrawable glautodrawable) {;
         // Wilsim.i.log.append("View : init()\n");
         glut = new GLUT();
         repaint = false;
@@ -1024,7 +1026,6 @@ public class View implements Runnable, GLEventListener {
         v2[0] = 0.0f;
         v2[1] = 30.0f / 5.0f;  // Ditto on hack
 
-        // Get ready for varying material properties
         gl.glEnable(GLLightingFunc.GL_COLOR_MATERIAL);
         gl.glColorMaterial(GL.GL_FRONT_AND_BACK,
                 GLLightingFunc.GL_AMBIENT_AND_DIFFUSE);
@@ -1033,7 +1034,7 @@ public class View implements Runnable, GLEventListener {
 
 
 
-        for(int x = 1; x < 50; x++) {
+        for(int x = 1; x < latticeSizeX; x++) {
 
             for(int y = 1; y < latticeSizeY; y++)
             {
