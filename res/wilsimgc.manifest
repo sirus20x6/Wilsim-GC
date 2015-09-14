@@ -1,5 +1,9 @@
-
-Main-Class: Wilsim
+Manifest-Version: 1.0
 Permissions: all-permissions
+Codebase: *
+Application-Library-Allowable-Codebase: *
+Caller-Allowable-Codebase: *
+Application-Name: Wilsim
+Class-Path: .;jar\gluegen-rt.jar;jar\jogl-all.jar;gcdata.jar;wilsim.ja
+ r
 
-Application-Library-Allowable-Codebase:  http://jogamp.org/deployment
