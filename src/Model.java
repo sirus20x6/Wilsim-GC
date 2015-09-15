@@ -68,8 +68,8 @@ public class Model implements Runnable {
     boolean scoreFlag;
     double score;
 
-    private static int ic;
-    private static int jc;
+    private static int ic[] = new int[Runtime.getRuntime().availableProcessors() - 1];
+    private static int jc[] = new int[Runtime.getRuntime().availableProcessors() - 1];
 
     private static int count;
 
@@ -90,9 +90,7 @@ public class Model implements Runnable {
         for (int thread = 0; thread < threads.length; thread++) {
             final int threadID = thread;
             threads[thread] = new Thread(new Runnable() {
-                private synchronized void push(int i, int j) {
 
-                }
 
                 public void run() {
                     int end = lattice_size_x;
@@ -121,75 +119,77 @@ public class Model implements Runnable {
                                 for (int j = 1; j < lattice_size_y - 1; j++) {
                                     float min;
                                     count = 0;
-                                    if (mask.get(i + j * lattice_size_x)){
-                                        push(i, j);
+                                    if (mask.get(i + j * lattice_size_x) && (ic[threadID] > 1) && (jc[threadID] > 1)){
+                                        count++;
+                                        stacki[(ic[threadID])] = i;
+                                        stackj[(jc[threadID])] = j;
                                         while (count > 0) {
                                             //pop();
 
-                                            ic = stacki[count];
-                                            jc = stackj[count];
+                                            ic[threadID] = stacki[count];
+                                            jc[threadID] = stackj[count];
                                             count--;
 
 
 
-                                            min = topo1dim[ic + jc * lattice_size_x];
-                                            if (topo1dim[(ic + 1) + jc * lattice_size_x] < min)
-                                                min = topo1dim[(ic + 1) + jc * lattice_size_x];
-                                            if (topo1dim[(ic - 1) + jc * lattice_size_x] < min)
-                                                min = topo1dim[(ic - 1) + jc * lattice_size_x];
-                                            if (topo1dim[ic + (jc + 1) * lattice_size_x] < min)
-                                                min = topo1dim[ic + (jc + 1) * lattice_size_x];
-                                            if (topo1dim[ic + (jc - 1) * lattice_size_x] < min)
-                                                min = topo1dim[ic + (jc - 1) * lattice_size_x];
-                                            if (topo1dim[(ic + 1) + (jc + 1) * lattice_size_x] < min)
-                                                min = topo1dim[(ic + 1) + (jc + 1) * lattice_size_x];
-                                            if (topo1dim[(ic - 1) + (jc - 1) * lattice_size_x] < min)
-                                                min = topo1dim[(ic - 1) + (jc - 1) * lattice_size_x];
-                                            if (topo1dim[(ic - 1) + (jc + 1) * lattice_size_x] < min)
-                                                min = topo1dim[(ic - 1) + (jc + 1) * lattice_size_x];
-                                            if (topo1dim[(ic + 1) + (jc - 1) * lattice_size_x] < min)
-                                                min = topo1dim[(ic + 1) + (jc - 1) * lattice_size_x];
-                                            if ((topo1dim[ic + jc * lattice_size_x] <= min) && (ic > 1) && (jc > 1)
-                                                    && (ic < lattice_size_x) && (jc < lattice_size_y)
-                                                    && (count < stacklimit) && (topo1dim[ic + jc * lattice_size_x] > 0)) {
-                                                topo1dim[ic + jc * lattice_size_x] = min + fillincrement;
+                                            min = topo1dim[ic[threadID] + jc[threadID] * lattice_size_x];
+                                            if (topo1dim[(ic[threadID] + 1) + jc[threadID] * lattice_size_x] < min)
+                                                min = topo1dim[(ic[threadID] + 1) + jc[threadID] * lattice_size_x];
+                                            if (topo1dim[(ic[threadID] - 1) + jc[threadID] * lattice_size_x] < min)
+                                                min = topo1dim[(ic[threadID] - 1) + jc[threadID] * lattice_size_x];
+                                            if (topo1dim[ic[threadID] + (jc[threadID] + 1) * lattice_size_x] < min)
+                                                min = topo1dim[ic[threadID] + (jc[threadID] + 1) * lattice_size_x];
+                                            if (topo1dim[ic[threadID] + (jc[threadID] - 1) * lattice_size_x] < min)
+                                                min = topo1dim[ic[threadID] + (jc[threadID] - 1) * lattice_size_x];
+                                            if (topo1dim[(ic[threadID] + 1) + (jc[threadID] + 1) * lattice_size_x] < min)
+                                                min = topo1dim[(ic[threadID] + 1) + (jc[threadID] + 1) * lattice_size_x];
+                                            if (topo1dim[(ic[threadID] - 1) + (jc[threadID] - 1) * lattice_size_x] < min)
+                                                min = topo1dim[(ic[threadID] - 1) + (jc[threadID] - 1) * lattice_size_x];
+                                            if (topo1dim[(ic[threadID] - 1) + (jc[threadID] + 1) * lattice_size_x] < min)
+                                                min = topo1dim[(ic[threadID] - 1) + (jc[threadID] + 1) * lattice_size_x];
+                                            if (topo1dim[(ic[threadID] + 1) + (jc[threadID] - 1) * lattice_size_x] < min)
+                                                min = topo1dim[(ic[threadID] + 1) + (jc[threadID] - 1) * lattice_size_x];
+                                            if ((topo1dim[ic[threadID] + jc[threadID] * lattice_size_x] <= min) && (ic[threadID] > 1) && (jc[threadID] > 1)
+                                                    && (ic[threadID] < lattice_size_x) && (jc[threadID] < lattice_size_y)
+                                                    && (count < stacklimit) && (topo1dim[ic[threadID] + jc[threadID] * lattice_size_x] > 0)) {
+                                                topo1dim[ic[threadID] + jc[threadID] * lattice_size_x] = min + fillincrement;
 
 
                                                 count++;
-                                                stacki[(ic + 1)] = i;
-                                                stackj[(jc - 1)] = j;
+                                                stacki[(ic[threadID] + 1)] = i;
+                                                stackj[(jc[threadID] - 1)] = j;
 
                                                 count++;
-                                                stacki[(ic - 1)] = i;
-                                                stackj[(jc - 1)] = j;
+                                                stacki[(ic[threadID] - 1)] = i;
+                                                stackj[(jc[threadID] - 1)] = j;
 
                                                 count++;
-                                                stacki[(ic + 1)] = i;
-                                                stackj[(jc + 1)] = j;
+                                                stacki[(ic[threadID] + 1)] = i;
+                                                stackj[(jc[threadID] + 1)] = j;
 
                                                 count++;
-                                                stacki[(ic - 1)] = i;
-                                                stackj[(jc + 1)] = j;
+                                                stacki[(ic[threadID] - 1)] = i;
+                                                stackj[(jc[threadID] + 1)] = j;
 
                                                 count++;
-                                                stacki[(ic)] = i;
-                                                stackj[(jc - 1)] = j;
+                                                stacki[(ic[threadID])] = i;
+                                                stackj[(jc[threadID] - 1)] = j;
 
                                                 count++;
-                                                stacki[(ic)] = i;
-                                                stackj[(jc + 1)] = j;
+                                                stacki[(ic[threadID])] = i;
+                                                stackj[(jc[threadID] + 1)] = j;
 
                                                 count++;
-                                                stacki[(ic + 1)] = i;
-                                                stackj[(jc)] = j;
+                                                stacki[(ic[threadID] + 1)] = i;
+                                                stackj[(jc[threadID])] = j;
 
                                                 count++;
-                                                stacki[(ic - 1)] = i;
-                                                stackj[(jc)] = j;
+                                                stacki[(ic[threadID] - 1)] = i;
+                                                stackj[(jc[threadID])] = j;
 
                                                 count++;
-                                                stacki[(ic)] = i;
-                                                stackj[(jc)] = j;
+                                                stacki[(ic[threadID])] = i;
+                                                stackj[(jc[threadID])] = j;
                                             }
                                         }
                                     }
