@@ -2083,7 +2083,7 @@ gl.glPopMatrix();
     }
 
     public void precalc_Normals(int x, int y){
-        if (y != latticeSizeY) {
+        if (y != latticeSizeY && x > 0) {
             float[] v1 = new float[3];
             float[] v2 = new float[3];
             float[] norm = new float[3];

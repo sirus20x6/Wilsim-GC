@@ -6,7 +6,8 @@ public class Model implements Runnable {
     private int iterationCount = 0;
     private CondVar executeFlag;
     private CondVar resetFlag;
-    private static CondVar[] needWork = new CondVar[Runtime.getRuntime().availableProcessors() - 1];
+
+    private static CondVar[] needWork = new CondVar[Runtime.getRuntime().availableProcessors()];
     private static final float oneoversqrt2 = 0.70710678118F;
     private static final float sqrt2 = 1.414213562F;
     private static final int stacklimit = 1000000;
@@ -20,15 +21,14 @@ public class Model implements Runnable {
     private static final float oneoverdeltax = (float) 1.0 / gridHorizontalSpacingFactor;
     private static float diag;
     private static float max;
-    private int i;
-    private int j;
+
     private final static short profileStartX = 660;
     private final static short profileStartY = 158;
     public static final int oneDimSize = (lattice_size_x + 1) * (lattice_size_y + 1);
     public Profile river;
 
     int storageIntervals;
-    private int storeCount;
+    private static int storeCount;
 
     // Time parameters
     private float duration;
@@ -68,8 +68,8 @@ public class Model implements Runnable {
     boolean scoreFlag;
     double score;
 
-    private static int ic[] = new int[Runtime.getRuntime().availableProcessors() - 1];
-    private static int jc[] = new int[Runtime.getRuntime().availableProcessors() - 1];
+    private static int ic[] = new int[Runtime.getRuntime().availableProcessors()];
+    private static int jc[] = new int[Runtime.getRuntime().availableProcessors()];
 
     private static int count;
 
@@ -85,18 +85,16 @@ public class Model implements Runnable {
     public static Thread[] threads;
 
     public static void createThreads(){
-        final int cores = Runtime.getRuntime().availableProcessors() - 1;
+        final int cores = Runtime.getRuntime().availableProcessors();
         threads = new Thread[cores];
         for (int thread = 0; thread < threads.length; thread++) {
             final int threadID = thread;
             threads[thread] = new Thread(new Runnable() {
 
 
+
                 public void run() {
-                    int end = lattice_size_x;
-                    if (!(threadID == cores)){
-                        end = (threadID * (lattice_size_x / cores) + (lattice_size_x / cores)) + 1;
-                    }
+
 
 
 
@@ -112,6 +110,13 @@ public class Model implements Runnable {
                             }
                             continue;
                         }
+
+
+                        int end = lattice_size_x;
+                        if (!(threadID == cores)){
+                            end = (threadID * (lattice_size_x / cores) + (lattice_size_x / cores)) + 1;
+                        }
+
                         //System.out.println("thread " + threadID + " has started");
                         //System.out.println("I am thread " + threadID + " and I am doing i " + (threadID * (lattice_size_x / cores) + 1) + " Through " + (threadID * (lattice_size_x / cores) + (lattice_size_x / cores)));
                         if (time > 3000) {
@@ -187,9 +192,9 @@ public class Model implements Runnable {
                                                 stacki[(ic[threadID] - 1)] = i;
                                                 stackj[(jc[threadID])] = j;
 
-                                                count++;
+                                               /* count++;
                                                 stacki[(ic[threadID])] = i;
-                                                stackj[(jc[threadID])] = j;
+                                                stackj[(jc[threadID])] = j;*/
                                             }
                                         }
                                     }
@@ -234,48 +239,49 @@ public class Model implements Runnable {
 
                                 if (mask.get(i)) {
 
-                            calculatedownhillslope((short) (i % lattice_size_x), (short) (i / lattice_size_x));
-                            //float erodeddepth = topoorig[(i % lattice_size_x)][(i / lattice_size_x)] - topo1dim[i];
-                            float erodeddepth = topoorig1d[i] - topo1dim[i];
-                            if (erodeddepth > 50) {
+                                    calculatedownhillslope((short) (i % lattice_size_x), (short) (i / lattice_size_x));
+                                    //float erodeddepth = topoorig[(i % lattice_size_x)][(i / lattice_size_x)] - topo1dim[i];
+                                    float erodeddepth = topoorig1d[i] - topo1dim[i];
+                                    if (erodeddepth > 50) {
 
-                                mask.set(i + 1);
-                                mask.set(i - 1);
-                                mask.set(i + lattice_size_x);
-                                mask.set(i - lattice_size_x);
+                                        mask.set(i + 1);
+                                        mask.set(i - 1);
+                                        mask.set(i + lattice_size_x);
+                                        mask.set(i - lattice_size_x);
 
-                                mask.set((i + 1) + lattice_size_x);
-                                mask.set((i + 1) - lattice_size_x);
-                                mask.set((i - 1) + lattice_size_x);
-                                mask.set((i - 1) - lattice_size_x);
+                                        mask.set((i + 1) + lattice_size_x);
+                                        mask.set((i + 1) - lattice_size_x);
+                                        mask.set((i - 1) + lattice_size_x);
+                                        mask.set((i - 1) - lattice_size_x);
 
-                                if (timecut[(i % lattice_size_x)] < 0.01) timecut[(i % lattice_size_x)] = time;
+                                        if (timecut[(i % lattice_size_x)] < 0.01) timecut[(i % lattice_size_x)] = time;
+                                    }
+                                    erodeddepth = rim[(i % lattice_size_x)] - topo1dim[i];
+
+                                    float k;
+                                    if (erodeddepth < 300)
+                                        k = Wilsim.c.kstrng;
+                                    else if (erodeddepth < 700)
+                                        k = Wilsim.c.kstrng * Wilsim.c.kfctor;
+                                    else
+                                        k = Wilsim.c.kstrng;
+
+                                    float c = Wilsim.c.cliffRate;
+
+                                    if (area21d[i] > 2.0f) {
+                                        channel1d[i] = 1;
+                                        wavespeed1d[i] = (float) (k * Math.sqrt(area21d[i]));
+                                    } else {
+                                        wavespeed1d[i] = c;
+                                        channel1d[i] = 0;
+                                    }
+                                    if (wavespeed1d[i] > max)
+                                        max = wavespeed1d[i];
+                                    Wilsim.v.map_color_pre_calc(topo1dim[i], vert_color2[i]);
+                                    Wilsim.v.precalc_Normals(x, j);
+
+                                }
                             }
-                            erodeddepth = rim[(i % lattice_size_x)] - topo1dim[i];
-
-                            float k;
-                            if (erodeddepth < 300)
-                                k = Wilsim.c.kstrng;
-                            else if (erodeddepth < 700)
-                                k = Wilsim.c.kstrng * Wilsim.c.kfctor;
-                            else
-                                k = Wilsim.c.kstrng;
-
-                            float c = Wilsim.c.cliffRate;
-
-                            if (area21d[i] > 2.0f) {
-                                channel1d[i] = 1;
-                                wavespeed1d[i] = (float) (k * Math.sqrt(area21d[i]));
-                            } else {
-                                wavespeed1d[i] = c;
-                                channel1d[i] = 0;
-                            }
-                            if (wavespeed1d[i] > max)
-                                max = wavespeed1d[i];
-                            Wilsim.v.map_color_pre_calc(topo1dim[i], vert_color2[i]);
-
-                        }
-                    }
 
                         float erosion = 0;
 
@@ -295,11 +301,17 @@ public class Model implements Runnable {
                                     }
                                 }
 
+
+
                     synchronized (needWork[threadID]) {
                         needWork[threadID].boolVal = false;
                         needWork[threadID].notify();
                         //System.out.println("test");
                     }
+
+
+
+
                     //System.out.println("thread " + threadID + " is done");
                 }
                 //run is next bracket
@@ -335,7 +347,7 @@ public class Model implements Runnable {
     }
 
     public void toggleErosionThreads(){
-        for (int i = 0; i< Runtime.getRuntime().availableProcessors() - 1; i++){
+        for (int i = 0; i< Runtime.getRuntime().availableProcessors(); i++){
             synchronized (needWork[i]) {
 
                 if (needWork[i].boolVal) {
@@ -417,7 +429,7 @@ public class Model implements Runnable {
     }
     }*/
 
-    private static void calculatedownhillslope(int i, int j)
+    private static synchronized void calculatedownhillslope(int i, int j)
     // this routine computes topographic slope in the direction of steepest
     // descent
     {
@@ -489,7 +501,7 @@ public class Model implements Runnable {
         }
     }
 
-    private void calculatedownhillslopeorig(short i, short j)
+    private static void calculatedownhillslopeorig(int i, int j)
     // does the same as the above for a different copy of the topographic
     // surface grid
     {
@@ -575,24 +587,14 @@ public class Model implements Runnable {
 
 
     private void initNormals() {
-        float [] v1 = new float[3];
-        float [] v2 = new float[3];
-        float [] norm = new float[3];
-
-
-        v1[0] = 30.0f / 5.0f;  // Scale factor is a hack
-        v1[1] = 0.0f;
-
-        v2[0] = 0.0f;
-        v2[1] = 30.0f / 5.0f;  // Ditto on hack
         vert_Normals = new Vec3[oneDimSize];
 
-        for (int i = 1; i < vert_Normals.length - lattice_size_x; i++) {
-            v1[2] = Model.topo1dim[i + 1] - Model.topo1dim[i - 1];
-            v2[2] = Model.topo1dim[i + lattice_size_x] - Model.topo1dim[(i - 1) + lattice_size_x];
+        for (int i = 0; i < vert_Normals.length - lattice_size_x; i++) {
+
             vert_Normals[i] = new Vec3();
-
-
+        }
+        for (int i = 2; i < vert_Normals.length - lattice_size_x; i++) {
+            Wilsim.v.precalc_Normals(i % lattice_size_x, i / lattice_size_x);
         }
     }
 
@@ -642,7 +644,7 @@ public class Model implements Runnable {
         initNormals();
         setupmatrices();
 
-        for (i = 1; i <= lattice_size_x; i++) {
+        for (int i = 1; i <= lattice_size_x; i++) {
             rim[i] = fp0c.nextFloat();
             timecut[i] = 0;
 
@@ -652,17 +654,16 @@ public class Model implements Runnable {
             topo1dim[i] = fp1.nextFloat();
         }*/
 
-        for (j = 1; j <= lattice_size_y; j++) {
-            for (i = 1; i <= lattice_size_x; i++) {
+        for (int j = 1; j <= lattice_size_y; j++) {
+            for (int i = 1; i <= lattice_size_x; i++) {
 
 
                 topoorig1d[i + j * lattice_size_x] = topo1dim[i + j * lattice_size_x] = fp1.nextFloat();
                 Wilsim.v.map_color_pre_calc(topo1dim[i + j * lattice_size_x], vert_color2[i + j * lattice_size_x]);
-                Wilsim.v.precalc_Normals(i, j);
+
 
                 topoactual1d[i + j * lattice_size_x] = fp1b.nextFloat();
                 topodrain[i][j] = topo1dim[i + j * lattice_size_x];
-
                 area21d[i + j * lattice_size_x] = fp0b.nextFloat();
             }
         }
@@ -670,7 +671,7 @@ public class Model implements Runnable {
         Wilsim.v.initModel(); // Let the view know that data matrices are ready
 
         createThreads();
-        for (int thread = 0; thread < Runtime.getRuntime().availableProcessors() - 1; thread++) {
+        for (int thread = 0; thread < Runtime.getRuntime().availableProcessors(); thread++) {
             needWork[thread] = new CondVar(false);
             synchronized (needWork[thread]) {
 
@@ -728,51 +729,23 @@ public class Model implements Runnable {
             }
 
 
-/*//multithread test
+//multithread test
 
 
- for (int thread = 0; thread < Runtime.getRuntime().availableProcessors() - 1; thread++) {
+
+
+                for (int thread = 0; thread < Runtime.getRuntime().availableProcessors(); thread++) {
                     needWork[thread].boolVal = true;
                 }
 
-            for (int i = 0; i< Runtime.getRuntime().availableProcessors() - 1; i++){
-                synchronized (needWork[i]) {
-                        needWork[i].boolVal = true;
-                        needWork[i].notify();
-                }
-            }
-
-
-            for (int thread = 0; thread < Runtime.getRuntime().availableProcessors() - 1; thread++) {
-                synchronized (needWork[thread]) {
-                    while (needWork[thread].boolVal == true) {
-                       // System.out.println("thread " + thread + " " + needWork[thread].boolVal);
-                        try {
-                            needWork[thread].wait();
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        //assert true;
-
-                    }
-                }
-            }*/
-            // hydrologic correction
-
-
-
-                for (int thread = 0; thread < Runtime.getRuntime().availableProcessors() - 1; thread++) {
-                    needWork[thread].boolVal = true;
-                }
-
-                for (int i = 0; i < Runtime.getRuntime().availableProcessors() - 1; i++) {
+                for (int i = 0; i < Runtime.getRuntime().availableProcessors(); i++) {
                     synchronized (needWork[i]) {
                         needWork[i].boolVal = true;
                         needWork[i].notify();
                     }
                 }
 
-                for (int thread = 0; thread < Runtime.getRuntime().availableProcessors() - 1; thread++) {
+                for (int thread = 0; thread < Runtime.getRuntime().availableProcessors(); thread++) {
 
                         while (needWork[thread].boolVal == true) {
                             synchronized (needWork[thread]) {
@@ -813,29 +786,10 @@ public class Model implements Runnable {
                 System.arraycopy(topo1dim,0,topoSave[storeCount],0,topo1dim.length);
 
                 Wilsim.i.log.append("Storing XSections\n");
-                for (i = 0; i < XSectionManager.nXSections(); i++)
+                for (int i = 0; i < XSectionManager.nXSections(); i++)
                     XSectionManager.getXSection(i).appendXSectionValues1d(topo1dim); //1d fix
 
-                // computes and prints final long profiles for Colorado River
-                i = profileStartX;
-                j = profileStartY;
-                int count = 0;
-                float dist = 0.0f;
-                float last = topo1dim[i + j * lattice_size_x];
-                while (i > 1 && count < 522 && j < lattice_size_y) {
-                    river.distances[storeCount][count] = dist;
-                    river.values[storeCount][count] = last;
-                    count++;
 
-                    calculatedownhillslopeorig((short) i, (short) j);
-                    //calculatedownhillslope(i, j);
-
-                    dist += deltax * diag;
-                    int ikeep = i;
-                    last = topo1dim[i + j * lattice_size_x];
-                    i = draindiri[i][j];
-                    j = draindirj[ikeep][j];
-                }
                 river.n[storeCount] = count;
 
                 // Wilsim.i.log.append("storeTime: " + storeTime + "\n");
@@ -905,8 +859,8 @@ public class Model implements Runnable {
             int score_count;
             score_count = 0;
             // Stay away from borders for now
-            for (i = 2; i < lattice_size_x - 1; i++)
-                for (j = 2; j < lattice_size_y - 1; j++) {
+            for (int i = 2; i < lattice_size_x - 1; i++)
+                for (int j = 2; j < lattice_size_y - 1; j++) {
                     if (!((j > 81) && (0.4 * j + i < 75))) {
                         value = topo1dim[i + j * lattice_size_x] - topoactual1d[i + j * lattice_size_x];
                         //value = topo1dim[i + j * lattice_size_x] - topoactual1d[i + j * lattice_size_x];
@@ -982,12 +936,12 @@ public class Model implements Runnable {
             }
         }
 
-        for (j = 1; j <= lattice_size_y; j++)
-            for (i = 1; i <= lattice_size_x; i++) {
+        for (int j = 1; j <= lattice_size_y; j++)
+            for (int i = 1; i <= lattice_size_x; i++) {
                 //topo1dim[i + j * lattice_size_x] = topoorig[i][j];
                 topo1dim[i + j * lattice_size_x] = topoorig1d[i + j * lattice_size_x];
                 Wilsim.v.map_color_pre_calc(topoorig1d[i + j * lattice_size_x], vert_color2[i + j * lattice_size_x]);
-                Wilsim.v.precalc_Normals(i, j);
+                //Wilsim.v.precalc_Normals(i, j);
             }
         Wilsim.c.sectionTimes.removeAll(Wilsim.c.sectionTimes);
         Wilsim.c.timeLegend.setText("<html></html>");
@@ -1029,15 +983,15 @@ public class Model implements Runnable {
         scoreFlag = false;
         //
 
-        for (j = 1; j <= lattice_size_y; j++) {
-            for (i = 1; i <= lattice_size_x; i++) {
+        for (int j = 1; j <= lattice_size_y; j++) {
+            for (int i = 1; i <= lattice_size_x; i++) {
                 U1d[i + j * lattice_size_x] = 0;
                 channel1d[i + j * lattice_size_x] = 0;
                 topo1dim[i + j * lattice_size_x] = topoorig1d[i + j * lattice_size_x];
                 Wilsim.v.map_color_pre_calc(topoorig1d[i + j * lattice_size_x], vert_color2[i + j * lattice_size_x]);
                 Wilsim.v.precalc_Normals(i, j);
 
-                if ((j > 81) && (0.4 * j + i < 75))
+                if ((j > 162) && (0.4 * j + i < 150))
                     mask.set(i + j * lattice_size_x, true);
                 else
                     /*mask[i][j] = 0; // defines the Lower Colorado trough as*/
@@ -1057,8 +1011,10 @@ public class Model implements Runnable {
                 // values used here
                 //masknew[i][j] = mask[i][j];
                 wavespeed1d[i + j * lattice_size_x] = 0;
+
             }
         }
+
         //Wilsim.v.loadModel(topo);
         Wilsim.v.newComp();
 
