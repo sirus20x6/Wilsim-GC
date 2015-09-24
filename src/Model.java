@@ -184,7 +184,7 @@ public class Model implements Runnable {
     // this routine computes topographic slope in the direction of steepest
     // descent
     {
-        if (i + (j - 1) * lattice_size_x > 0 && i + (j + 1) * lattice_size_x <= oneDimSize) {
+        if (i + (j - 1) * lattice_size_x > 0 && i + (j + 1) * lattice_size_x < (oneDimSize - lattice_size_x) -1) {
             float down;
             down = 0;
             draindiri[i][j] = i;
@@ -510,6 +510,7 @@ public class Model implements Runnable {
 
                     mask.set((i + 1) + lattice_size_x);
                     mask.set((i + 1) - lattice_size_x);
+
                     mask.set((i - 1) + lattice_size_x);
                     mask.set((i - 1) - lattice_size_x);
 
@@ -518,11 +519,11 @@ public class Model implements Runnable {
                 erodeddepth = rim[(i % lattice_size_x)] - topo1dim[i];
 
                 float k;
-                if (erodeddepth < 300)
-                    k = Wilsim.c.kstrng;
-                else if (erodeddepth < 700)
+                k = Wilsim.c.kstrng;
+
+                if (erodeddepth < 700)
                     k = Wilsim.c.kstrng * Wilsim.c.kfctor;
-                else
+                if (erodeddepth < 300)
                     k = Wilsim.c.kstrng;
 
                 float c = Wilsim.c.cliffRate;
@@ -649,7 +650,8 @@ public class Model implements Runnable {
 
             if (time >= storeTime) {
                 //topoSave[storeCount].clone(topo1dim);
-                System.arraycopy(topo1dim,0,topoSave[storeCount],0,topo1dim.length);
+                //System.arraycopy(topo1dim,0,topoSave[storeCount],0,topo1dim.length);
+                //for toposave sections
 
                 Wilsim.i.log.append("Storing XSections\n");
                 for (i = 0; i < XSectionManager.nXSections(); i++)
@@ -810,7 +812,8 @@ public class Model implements Runnable {
     void resetCall() {
 /*        for (i = 0; i <= lattice_size_x; i++)
             System.arraycopy(topoorig[i], 0, topo1dim, i * lattice_size_y, lattice_size_y); //1d fix*/
-
+        time = 0;
+        Wilsim.v.duringSim = false;
         if (Wilsim.c.pauseValue == 0) {
             if(executeFlag.boolVal)
                 toggleExecution();

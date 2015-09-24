@@ -11,6 +11,8 @@ import com.jogamp.opengl.util.glsl.ShaderState;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 
 public class View implements Runnable, GLEventListener {
     public final GLCanvas canvas;
@@ -103,9 +105,11 @@ private final float COLOR_MIN_HEIGHT = 1400.0f;
     private final float[] mouse2Data = new float[4];
 
     public XSection tempXSection = new XSection();;
+    public static boolean duringSim = false;
 
     // XSection information
     final private float profileScale = 1.1f;  // For borders in profile view
+    public float cameraZ = 0f;
 
     public View() {
         // System.out.println("View: View()\n");
@@ -127,8 +131,9 @@ private final float COLOR_MIN_HEIGHT = 1400.0f;
         ViewEventHandler v = new ViewEventHandler();
         canvas.addMouseListener(v);
         canvas.addMouseMotionListener(v);
+        canvas.addMouseWheelListener(v);
 
-        // Initialize camera parameters
+                // Initialize camera parameters
         viewLongitude = 180.0f;
         viewLatitude = 45.0f;
 
@@ -160,11 +165,11 @@ private final float COLOR_MIN_HEIGHT = 1400.0f;
 
     // inner class for handling events
     private class ViewEventHandler extends ViewAdapter {
+
         @Override
         public void mousePressed(MouseEvent m) {
-        /* Wilsim.i.log.append("View : button_down() (" + m.getX() + ", "
-                + m.getY() + ")\n");
-	    */
+
+
 
             mouseEndX = mouseStartX = m.getX();
             mouseEndY = mouseStartY = m.getY();
@@ -173,6 +178,8 @@ private final float COLOR_MIN_HEIGHT = 1400.0f;
                 case SPIN_MODE:
                     return;
                 case PROFILE_MODE:
+                    if (Wilsim.m.getTime() == 0){
+
                     tempXSection.startX =
                             (int) (mouseStartX * mouse2Data[0] + mouse2Data[1]);
                     tempXSection.startY =
@@ -195,6 +202,11 @@ private final float COLOR_MIN_HEIGHT = 1400.0f;
 					+ tempXSection.startX + ", "
 					+ tempXSection.startY + ")\n");
 		    */
+
+                    }
+                    else{
+                        duringSim = true;
+                    }
                     break;
                 default:
                     return;
@@ -222,21 +234,22 @@ private final float COLOR_MIN_HEIGHT = 1400.0f;
                 case SPIN_MODE:
                     break;
                 case PROFILE_MODE:
-                    if (!buttonDownFlag) return;  // Invalid start point
-                    tempXSection.endX =
-                            (int) (mouseEndX * mouse2Data[0] + mouse2Data[1]);
-                    tempXSection.endY =
-                            (int) (mouseEndY * mouse2Data[2] + mouse2Data[3]);
-                    // Check for bounds
-                    if (tempXSection.startX < 0
-                            || tempXSection.endX >= latticeSizeX)
-                        break;
-                    if (tempXSection.startY < 0
-                            || tempXSection.endY >= latticeSizeY)
-                        break;
+                    if (Wilsim.m.getTime() == 0) {
+                        if (!buttonDownFlag) return;  // Invalid start point
+                        tempXSection.endX =
+                                (int) (mouseEndX * mouse2Data[0] + mouse2Data[1]);
+                        tempXSection.endY =
+                                (int) (mouseEndY * mouse2Data[2] + mouse2Data[3]);
+                        // Check for bounds
+                        if (tempXSection.startX < 0
+                                || tempXSection.endX >= latticeSizeX)
+                            break;
+                        if (tempXSection.startY < 0
+                                || tempXSection.endY >= latticeSizeY)
+                            break;
 
-                    // For future implementation -- clipping of line outside
-                    // bounds would be better.
+                        // For future implementation -- clipping of line outside
+                        // bounds would be better.
 
 		    /* 
 		    Wilsim.i.log.append("View : button_up() mouse(" 
@@ -246,19 +259,19 @@ private final float COLOR_MIN_HEIGHT = 1400.0f;
 					+ tempXSection.endY + ")\n");
 		    */
 
-                    // For future implementation -- clipping of line outside
-                    // bounds would be better.
+                        // For future implementation -- clipping of line outside
+                        // bounds would be better.
 
-                    // Make a profile
-                    int p_index = XSectionManager.addXSection();
-                    XSection p = XSectionManager.getXSection(p_index);
+                        // Make a profile
+                        int p_index = XSectionManager.addXSection();
+                        XSection p = XSectionManager.getXSection(p_index);
 
 
-                    p.startX = tempXSection.startX;
-                    p.startY = tempXSection.startY;
-                    p.endX = tempXSection.endX;
-                    p.endY = tempXSection.endY;
-
+                        p.startX = tempXSection.startX;
+                        p.startY = tempXSection.startY;
+                        p.endX = tempXSection.endX;
+                        p.endY = tempXSection.endY;
+                    }
                     break;
                 default:
                     break;
@@ -281,22 +294,24 @@ private final float COLOR_MIN_HEIGHT = 1400.0f;
                 case SPIN_MODE:
                     return;
                 case PROFILE_MODE:
+                    if (Wilsim.m.getTime() == 0) {
 		    /* Wilsim.i.log.append("View : move() (" + m.getX() + ", "
 						+ m.getY() + ")\n");
 		    */
-                    if (!buttonDownFlag) {
-                        // Shouldn't happen unless events are processed
-                        // out of order
-                        Wilsim.i.log.append("View : move() : out of order\n");
-                        return;
+                        if (!buttonDownFlag) {
+                            // Shouldn't happen unless events are processed
+                            // out of order
+                            Wilsim.i.log.append("View : move() : out of order\n");
+                            return;
+                        }
+
+                        {
+
+                            // Check for bounds
+                            // For future implementation -- clipping of line outside
+                            // bounds would be better.
+                        }
                     }
-
-                {
-
-                    // Check for bounds
-                    // For future implementation -- clipping of line outside
-                    // bounds would be better.
-                }
                 break;
                 default:
                     return;
@@ -308,7 +323,27 @@ private final float COLOR_MIN_HEIGHT = 1400.0f;
                 newComputation.notify();
             }
         }
+
+
+        @Override
+        public void mouseWheelMoved(MouseWheelEvent m) {
+
+            float wheelRotation = m.getWheelRotation();
+            if (wheelRotation != 0){
+                cameraZ += wheelRotation * 100;
+                synchronized (newComputation) {
+                    newUI = true;
+                    newComputation.boolVal = true;
+                    newComputation.notify();
+                }
+            }
+        }
+
     }
+
+
+
+
 
     public void init(final GLAutoDrawable glautodrawable) {
         // Wilsim.i.log.append("View : init()\n");
@@ -345,6 +380,7 @@ private final float COLOR_MIN_HEIGHT = 1400.0f;
             colors.seal(gl, true);
             st.ownAttribute(colors, true);
             colors.enableBuffer(gl, false);*/
+            System.err.println("GLSL unavailable");
         }
         else
             System.err.println("GLSL available");
@@ -396,52 +432,6 @@ private final float COLOR_MIN_HEIGHT = 1400.0f;
         newComputation.boolVal = false;
     }
 
-    public void loadModel(float[][] array) {
-        // System.out.println("View: loadModel()\n");
-// Don't coppy an array in a for loop. Very slow!
-/*	for(int i = 0; i < array.length; i++)
-	    for(int j = 0; j < array[i].length; j++)
-		topo[i][j] = array[i][j];*/
-
-        //topo = array.clone(); // <== this should be 4x faster
-
-
-
-
-        //for(int j = 0; j <= latticeSizeX; j++)
-        //System.arraycopy(array[j], 0, topo[j], 0, array[0].length); //even faster
-
-
-
-
-
- /*       for (int j = 1; j <= Model.lattice_size_y; j++) {
-            for (int i = 1; i <= Model.lattice_size_x; i++) {
-                float t = (topo[i][j] - COLOR_MIN_HEIGHT) / (COLOR_MAX_HEIGHT - COLOR_MIN_HEIGHT);
-
-                // Clamp to range, just in case
-                if (t < 0.0) t = 0.0f;
-                if (t > 1.0) t = 1.0f;
-                if (t < 0.5 *//*&& t > 0.01*//*) {
-                    topoColor[i][j][0] = 0.488f + t * 0.836f;
-                    topoColor[i][j][1] = 0.164f + t * 0.953f;
-                    topoColor[i][j][2] = 0.094f + t * 0.172f;
-                }
-                else {
-                    topoColor[i][j][0] = 0.906f + (t - 0.5f) * 0.180f;
-                    topoColor[i][j][1] = 0.640f + (t - 0.5f) * 0.680f;
-                    topoColor[i][j][2] = 0.180f + (t - 0.5f) * 0.773f;
-                }
-            }
-            }*/
-
-/*        synchronized (newComputation) {
-            newData = true;
-            newComputation.boolVal = true;
-            newComputation.notify();
-        }*/
-    }
-
     public void newComp(){
         synchronized (newComputation) {
             newData = true;
@@ -488,6 +478,8 @@ private final float COLOR_MIN_HEIGHT = 1400.0f;
 
     private void drawprofileMode() {
         drawXSectionMode();
+
+
         gl.glEnable(GLLightingFunc.GL_LIGHTING);
 
         // Position lights
@@ -495,7 +487,7 @@ private final float COLOR_MIN_HEIGHT = 1400.0f;
 
         // Recenter and resposition grid
         // gl.glRotatef(180f, 1.0f, 1.0f, .0f);
-        gl.glScalef(gridHorizontalScaleFactor, -gridHorizontalScaleFactor +2, 1.0f);
+        gl.glScalef(gridHorizontalScaleFactor, -gridHorizontalScaleFactor + 2, 1.0f);
         gl.glTranslatef(-latticeSizeX / 2, -latticeSizeY / 2, -1800);
         // Z translation is currently a hack based on the grid.  Roughly 1800 m for
         // the Grand Canyon
@@ -505,15 +497,26 @@ private final float COLOR_MIN_HEIGHT = 1400.0f;
         gl.glDisable(GLLightingFunc.GL_LIGHTING);
 
         drawXSections();
+if (duringSim == true) {
+    gl.glTranslatef(30f, -15f, 3000.f);
+    gl.glScalef(0.08f, -0.08f, 0.0f);
+    renderStrokeString(GLUT.STROKE_MONO_ROMAN, "Draw the cross-section before");
+    gl.glTranslatef(-2700f, -150f, 0f);
+    renderStrokeString(GLUT.STROKE_MONO_ROMAN, "starting the simulation");
+}
 
-        // Now draw UI stuff on top
-        gl.glMatrixMode(GLMatrixFunc.GL_PROJECTION);
+                // Now draw UI stuff on top
+                gl.glMatrixMode(GLMatrixFunc.GL_PROJECTION);
         gl.glLoadIdentity();
         gl.glOrtho(0.0f, canvas.getWidth(), 0.0f, canvas.getHeight(), 1.0f, 2.0f);
         gl.glMatrixMode(GLMatrixFunc.GL_MODELVIEW);
         gl.glLoadIdentity();
 
+
+
         drawUI();
+
+
 
     }
 
@@ -563,6 +566,7 @@ private final float COLOR_MIN_HEIGHT = 1400.0f;
         // Set up 3D rendering
         gl.glMatrixMode(GLMatrixFunc.GL_MODELVIEW);
         gl.glLoadIdentity();
+        gl.glTranslatef(1f, 1f, cameraZ);
         gl.glMultMatrixf(world2cam, 0);
 
         // Spin mode
@@ -585,7 +589,6 @@ private final float COLOR_MIN_HEIGHT = 1400.0f;
         drawTerrain();
 
 
-
         gl.glDisable(GLLightingFunc.GL_LIGHTING);
 
         drawXSections();
@@ -600,9 +603,6 @@ private final float COLOR_MIN_HEIGHT = 1400.0f;
 
         drawVertScale();
         drawUI();
-        immModeSink.draw(gl, true);
-
-
 
     }
 
@@ -678,6 +678,7 @@ private final float COLOR_MIN_HEIGHT = 1400.0f;
     }
 
     private void drawRP() {
+
         gl.glEnable(GLLightingFunc.GL_LIGHTING);
 
         // Position lights
@@ -813,203 +814,6 @@ private final float COLOR_MIN_HEIGHT = 1400.0f;
 
         gl.glLineWidth(1.0f);
     }
-/*
-    private void drawTerrain2() {
-        // Need a separate vertex normal for each quad -- this implementation is inefficient
-        // Should be computed once and stored when grid is loaded
-
-        float[] v1 = new float[3];
-        float[] v2 = new float[3];
-        float[] norm = new float[3];
-        float[] color = new float[4];
-
-        v1[0] = gridHorizontalScaleFactor / 5.0f;  // Scale factor is a hack
-        v1[1] = 0.0f;
-
-        v2[0] = 0.0f;
-        v2[1] = gridHorizontalScaleFactor / 5.0f;  // Ditto on hack
-
-        // Get ready for varying material properties
-        gl.glEnable(GLLightingFunc.GL_COLOR_MATERIAL);
-        gl.glColorMaterial(GL.GL_FRONT_AND_BACK,
-                GLLightingFunc.GL_AMBIENT_AND_DIFFUSE);
-        int interp = 2;
-
-        float mux = (2 % interp) * (1 / (float) (interp - 1));
-        float mux2 = (float) (1 - Math.cos(mux * Math.PI)) / 2;
-
-        for (int x = 2; x < (latticeSizeX - 2) * interp; x++) {
-
-
-
-            float muxb = ((x + 1) % interp) * (1 / (float) (interp - 1));
-            float muxb2 = (float) (1 - Math.cos(muxb * Math.PI)) / 2;
-
-
-            for (int y = 2; y < (latticeSizeY - 2) * interp; y++) {
-
-                float answerx = (
-                        topo[x / interp][y / interp] * (1 - mux2) + topo[(x / interp) + 1][(y / interp)] * mux2);
-                float answerx2 = (
-                        topo[x / interp][y / interp + 1] * (1 - mux2) + topo[(x / interp) + 1][(y / interp) + 1] * mux2);
-
-                float answerxb = (
-                        topo[x / interp][y / interp] * (1 - muxb2) + topo[(x / interp) + 1][(y / interp)] * muxb2);
-
-                float answerxb2 = (
-                        topo[x / interp][y / interp + 1] * (1 - muxb2) + topo[(x / interp) + 1][(y / interp) + 1] * muxb2);
-
-                float muy = (y % interp) * (1 / (float) (interp - 1));
-                float muy2 = (float) (1 - Math.cos(muy * Math.PI)) / 2;
-
-                float ybetweenx0x1 = (
-                        answerx * (1 - muy2) + answerx2 * muy2);
-                float ybetweenx1x2 = (
-                        answerxb * (1 - muy2) + answerxb2 * muy2);
-
-                float muyb = ((y + 1) % interp) * (1 / (float) (interp - 1));
-                float muyb2 = (float) (1 - Math.cos(muyb * Math.PI)) / 2;
-
-                float y1betweenx0x1 = (
-                        answerx * (1 - muyb2) + answerx2 * muyb2);
-
-                float y1betweenx1x2 = (
-                        answerxb * (1 - muyb2) + answerxb2 * muyb2);
-
-
-
-
-                gl.glBegin(GL.GL_TRIANGLE_STRIP);
-                v1[2] = topo[(x / interp) + 1][(y / interp)] - topo[(x / interp) - 1][(y / interp)];
-                v2[2] = topo[(x / interp)][(y / interp) + 1] - topo[(x / interp)][(y / interp) - 1];
-
-                cross(norm, v2, v1);
-
-                gl.glNormal3fv(norm, 0);
-
-                map_color(ybetweenx0x1, color);
-                gl.glColor3f(color[0], color[1], color[2]);
-                gl.glVertex3f(x / interp + mux, y / interp + muy, ybetweenx0x1);
-
-                map_color(ybetweenx1x2, color);
-                gl.glColor3f(color[0], color[1], color[2]);
-                gl.glVertex3f(x / interp + mux + mux, y / interp + muy, ybetweenx1x2);
-
-                map_color(y1betweenx0x1, color);
-                gl.glColor3f(color[0], color[1], color[2]);
-                gl.glVertex3f(x / interp + mux, y / interp + muy + muy, y1betweenx0x1);
-
-*//*                v1[2] = topo[(x / interp) + 2][(y / interp) + 1] - topo[x / interp][y / interp + 1];
-                v2[2] = topo[(x / interp) + 1][(y / interp) + 2] - topo[(x / interp) + 1][y / interp];
-
-                cross(norm, v2, v1);*//*
-
-                map_color(y1betweenx1x2, color);
-                gl.glColor3f(color[0], color[1], color[2]);
-                gl.glVertex3f(x / interp + mux + mux, y / interp + muy + muy, y1betweenx1x2);
-
-
-                gl.glEnd();
-
-
-            }
-            mux = muxb;
-            mux2 = muxb2;
-        }
-        float km = 13.888888888f;
-        int offset = 2;
-        int verty = 270;
-
-
-
-
-
-*//*        gl.glBegin(GL.GL_TRIANGLES);
-        gl.glColor3f(0.0f, 0.0f, 0.0f);
-
-        gl.glVertex3f(offset, 271, 1800.0f);
-        gl.glVertex3f(km * 5 + offset, 271, 1800.0f);
-        gl.glVertex3f(offset, 261, 1800.0f);
-
-        gl.glVertex3f(offset, 261, 1800.0f);
-        gl.glVertex3f(km * 5 + offset, 271, 1800.0f);
-        gl.glVertex3f(km * 5 + offset, 261, 1800.0f);
-
-
-        gl.glColor3f(1.75f, 1.75f, 1.75f);
-        gl.glVertex3f(km * 5 + offset, 271, 1800.0f);
-        gl.glVertex3f(km * 7 + offset, 271, 1800.0f);
-        gl.glVertex3f(km * 5 + offset, 261, 1800.0f);
-
-        gl.glVertex3f(km * 5 + offset, 261, 1800.0f);
-        gl.glVertex3f(km * 7 + offset, 271, 1800.0f);
-        gl.glVertex3f(km * 7 + offset, 261, 1800.0f);
-
-        gl.glColor3f(1.0f, 1.0f, 1.0f);
-        gl.glVertex3f(km * 7 + offset, 271, 1800.0f);
-        gl.glVertex3f(km * 8 + offset, 271, 1800.0f);
-        gl.glVertex3f(km * 7 + offset, 261, 1800.0f);
-
-        gl.glVertex3f(km * 7 + offset, 261, 1800.0f);
-        gl.glVertex3f(km * 8 + offset, 271, 1800.0f);
-        gl.glVertex3f(km * 8 + offset, 261, 1800.0f);
-
-        gl.glEnd();*//*
-
-        gl.glLineWidth(1.0f);
-        gl.glColor3f(0.0f, 0.0f, 0.0f);
-        gl.glBegin(GL2.GL_LINES);
-        gl.glVertex3f(offset, verty - 5.0f, 1820.0f);
-        gl.glVertex3f(km * 10 + offset, verty - 5.0f, 1820.0f);
-        gl.glEnd();
-
-        // Draw label tics
-        gl.glColor3f(0.0f, 0.0f, 0.0f);
-        //gl.glColor4f(0.0f, 0.0f, 0.0f, .5f);
-        gl.glBegin(GL2.GL_LINES);
-        gl.glVertex3f(offset, verty + 0.0f, 1820.0f);
-        gl.glVertex3f(offset, verty - 10.0f, 1820.0f);
-        //System.out.println("Line 50 * drawScaleX " + (50 * drawScaleX));
-        gl.glVertex3f(km * 2.5f + offset, verty + 0.0f, 1820.0f);
-        gl.glVertex3f(km * 2.5f + offset, verty - 10.0f, 1820.0f);
-        //System.out.println("Line 20050 * drawScaleX " + (20050 * drawScaleX));
-        gl.glVertex3f(km * 5 + offset, verty + 0.0f, 1820.0f);
-        gl.glVertex3f(km * 5 + offset, verty - 10.0f, 1820.0f);
-        //System.out.println("Line 30050 * drawScaleX " + (30050 * drawScaleX));
-        gl.glVertex3f(km * 10 + offset, verty + 0.0f, 1820.0f);
-        gl.glVertex3f(km * 10 + offset, verty - 10.0f, 1820.0f);
-
-*//*        gl.glVertex3f(km * 15 + offset, verty + 0.0f, 1820.0f);
-        gl.glVertex3f(km * 15 + offset, verty - 10.0f, 1820.0f);*//*
-        //System.out.println("Line 40050 * drawScaleX " + (40050 * drawScaleX));
-
-
-        gl.glEnd();
-
-
-        vertScaleTextEngine.setColor(0.0f, 0.0f, 0.0f, 1.0f);
-        vertScaleTextEngine.beginRendering(canvas.getWidth(), canvas.getHeight());
-
-*//*        vertScaleTextEngine.draw("Horizontal Distance (km) ", 5, 5);
-        vertScaleTextEngine.draw("Horizontal Distance (km) " , 5, 5);
-        vertScaleTextEngine.draw("Horizontal Distance (km) " , 5, 5);*//*
-*//*        if (viewMode == SPIN_MODE) {*//*
-        vertScaleTextEngine.draw("0 km ", 5, 25);
-        vertScaleTextEngine.draw("25 km ", 55, 25);
-        vertScaleTextEngine.draw("50 km ", 105, 25);
-        vertScaleTextEngine.draw("100 km ", 205, 25);
-//        }
- *//*       else {*//*
-*//*            vertScaleTextEngine.draw("0 km ", 50, 25);
-            vertScaleTextEngine.draw("25 km ", 155, 25);
-            vertScaleTextEngine.draw("50 km ", 205, 25);
-            vertScaleTextEngine.draw("100 km ", 305, 25);
-            vertScaleTextEngine.draw("200 km ", 515, 25);*//*
-
-        //       }
-        vertScaleTextEngine.endRendering();
-        gl.glDisable(GLLightingFunc.GL_COLOR_MATERIAL);
-    }*/
 
 
     private void drawTerrainasdf()
@@ -1769,6 +1573,8 @@ gl.glPopMatrix();
     }
 
     private void drawProfileView() {
+
+
         gl.glClearColor(.5f, .5f, .5f, 1.0f);
         gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
 
@@ -2105,6 +1911,7 @@ gl.glPopMatrix();
         cameraEye[1] = cameraRadius * (float) Math.cos(longitude * Math.PI / 180.0f)
                 * (float) Math.sin(latitude * Math.PI / 180.0f);
         cameraEye[2] = cameraRadius * (float) Math.cos(latitude * Math.PI / 180.0f);
+
 
         calculateWorldToCamera(world2cam);
     }

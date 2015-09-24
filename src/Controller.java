@@ -514,23 +514,6 @@ public class Controller
             }
         });
 
-/*
-        //JButton initialize = new JButton("Initialize");
-        //initialize.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent arg0) {
-                Wilsim.v.resetXSections();
-            }
-        });
-
-        //JButton display = new JButton("Display");
-       *//* display.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent arg0) {
-                Wilsim.v.resetXSections();
-            }
-        });
-*/
 
         // create XSection File Browser for future use
         xsfc = new JFileChooser();
@@ -609,18 +592,6 @@ public class Controller
 
                 viewPanel.remove(viewHorScroll);
                 viewPanel.remove(viewVerScroll);
-/*
-                viewVerScroll.setBackground(new Color(1, 0, 0, 0));
-                viewVerScroll.setLayout(null);
-                viewVerScroll.setPreferredSize(null);
-
-                viewVerScroll.setBounds(10, 35, 250, 525);
-                viewVerScroll.setBackground(new Color(1, 0, 0, 0));
-                viewVerScroll.setPreferredSize(new Dimension(0, 0));
-                viewVerScroll.setBorder(null);
-                //viewVerScroll.setViewportBorder(null);
-                viewVerScroll.setBorder(null);
-*/
 
 
                 card.show(cardPanel, "Card3");
@@ -825,7 +796,7 @@ public class Controller
    pas.setBorder(Line);
    */
         // Storage intervals
-        JLabel siLabel = new JLabel("Storage Intervals :");
+        JLabel siLabel = new JLabel("Visualization Intervals :");
         siLabel.setToolTipText(
                 "<html>How often the long profile and cross-section will be saved:<br />" +
                         "a value of 1 means that they will be saved once (at the end<br />" +
@@ -900,10 +871,10 @@ public class Controller
     private void saveCross() {
         //Wilsim.c.outputReady();
         //remember dir choosen
-        outputTopo(
+        //outputTopo(
                 outputProfiles(
                         outputXSections(curDir)
-                )
+                //)
         );
 
     }
