@@ -16,20 +16,12 @@ import java.awt.event.MouseWheelEvent;
 public class View implements Runnable, GLEventListener {
     public final GLCanvas canvas;
     private final GLCapabilities caps;
-<<<<<<< .merge_file_a02176
 /*    //private final ImmModeSink gl = ImmModeSink.createFixed(Wilsim.m.oneDimSize,
-=======
-    private final ImmModeSink immModeSink = ImmModeSink.createFixed(Wilsim.m.oneDimSize,
->>>>>>> .merge_file_a22216
             3, GL.GL_FLOAT, // vertex
             3, GL.GL_FLOAT, // color
             3, GL.GL_FLOAT, // normal
             0, GL.GL_FLOAT, // texCoords
-<<<<<<< .merge_file_a02176
             GL.GL_DYNAMIC_DRAW);*/
-=======
-            GL.GL_DYNAMIC_DRAW);
->>>>>>> .merge_file_a22216
     private GL2 gl;
 
     private static float[][][] topoColor;
@@ -198,9 +190,9 @@ public class View implements Runnable, GLEventListener {
                     // For future implementation -- clipping of line outside
                     // bounds would be better.
 
-		    /* Wilsim.i.log.append("View : button_down() mouse(" 
+		    /* Wilsim.i.log.append("View : button_down() mouse("
                     + m.getX() + ", "+ m.getY() + ")\n");
-		    Wilsim.i.log.append("View : button_down() data(" 
+		    Wilsim.i.log.append("View : button_down() data("
 					+ tempXSection.startX + ", "
 					+ tempXSection.startY + ")\n");
 		    */
@@ -247,10 +239,10 @@ public class View implements Runnable, GLEventListener {
                     // For future implementation -- clipping of line outside
                     // bounds would be better.
 
-		    /* 
-		    Wilsim.i.log.append("View : button_up() mouse(" 
+		    /*
+		    Wilsim.i.log.append("View : button_up() mouse("
 					+ m.getX() + ", "+ m.getY() + ")\n");
-		    Wilsim.i.log.append("View : button_up() data(" 
+		    Wilsim.i.log.append("View : button_up() data("
 					+ tempXSection.endX + ", "
 					+ tempXSection.endY + ")\n");
 		    */
@@ -853,7 +845,6 @@ public class View implements Runnable, GLEventListener {
         gl.glColorMaterial(GL.GL_FRONT_AND_BACK,
                 GLLightingFunc.GL_AMBIENT_AND_DIFFUSE);
 
-<<<<<<< .merge_file_a02176
         gl.glBegin(GL.GL_TRIANGLE_STRIP);
 
 
@@ -946,106 +937,10 @@ public class View implements Runnable, GLEventListener {
         }
 
         //gl.glEnd(gl, true);
-=======
-        immModeSink.glBegin(GL.GL_TRIANGLE_STRIP);
 
 
-
-        for(int x = 1; x < latticeSizeX; x++) {
-
-        for(int y = 1; y < latticeSizeY; y++)
-        {
-
-            immModeSink.glNormal3f(Wilsim.m.vert_Normals[x + y * Model.lattice_size_x].x, Wilsim.m.vert_Normals[x + y * Model.lattice_size_x].y, Wilsim.m.vert_Normals[x + y * Model.lattice_size_x].z);
-            immModeSink.glColor3f(Model.vert_color2[x + y * Model.lattice_size_x].x, Model.vert_color2[(x + y * Model.lattice_size_x)].y, Model.vert_color2[(x + y * Model.lattice_size_x)].z);
-            immModeSink.glVertex3f(x, y, Model.topo1dim[x + y * latticeSizeX]);
-
-            x++;
-
-            immModeSink.glNormal3f(Wilsim.m.vert_Normals[x + y * Model.lattice_size_x].x, Wilsim.m.vert_Normals[x + y * Model.lattice_size_x].y, Wilsim.m.vert_Normals[x + y * Model.lattice_size_x].z );
-            immModeSink.glColor3f(Model.vert_color2[x + y * Model.lattice_size_x].x, Model.vert_color2[(x + y * Model.lattice_size_x)].y, Model.vert_color2[(x + y * Model.lattice_size_x)].z);
-            immModeSink.glVertex3f(x, y, Model.topo1dim[x + y * latticeSizeX]);
-            x--;
-        }
-
-        //degenerate triangles
-
-        //eff
-        immModeSink.glNormal3f(0f,0f,0f);
-        immModeSink.glColor3f(0f, 0f, 0f);
-        immModeSink.glVertex3f(x, latticeSizeY, Model.topo1dim[x + latticeSizeY * latticeSizeX]);
-        immModeSink.glNormal3f(0f, 0f, 0f);
-        immModeSink.glColor3f(0f, 0f, 0f);
-        immModeSink.glVertex3f(x + 1, latticeSizeY, Model.topo1dim[(x + 1) + latticeSizeY * latticeSizeX]);
-        immModeSink.glNormal3f(0f, 0f, 0f);
-        immModeSink.glColor3f(0f, 0f, 0f);
-        immModeSink.glVertex3f(x + 1, latticeSizeY, Model.topo1dim[(x + 1) + latticeSizeY * latticeSizeX]);
-
-        //FFG
-        immModeSink.glNormal3f(0f, 0f, 0f);
-        immModeSink.glColor3f(0f, 0f, 0f);
-        immModeSink.glVertex3f(x + 1, latticeSizeY, Model.topo1dim[(x + 1) + latticeSizeY * latticeSizeX]);
-        immModeSink.glNormal3f(0f, 0f, 0f);
-        immModeSink.glColor3f(0f, 0f, 0f);
-        immModeSink.glVertex3f(x + 1, latticeSizeY, Model.topo1dim[(x + 1) + latticeSizeY * latticeSizeX]);
-        immModeSink.glNormal3f(0f, 0f, 0f);
-        immModeSink.glColor3f(0f, 0f, 0f);
-        immModeSink.glVertex3f(x, 1, Model.topo1dim[x + latticeSizeX]);
-
-        //FGG
-        immModeSink.glNormal3f(0f, 0f, 0f);
-        immModeSink.glColor3f(0f, 0f, 0f);
-        immModeSink.glVertex3f(x + 1, latticeSizeY, Model.topo1dim[(x + 1) + latticeSizeY * latticeSizeX]);
-        immModeSink.glNormal3f(0f, 0f, 0f);
-        immModeSink.glColor3f(0f, 0f, 0f);
-        immModeSink.glVertex3f(x, 1, Model.topo1dim[x + latticeSizeX]);
-        immModeSink.glNormal3f(0f, 0f, 0f);
-        immModeSink.glColor3f(0f, 0f, 0f);
-        immModeSink.glVertex3f(x, 1, Model.topo1dim[x + latticeSizeX]);
-
-        //GGH
-        immModeSink.glNormal3f(0f, 0f, 0f);
-        immModeSink.glColor3f(0f, 0f, 0f);
-        immModeSink.glVertex3f(x, 1, Model.topo1dim[x + latticeSizeX]);
-        immModeSink.glNormal3f(0f, 0f, 0f);
-        immModeSink.glColor3f(0f, 0f, 0f);
-        immModeSink.glVertex3f(x, 1, Model.topo1dim[x + latticeSizeX]);
-        immModeSink.glNormal3f(0f, 0f, 0f);
-        immModeSink.glColor3f(0f, 0f, 0f);
-        immModeSink.glVertex3f(x + 1, 1, Model.topo1dim[(x + 1) + latticeSizeX]);
-
-        //GHG
-        immModeSink.glNormal3f(0f, 0f, 0f);
-        immModeSink.glColor3f(0f, 0f, 0f);
-        immModeSink.glVertex3f(x, 1, Model.topo1dim[x + latticeSizeX]);
-        immModeSink.glNormal3f(0f, 0f, 0f);
-        immModeSink.glColor3f(0f, 0f, 0f);
-        immModeSink.glVertex3f(x + 1, 1, Model.topo1dim[(x + 1) + latticeSizeX]);
-        immModeSink.glNormal3f(0f, 0f, 0f);
-        immModeSink.glColor3f(0f, 0f, 0f);
-        immModeSink.glVertex3f(x, 1, Model.topo1dim[x + latticeSizeX]);
-
-        //GGH
-        immModeSink.glNormal3f(0f, 0f, 0f);
-        immModeSink.glColor3f(0f, 0f, 0f);
-        immModeSink.glVertex3f(x, 1, Model.topo1dim[x + latticeSizeX]);
-        immModeSink.glNormal3f(0f, 0f, 0f);
-        immModeSink.glColor3f(0f, 0f, 0f);
-        immModeSink.glVertex3f(x, 1, Model.topo1dim[x + latticeSizeX]);
-        immModeSink.glNormal3f(0f,0f,0f);
-        immModeSink.glColor3f(0f,0f,0f);
-        immModeSink.glVertex3f(x + 1, 1, Model.topo1dim[(x + 1) + latticeSizeX]);
     }
->>>>>>> .merge_file_a22216
 
-    immModeSink.glEnd(gl, true);
-
-
-<<<<<<< .merge_file_a02176
-=======
-}
-
->>>>>>> .merge_file_a22216
     private void drawTerraindirect()
     {
         // Need a separate vertex normal for each quad -- this implementation is inefficient
@@ -1082,11 +977,7 @@ public class View implements Runnable, GLEventListener {
                 cross(norm, v2, v1);
                 gl.glNormal3f(norm[0], norm[1], norm[2]);*/
 //                gl.glNormal3fv(Wilsim.m.vert_Normals[x + y * Model.lattice_size_x], 0);
-<<<<<<< .merge_file_a02176
                 gl.glNormal3f(Wilsim.m.vert_Normals[x + y * Model.lattice_size_x].x, Wilsim.m.vert_Normals[x + y * Model.lattice_size_x].y, Wilsim.m.vert_Normals[x + y * Model.lattice_size_x].z);
-=======
-                gl.glNormal3f(Wilsim.m.vert_Normals[x + y * Model.lattice_size_x].x, Wilsim.m.vert_Normals[x + y * Model.lattice_size_x].y, Wilsim.m.vert_Normals[x + y * Model.lattice_size_x].z );
->>>>>>> .merge_file_a22216
 
                 gl.glColor3f(Model.vert_color2[x + y * Model.lattice_size_x].x, Model.vert_color2[(x + y * Model.lattice_size_x)].y, Model.vert_color2[(x + y * Model.lattice_size_x)].z);
                 gl.glVertex3f(x, y, Model.topo1dim[x + y * latticeSizeX]);
@@ -2082,7 +1973,6 @@ public class View implements Runnable, GLEventListener {
         c[2] = a[0] * b[1] - b[0] * a[1];
     }
 
-<<<<<<< .merge_file_a02176
     /*    public void cross(Model.Vec3 vert_Normals) {
             // C = A X B
 
@@ -2090,15 +1980,6 @@ public class View implements Runnable, GLEventListener {
             z[1] = -(x[0] * y[2] - y[0] * x[2]);
             z[2] = x[0] * y[1] - y[0] * x[1];
         }*/
-=======
-/*    public void cross(Model.Vec3 vert_Normals) {
-        // C = A X B
-
-        vert_Normals.z[0] = x[1] * y[2] - y[1] * x[2];
-        z[1] = -(x[0] * y[2] - y[0] * x[2]);
-        z[2] = x[0] * y[1] - y[0] * x[1];
-    }*/
->>>>>>> .merge_file_a22216
     private float dot(float[] a, float[] b) {
         return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
     }
