@@ -249,7 +249,7 @@ public class XSection {
 			for (i = 0; i < dMax; i++) {
 				//System.out.println("X is " + x + " Y is " + y);
 				//System.out.println("p is " + p );
-				values[nIterates + 1][i] = terrain[Math.round( (float) x) + Math.round( (float) y) * 339];
+				values[nIterates + 1][i] = terrain[Math.round( (float) x) + Math.round( (float) y) * Wilsim.m.lattice_size_x];
 
 				if (values[0][i] > crossSectionMaxY) {
 					crossSectionMaxY = values[0][i];
@@ -265,7 +265,7 @@ public class XSection {
 
 			}
 			//System.out.println("X is " + x + " Y is " + y);
-			values[nIterates + 1][i] = terrain[Math.round( (float) x) + Math.round( (float) y) * 339];
+			values[nIterates + 1][i] = terrain[Math.round( (float) x) + Math.round( (float) y) * Wilsim.m.lattice_size_x];
 		}
 
 		nIterates++;
