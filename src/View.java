@@ -11,16 +11,25 @@ import com.jogamp.opengl.util.glsl.ShaderState;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
 
 public class View implements Runnable, GLEventListener {
     public final GLCanvas canvas;
     private final GLCapabilities caps;
+<<<<<<< .merge_file_a02176
+/*    //private final ImmModeSink gl = ImmModeSink.createFixed(Wilsim.m.oneDimSize,
+=======
     private final ImmModeSink immModeSink = ImmModeSink.createFixed(Wilsim.m.oneDimSize,
+>>>>>>> .merge_file_a22216
             3, GL.GL_FLOAT, // vertex
             3, GL.GL_FLOAT, // color
             3, GL.GL_FLOAT, // normal
             0, GL.GL_FLOAT, // texCoords
+<<<<<<< .merge_file_a02176
+            GL.GL_DYNAMIC_DRAW);*/
+=======
             GL.GL_DYNAMIC_DRAW);
+>>>>>>> .merge_file_a22216
     private GL2 gl;
 
     private static float[][][] topoColor;
@@ -72,7 +81,6 @@ public class View implements Runnable, GLEventListener {
     // for visualization - change later to take into account true
     // ground scale factor and then throw in proper vertical scaling.
 
-    final private float gridHorizontalSpacingFactor = 720.0f;
     // Spacing between points on ground
     // Needed for cross section output.
 
@@ -88,8 +96,8 @@ public class View implements Runnable, GLEventListener {
     private boolean repaint;
 
     private final float COLOR_MAX_HEIGHT = 3000.0f;
-//    private final float COLOR_MIN_HEIGHT = 1200.0f;
-private final float COLOR_MIN_HEIGHT = 1400.0f;
+    //    private final float COLOR_MIN_HEIGHT = 1200.0f;
+    private final float COLOR_MIN_HEIGHT = 1400.0f;
 
     private final float[] vertScaleSample = {1400.0f, 2000.0f, 2500.0f, 3000.0f};
     private final int nVertScaleSamples = 4;
@@ -106,6 +114,7 @@ private final float COLOR_MIN_HEIGHT = 1400.0f;
 
     // XSection information
     final private float profileScale = 1.1f;  // For borders in profile view
+    public float cameraZ = 0f;
 
     public View() {
         // System.out.println("View: View()\n");
@@ -308,6 +317,22 @@ private final float COLOR_MIN_HEIGHT = 1400.0f;
                 newComputation.notify();
             }
         }
+
+
+        @Override
+        public void mouseWheelMoved(MouseWheelEvent m) {
+
+            float wheelRotation = m.getWheelRotation();
+            if (wheelRotation != 0){
+                cameraZ += wheelRotation * 10000;
+                synchronized (newComputation) {
+                    newUI = true;
+                    newComputation.boolVal = true;
+                    newComputation.notify();
+                }
+            }
+        }
+
     }
 
     public void init(final GLAutoDrawable glautodrawable) {
@@ -563,6 +588,7 @@ private final float COLOR_MIN_HEIGHT = 1400.0f;
         // Set up 3D rendering
         gl.glMatrixMode(GLMatrixFunc.GL_MODELVIEW);
         gl.glLoadIdentity();
+        gl.glTranslatef(1f, 1f, cameraZ);
         gl.glMultMatrixf(world2cam, 0);
 
         // Spin mode
@@ -600,10 +626,6 @@ private final float COLOR_MIN_HEIGHT = 1400.0f;
 
         drawVertScale();
         drawUI();
-        immModeSink.draw(gl, true);
-
-
-
     }
 
     private void drawXSectionMode() {
@@ -831,6 +853,100 @@ private final float COLOR_MIN_HEIGHT = 1400.0f;
         gl.glColorMaterial(GL.GL_FRONT_AND_BACK,
                 GLLightingFunc.GL_AMBIENT_AND_DIFFUSE);
 
+<<<<<<< .merge_file_a02176
+        gl.glBegin(GL.GL_TRIANGLE_STRIP);
+
+
+
+        for(int x = 1; x < latticeSizeX; x++) {
+
+            for(int y = 1; y < latticeSizeY; y++)
+            {
+
+                gl.glNormal3f(Wilsim.m.vert_Normals[x + y * Model.lattice_size_x].x, Wilsim.m.vert_Normals[x + y * Model.lattice_size_x].y, Wilsim.m.vert_Normals[x + y * Model.lattice_size_x].z);
+                gl.glColor3f(Model.vert_color2[x + y * Model.lattice_size_x].x, Model.vert_color2[(x + y * Model.lattice_size_x)].y, Model.vert_color2[(x + y * Model.lattice_size_x)].z);
+                gl.glVertex3f(x, y, Model.topo1dim[x + y * latticeSizeX]);
+
+                x++;
+
+                gl.glNormal3f(Wilsim.m.vert_Normals[x + y * Model.lattice_size_x].x, Wilsim.m.vert_Normals[x + y * Model.lattice_size_x].y, Wilsim.m.vert_Normals[x + y * Model.lattice_size_x].z );
+                gl.glColor3f(Model.vert_color2[x + y * Model.lattice_size_x].x, Model.vert_color2[(x + y * Model.lattice_size_x)].y, Model.vert_color2[(x + y * Model.lattice_size_x)].z);
+                gl.glVertex3f(x, y, Model.topo1dim[x + y * latticeSizeX]);
+                x--;
+            }
+
+            //degenerate triangles
+
+
+            //eff
+            gl.glNormal3f(0f,0f,0f);
+            gl.glColor3f(0f, 0f, 0f);
+            gl.glVertex3f(x, latticeSizeY, Model.topo1dim[x + latticeSizeY * latticeSizeX]);
+            gl.glNormal3f(0f, 0f, 0f);
+            gl.glColor3f(0f, 0f, 0f);
+            gl.glVertex3f(x + 1, latticeSizeY, Model.topo1dim[(x + 1) + latticeSizeY * latticeSizeX]);
+            gl.glNormal3f(0f, 0f, 0f);
+            gl.glColor3f(0f, 0f, 0f);
+            gl.glVertex3f(x + 1, latticeSizeY, Model.topo1dim[(x + 1) + latticeSizeY * latticeSizeX]);
+
+            //FFG
+            gl.glNormal3f(0f, 0f, 0f);
+            gl.glColor3f(0f, 0f, 0f);
+            gl.glVertex3f(x + 1, latticeSizeY, Model.topo1dim[(x + 1) + latticeSizeY * latticeSizeX]);
+            gl.glNormal3f(0f, 0f, 0f);
+            gl.glColor3f(0f, 0f, 0f);
+            gl.glVertex3f(x + 1, latticeSizeY, Model.topo1dim[(x + 1) + latticeSizeY * latticeSizeX]);
+            gl.glNormal3f(0f, 0f, 0f);
+            gl.glColor3f(0f, 0f, 0f);
+            gl.glVertex3f(x, 1, Model.topo1dim[x + latticeSizeX]);
+
+            //FGG
+            gl.glNormal3f(0f, 0f, 0f);
+            gl.glColor3f(0f, 0f, 0f);
+            gl.glVertex3f(x + 1, latticeSizeY, Model.topo1dim[(x + 1) + latticeSizeY * latticeSizeX]);
+            gl.glNormal3f(0f, 0f, 0f);
+            gl.glColor3f(0f, 0f, 0f);
+            gl.glVertex3f(x, 1, Model.topo1dim[x + latticeSizeX]);
+            gl.glNormal3f(0f, 0f, 0f);
+            gl.glColor3f(0f, 0f, 0f);
+            gl.glVertex3f(x, 1, Model.topo1dim[x + latticeSizeX]);
+
+            //GGH
+            gl.glNormal3f(0f, 0f, 0f);
+            gl.glColor3f(0f, 0f, 0f);
+            gl.glVertex3f(x, 1, Model.topo1dim[x + latticeSizeX]);
+            gl.glNormal3f(0f, 0f, 0f);
+            gl.glColor3f(0f, 0f, 0f);
+            gl.glVertex3f(x, 1, Model.topo1dim[x + latticeSizeX]);
+            gl.glNormal3f(0f, 0f, 0f);
+            gl.glColor3f(0f, 0f, 0f);
+            gl.glVertex3f(x + 1, 1, Model.topo1dim[(x + 1) + latticeSizeX]);
+
+            //GHG
+            gl.glNormal3f(0f, 0f, 0f);
+            gl.glColor3f(0f, 0f, 0f);
+            gl.glVertex3f(x, 1, Model.topo1dim[x + latticeSizeX]);
+            gl.glNormal3f(0f, 0f, 0f);
+            gl.glColor3f(0f, 0f, 0f);
+            gl.glVertex3f(x + 1, 1, Model.topo1dim[(x + 1) + latticeSizeX]);
+            gl.glNormal3f(0f, 0f, 0f);
+            gl.glColor3f(0f, 0f, 0f);
+            gl.glVertex3f(x, 1, Model.topo1dim[x + latticeSizeX]);
+
+            //GGH
+            gl.glNormal3f(0f, 0f, 0f);
+            gl.glColor3f(0f, 0f, 0f);
+            gl.glVertex3f(x, 1, Model.topo1dim[x + latticeSizeX]);
+            gl.glNormal3f(0f, 0f, 0f);
+            gl.glColor3f(0f, 0f, 0f);
+            gl.glVertex3f(x, 1, Model.topo1dim[x + latticeSizeX]);
+            gl.glNormal3f(0f,0f,0f);
+            gl.glColor3f(0f,0f,0f);
+            gl.glVertex3f(x + 1, 1, Model.topo1dim[(x + 1) + latticeSizeX]);
+        }
+
+        //gl.glEnd(gl, true);
+=======
         immModeSink.glBegin(GL.GL_TRIANGLE_STRIP);
 
 
@@ -920,12 +1036,16 @@ private final float COLOR_MIN_HEIGHT = 1400.0f;
         immModeSink.glColor3f(0f,0f,0f);
         immModeSink.glVertex3f(x + 1, 1, Model.topo1dim[(x + 1) + latticeSizeX]);
     }
+>>>>>>> .merge_file_a22216
 
     immModeSink.glEnd(gl, true);
 
 
+<<<<<<< .merge_file_a02176
+=======
 }
 
+>>>>>>> .merge_file_a22216
     private void drawTerraindirect()
     {
         // Need a separate vertex normal for each quad -- this implementation is inefficient
@@ -950,7 +1070,7 @@ private final float COLOR_MIN_HEIGHT = 1400.0f;
 //degenerate triangles info
         //http://www.gamedev.net/page/resources/_/technical/graphics-programming-and-theory/concatenating-triangle-strips-r1871
         gl.glBegin(GL.GL_TRIANGLE_STRIP);
-        //immModeSink.glBegin(GL.GL_TRIANGLE_STRIP);
+        //gl.glBegin(GL.GL_TRIANGLE_STRIP);
 
 
         for(int x = 1; x < latticeSizeX; x++) {
@@ -962,7 +1082,11 @@ private final float COLOR_MIN_HEIGHT = 1400.0f;
                 cross(norm, v2, v1);
                 gl.glNormal3f(norm[0], norm[1], norm[2]);*/
 //                gl.glNormal3fv(Wilsim.m.vert_Normals[x + y * Model.lattice_size_x], 0);
+<<<<<<< .merge_file_a02176
+                gl.glNormal3f(Wilsim.m.vert_Normals[x + y * Model.lattice_size_x].x, Wilsim.m.vert_Normals[x + y * Model.lattice_size_x].y, Wilsim.m.vert_Normals[x + y * Model.lattice_size_x].z);
+=======
                 gl.glNormal3f(Wilsim.m.vert_Normals[x + y * Model.lattice_size_x].x, Wilsim.m.vert_Normals[x + y * Model.lattice_size_x].y, Wilsim.m.vert_Normals[x + y * Model.lattice_size_x].z );
+>>>>>>> .merge_file_a22216
 
                 gl.glColor3f(Model.vert_color2[x + y * Model.lattice_size_x].x, Model.vert_color2[(x + y * Model.lattice_size_x)].y, Model.vert_color2[(x + y * Model.lattice_size_x)].z);
                 gl.glVertex3f(x, y, Model.topo1dim[x + y * latticeSizeX]);
@@ -1048,7 +1172,7 @@ private final float COLOR_MIN_HEIGHT = 1400.0f;
         renderStrokeString(GLUT.STROKE_MONO_ROMAN, "0km");
         gl.glTranslatef(130f, verty - 540f, 1820.f);
         renderStrokeString(GLUT.STROKE_MONO_ROMAN, "25km 50km    100km");
-gl.glPopMatrix();
+        gl.glPopMatrix();
 
 
 
@@ -1247,7 +1371,7 @@ gl.glPopMatrix();
         //System.out.println("Line 40050 * drawScaleX " + (40050 * drawScaleX));
 
 
-       // gl.glEnd();
+        // gl.glEnd();
         // Draw labels
 
         vertScaleTextEngine.beginRendering(canvas.getWidth(), canvas.getHeight());
@@ -1315,7 +1439,7 @@ gl.glPopMatrix();
 //for (int x = XSectionManager.getXSection(0).getNIterates(); x < XSectionManager.getXSection(0).getMaxNIterates(); x++) {
 
 
-       // gl.glEnd();
+        // gl.glEnd();
 
 
 
@@ -1326,7 +1450,7 @@ gl.glPopMatrix();
             drawScaleX = (float) scalef;
             for (int x = 1; x <= XSectionManager.getXSection(0).getNIterates(); x++) {
 
-                Color myRGBColor = Color.getHSBColor((float) (x - 1) / (Wilsim.m.storageIntervals + 1), saturation, brightness);
+                Color myRGBColor = Color.getHSBColor((float) (x - 1) / (Wilsim.m.visualizationIntervals + 1), saturation, brightness);
 
                 gl.glEnable(GL.GL_LINE_SMOOTH);
                 gl.glEnable(GL.GL_BLEND);
@@ -1348,7 +1472,7 @@ gl.glPopMatrix();
                         double answer = (XSectionManager.getXSection(0).values[x][i / 5] * (1 - mu2) +
                                 XSectionManager.getXSection(0).values[x][(i / 5) + 1] * mu2);
 
-                        gl.glVertex3f((XSectionManager.getXSection(0).values[0][i / 5] * drawScaleX + (720 * (float) mu) * drawScaleX) + 75,
+                        gl.glVertex3f((XSectionManager.getXSection(0).values[0][i / 5] * drawScaleX + (Wilsim.m.gridHorizontalSpacingFactor * (float) mu) * drawScaleX) + 75,
                                 (float) answer * drawScaleY + 87,
                                 -1.4f + (x * .001f));
                     }
@@ -1484,7 +1608,7 @@ gl.glPopMatrix();
             }
 
         }
-            gl.glEnd();
+        gl.glEnd();
 
 
 
@@ -1516,7 +1640,7 @@ gl.glPopMatrix();
 
         if (lastGridH != Wilsim.c.isHGridBool()){
             canvas.repaint();
-           // repaint = false;
+            // repaint = false;
         }
     }
 
@@ -1658,17 +1782,17 @@ gl.glPopMatrix();
 
 
         if (Wilsim.m.river != null && Wilsim.m.river.getProcessed() > 0) {
-        // Last minute filter hack to get rid of spikes.  Ideally
-        // shouldn't be needed.  To be investigated further
-        final int thresh = 30;
-        for (int k = 7; k >= 1; k -= 2) // Reduce wide peaks to narrow peaks
-            for (int j = 0; j < Wilsim.m.river.getNIterates(); j++) {
-                for (int i = k; i < Wilsim.m.river.n[j] - k; i++) {
-                    if ((Wilsim.m.river.values[j][i - k] - Wilsim.m.river.values[j][i]) < -thresh
-                            && (Wilsim.m.river.values[j][i + k] - Wilsim.m.river.values[j][i]) < -thresh)
-                        Wilsim.m.river.values[j][i] = (Wilsim.m.river.values[j][i + k] + Wilsim.m.river.values[j][i - k]) / 2.0f;
+            // Last minute filter hack to get rid of spikes.  Ideally
+            // shouldn't be needed.  To be investigated further
+            final int thresh = 30;
+            for (int k = 7; k >= 1; k -= 2) // Reduce wide peaks to narrow peaks
+                for (int j = 0; j < Wilsim.m.river.getNIterates(); j++) {
+                    for (int i = k; i < Wilsim.m.river.n[j] - k; i++) {
+                        if ((Wilsim.m.river.values[j][i - k] - Wilsim.m.river.values[j][i]) < -thresh
+                                && (Wilsim.m.river.values[j][i + k] - Wilsim.m.river.values[j][i]) < -thresh)
+                            Wilsim.m.river.values[j][i] = (Wilsim.m.river.values[j][i + k] + Wilsim.m.river.values[j][i - k]) / 2.0f;
+                    }
                 }
-            }
 
 
 
@@ -1680,7 +1804,7 @@ gl.glPopMatrix();
 
 
 
-                Color myRGBColor = Color.getHSBColor((float) (x) / (Wilsim.m.storageIntervals + 1), saturation, brightness);
+                Color myRGBColor = Color.getHSBColor((float) (x) / (Wilsim.m.visualizationIntervals + 1), saturation, brightness);
 
                 gl.glEnable(GL.GL_LINE_SMOOTH);
                 gl.glEnable(GL.GL_BLEND);
@@ -1958,6 +2082,15 @@ gl.glPopMatrix();
         c[2] = a[0] * b[1] - b[0] * a[1];
     }
 
+<<<<<<< .merge_file_a02176
+    /*    public void cross(Model.Vec3 vert_Normals) {
+            // C = A X B
+
+            vert_Normals.z[0] = x[1] * y[2] - y[1] * x[2];
+            z[1] = -(x[0] * y[2] - y[0] * x[2]);
+            z[2] = x[0] * y[1] - y[0] * x[1];
+        }*/
+=======
 /*    public void cross(Model.Vec3 vert_Normals) {
         // C = A X B
 
@@ -1965,6 +2098,7 @@ gl.glPopMatrix();
         z[1] = -(x[0] * y[2] - y[0] * x[2]);
         z[2] = x[0] * y[1] - y[0] * x[1];
     }*/
+>>>>>>> .merge_file_a22216
     private float dot(float[] a, float[] b) {
         return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
     }
@@ -2045,6 +2179,7 @@ gl.glPopMatrix();
         }
 
     }
+
     public void map_color_pre_calc(float height, Model.Vec3 color){
         float t = (height - COLOR_MIN_HEIGHT) / (COLOR_MAX_HEIGHT - COLOR_MIN_HEIGHT);
 
@@ -2083,7 +2218,7 @@ gl.glPopMatrix();
     }
 
     public void precalc_Normals(int x, int y){
-        if (y != latticeSizeY && x > 0) {
+        if (y != latticeSizeY) {
             float[] v1 = new float[3];
             float[] v2 = new float[3];
             float[] norm = new float[3];
@@ -2113,7 +2248,7 @@ gl.glPopMatrix();
         if (t > 1.0) t = 1.0f;
 
 
-	// Light green through red
+        // Light green through red
 
 
 /*	else
